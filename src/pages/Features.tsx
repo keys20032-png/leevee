@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowLeft, MessageSquare, Flame, GraduationCap, PartyPopper, PenTool, Swords, ImageIcon, Brain, Shield, Mic, Download, Search, RefreshCw, Zap, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -23,24 +24,30 @@ const CAPABILITIES = [
   { icon: Zap, title: "10+ AI Models", desc: "Powered by multiple frontier models including GPT-5, Gemini 2.5 Pro, and more — automatically selected per mode for best results." },
 ];
 
-const COMPARISON: { feature: string; leevee: boolean | string; grok: boolean | string }[] = [
-  { feature: "Dedicated Chat Modes (7)", leevee: true, grok: false },
-  { feature: "Vent Mode (non-judgmental)", leevee: true, grok: false },
-  { feature: "Debate Mode (Socratic)", leevee: true, grok: false },
-  { feature: "Image Generation", leevee: true, grok: true },
-  { feature: "Image Editing", leevee: true, grok: false },
-  { feature: "Persistent Memory Bank", leevee: true, grok: false },
-  { feature: "Data Export & Ownership", leevee: true, grok: false },
-  { feature: "Device Sync (no account)", leevee: true, grok: false },
-  { feature: "Crisis Detection + 988", leevee: true, grok: false },
-  { feature: "Safety Plan Builder", leevee: true, grok: false },
-  { feature: "Quick Exit Button", leevee: true, grok: false },
-  { feature: "Voice Input", leevee: true, grok: true },
-  { feature: "Real-Time Web Search", leevee: true, grok: true },
-  { feature: "Multi-language UI", leevee: "5 languages", grok: true },
-  { feature: "PWA / Installable", leevee: true, grok: false },
-  { feature: "Open / Indie Built", leevee: true, grok: false },
-  { feature: "Free Tier", leevee: true, grok: "Paid only" },
+const COMPARISON: { feature: string; leevee: boolean | string; grok: boolean | string; claude: boolean | string }[] = [
+  { feature: "Dedicated Chat Modes (7)", leevee: true, grok: false, claude: false },
+  { feature: "Vent Mode (non-judgmental)", leevee: true, grok: false, claude: false },
+  { feature: "Debate Mode (Socratic)", leevee: true, grok: false, claude: false },
+  { feature: "Image Generation", leevee: true, grok: true, claude: false },
+  { feature: "Image Editing", leevee: true, grok: false, claude: false },
+  { feature: "Persistent Memory Bank", leevee: true, grok: false, claude: "Limited" },
+  { feature: "Data Export & Ownership", leevee: true, grok: false, claude: false },
+  { feature: "Device Sync (no account)", leevee: true, grok: false, claude: false },
+  { feature: "Crisis Detection + 988", leevee: true, grok: false, claude: false },
+  { feature: "Safety Plan Builder", leevee: true, grok: false, claude: false },
+  { feature: "Quick Exit Button", leevee: true, grok: false, claude: false },
+  { feature: "Voice Input", leevee: true, grok: true, claude: true },
+  { feature: "Real-Time Web Search", leevee: true, grok: true, claude: true },
+  { feature: "Multi-language UI", leevee: "5 languages", grok: true, claude: true },
+  { feature: "PWA / Installable", leevee: true, grok: false, claude: false },
+  { feature: "Open / Indie Built", leevee: true, grok: false, claude: false },
+  { feature: "Free Tier", leevee: true, grok: "Paid only", claude: "Limited" },
+  { feature: "200k+ Context Window", leevee: false, grok: true, claude: true },
+  { feature: "Agentic / Computer Use", leevee: false, grok: false, claude: true },
+  { feature: "Enterprise / Team Plans", leevee: false, grok: true, claude: true },
+  { feature: "Frontier Benchmark Scores", leevee: false, grok: true, claude: true },
+  { feature: "Sex Work Education", leevee: true, grok: false, claude: "Refuses" },
+  { feature: "LGBTQ+ Inclusive by Design", leevee: true, grok: false, claude: "Neutral" },
 ];
 
 const Features = () => {
@@ -134,8 +141,8 @@ const Features = () => {
         {/* Comparison Table */}
         <section className="space-y-6">
           <AnimatedSection>
-            <h3 className="text-xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee vs Grok — Feature by Feature</h3>
-            <p className="text-sm text-muted-foreground mt-1">An honest, accurate comparison. No spin.</p>
+            <h3 className="text-xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee vs Grok vs Claude — Feature by Feature</h3>
+            <p className="text-sm text-muted-foreground mt-1">An honest, accurate three-way comparison. No spin.</p>
           </AnimatedSection>
           <AnimatedSection delay={100}>
             <div className="rounded-xl border border-border overflow-hidden">
@@ -143,35 +150,33 @@ const Features = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border bg-card/80">
-                      <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Feature</th>
-                      <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wider text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee</th>
-                      <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Grok</th>
+                      <th className="text-left px-3 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Feature</th>
+                      <th className="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee</th>
+                      <th className="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Grok</th>
+                      <th className="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Claude</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {COMPARISON.map((row, i) => (
-                      <tr key={row.feature} className={`border-b border-border/50 ${i % 2 === 0 ? "bg-background" : "bg-card/30"}`}>
-                        <td className="px-4 py-2.5 text-foreground text-xs">{row.feature}</td>
-                        <td className="px-4 py-2.5 text-center">
-                          {row.leevee === true ? (
-                            <Check className="w-4 h-4 text-green-500 mx-auto" />
-                          ) : row.leevee === false ? (
-                            <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
-                          ) : (
-                            <span className="text-xs text-primary font-medium">{row.leevee}</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-2.5 text-center">
-                          {row.grok === true ? (
-                            <Check className="w-4 h-4 text-green-500 mx-auto" />
-                          ) : row.grok === false ? (
-                            <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
-                          ) : (
-                            <span className="text-xs text-muted-foreground font-medium">{row.grok}</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {COMPARISON.map((row, i) => {
+                      const renderCell = (val: boolean | string) =>
+                        val === true ? (
+                          <Check className="w-4 h-4 text-green-500 mx-auto" />
+                        ) : val === false ? (
+                          <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
+                        ) : (
+                          <span className="text-xs text-muted-foreground font-medium">{val}</span>
+                        );
+                      return (
+                        <tr key={row.feature} className={`border-b border-border/50 ${i % 2 === 0 ? "bg-background" : "bg-card/30"}`}>
+                          <td className="px-3 py-2.5 text-foreground text-xs">{row.feature}</td>
+                          <td className="px-3 py-2.5 text-center">
+                            {row.leevee === true ? <Check className="w-4 h-4 text-green-500 mx-auto" /> : row.leevee === false ? <X className="w-4 h-4 text-muted-foreground/40 mx-auto" /> : <span className="text-xs text-primary font-medium">{row.leevee}</span>}
+                          </td>
+                          <td className="px-3 py-2.5 text-center">{renderCell(row.grok)}</td>
+                          <td className="px-3 py-2.5 text-center">{renderCell(row.claude)}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -355,11 +360,51 @@ const Features = () => {
             </div>
           </AnimatedSection>
 
+          {/* Topic 6: AI Lawsuits & Regulation */}
+          <AnimatedSection delay={320}>
+            <div className="rounded-xl border border-border bg-card/60 p-5 space-y-4">
+              <h4 className="font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                ⚖️ AI Lawsuits, Regulation Failures, and Who's Actually Accountable
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                As of early 2026, the AI industry faces an unprecedented wave of lawsuits and regulatory scrutiny — yet meaningful regulation remains elusive. This matters for every AI user, regardless of which product they choose.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">The Lawsuit Landscape</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Major AI companies face active litigation on multiple fronts: copyright infringement (NYT v. OpenAI, Getty v. Stability AI), privacy violations (class actions in IL, CA, and EU under GDPR), and harm claims from users who received dangerous outputs. In 2025–2026 alone, Anthropic faced scrutiny over Claude's refusal patterns blocking legitimate medical research, while xAI was criticized for Grok generating election misinformation during the 2025 UK general election.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Key case:</strong> The 2025 Doe v. Character AI wrongful death lawsuit — where a teenager's suicide was linked to an AI chatbot — forced the entire industry to reckon with whether AI companions need regulated safety standards, not just voluntary guidelines.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">The Regulation Vacuum</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    The EU AI Act (effective 2025) remains the only comprehensive framework, but enforcement has been slow and penalties rare. The US has no federal AI regulation — only a patchwork of executive orders and state-level bills. China's AI regulations focus on content control, not user safety. The result: companies self-regulate, which critics call "the fox guarding the henhouse."
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>The paradox:</strong> Anthropic's own "Responsible Scaling Policy" — once praised for promising to pause development if safety couldn't keep up — was quietly softened in late 2025 when competitive pressure from Grok 4 and GPT-5 made self-imposed limits commercially untenable.
+                  </p>
+                </div>
+              </div>
+              <div className="border-t border-border/50 pt-3 space-y-2">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <strong className="text-foreground">Where Leevee fits in this:</strong> As an indie project, Leevee isn't training models on scraped data — it uses API-accessed models, which means it doesn't face the same copyright liability as companies training on the open internet. But it <em>does</em> face the same responsibility for output safety, which is why crisis detection, lethality blocking, and content moderation are built in from day one — not bolted on after a lawsuit.
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed italic">
+                  The uncomfortable truth is that no AI company — indie or frontier — has solved accountability. The difference is whether you build safety because you care about users, or because you're trying to avoid the next lawsuit. Leevee was built by someone who's been on the other side of systems that failed vulnerable people. That's not a benchmark score. It's a design philosophy.
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+
           {/* Closing note */}
-          <AnimatedSection delay={280}>
+          <AnimatedSection delay={360}>
             <div className="rounded-xl border border-border/50 bg-secondary/30 p-5">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">A note on honesty:</strong> Leevee is an indie project. We don't have Grok's compute power, benchmark scores, or engineering team. What we do have is a deliberate design philosophy that prioritizes user safety, data ownership, and inclusivity without corporate censorship theater. We believe that's worth something — but we also believe you should make that judgment for yourself with accurate information, not AI-generated misinformation about what we can and can't do.
+                <strong className="text-foreground">A note on honesty:</strong> Leevee is an indie project. We don't have Grok's raw power, Claude's massive context windows, or either company's engineering army. What we do have is a deliberate design philosophy that prioritizes user safety, data ownership, and inclusivity without corporate censorship theater. Both Grok and Claude have generated comparisons describing Leevee as "text-only" or "limited" — this page exists because those descriptions were wrong, and we believe you deserve accurate information to choose for yourself.
               </p>
             </div>
           </AnimatedSection>
