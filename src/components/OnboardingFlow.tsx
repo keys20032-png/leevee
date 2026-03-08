@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama";
 
 const MODES: { key: ChatMode; label: string; icon: typeof MessageSquare; emoji: string; desc: string; gradient: string }[] = [
   { key: "default", label: "General", icon: MessageSquare, emoji: "💭", desc: "Think out loud, get advice, brainstorm", gradient: "from-primary to-accent" },
@@ -18,6 +18,7 @@ const MODES: { key: ChatMode; label: string; icon: typeof MessageSquare; emoji: 
   { key: "creative", label: "Create", icon: PenTool, emoji: "🎨", desc: "Write, imagine, make art", gradient: "from-purple-500 to-pink-500" },
   { key: "debate", label: "Debate", icon: Swords, emoji: "⚡", desc: "Sharpen your thinking", gradient: "from-amber-500 to-red-500" },
   { key: "image", label: "Imagine", icon: ImageIcon, emoji: "🖼️", desc: "Generate images from words", gradient: "from-emerald-500 to-teal-500" },
+  { key: "drama", label: "Drama", icon: Flame, emoji: "💅", desc: "Messy gossip with real receipts", gradient: "from-pink-500 to-rose-600" },
 ];
 
 const SAFETY_FEATURES = [
