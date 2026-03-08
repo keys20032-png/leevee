@@ -404,7 +404,12 @@ serve(async (req) => {
 
     // Pick the right system prompt based on mode
     const validMode = (mode && mode in PROMPTS) ? mode : "default";
-    const systemPrompt = PROMPTS[validMode];
+    let systemPrompt = PROMPTS[validMode];
+
+    // If distressed, inject grounding instructions into the system prompt
+    if (isDistressed) {
+      systemPrompt += `\n\nIMPORTANT: The user appears to be in emotional distress. After your main response, ALWAYS append a brief, compassionate reminder that you are an AI and encourage them to connect with real people. Also suggest a 5-4-3-2-1 grounding exercise if the conversation seems intense. Be warm and caring, not clinical.`;
+    }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -440,6 +445,37 @@ serve(async (req) => {
       console.error("AI gateway error:", response.status, t);
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // If distressed, we'll append grounding after the stream ends
+    if (isDistressed) {
+      // Create a TransformStream to append the grounding exercise after [DONE]
+      const { readable, writable } = new TransformStream();
+      const writer = writable.getWriter();
+      const reader = response.body!.getReader();
+
+      (async () => {
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            await writer.write(value);
+          }
+          // Append machine reminder as a final SSE chunk
+          const reminderChunk = `data: ${JSON.stringify({
+            choices: [{ delta: { content: MACHINE_REMINDER } }],
+          })}\n\n`;
+          await writer.write(new TextEncoder().encode(reminderChunk));
+          await writer.write(new TextEncoder().encode("data: [DONE]\n\n"));
+          await writer.close();
+        } catch (e) {
+          await writer.abort(e);
+        }
+      })();
+
+      return new Response(readable, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
       });
     }
 
