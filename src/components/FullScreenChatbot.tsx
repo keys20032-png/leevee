@@ -1916,17 +1916,17 @@ const FullScreenChatbot = () => {
             <p className="text-[10px] text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-1.5 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               <span className="font-semibold text-primary">Leevee AI</span>
               <span className="text-muted-foreground/40">·</span>
-              <a href="/features" className="text-foreground/60 hover:text-primary transition-colors font-medium">Features</a>
+              <a href="/features" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.features}</a>
               <span className="text-muted-foreground/40">·</span>
-              <a href="/safety" className="text-foreground/60 hover:text-primary transition-colors font-medium">Safety</a>
+              <a href="/safety" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.safety}</a>
               <span className="text-muted-foreground/40">·</span>
-              <a href="/feature-requests" className="text-foreground/60 hover:text-primary transition-colors font-medium">Ideas</a>
+              <a href="/feature-requests" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.ideas}</a>
               <span className="text-muted-foreground/40">·</span>
-              <a href="/pricing" className="text-foreground/60 hover:text-primary transition-colors font-medium">Pricing</a>
+              <a href="/pricing" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.pricing}</a>
               <span className="text-muted-foreground/40">·</span>
-              <a href="/terms" className="text-foreground/60 hover:text-primary transition-colors font-medium">Terms</a>
+              <a href="/terms" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.terms}</a>
               <span className="text-muted-foreground/40">·</span>
-              <a href="/privacy" className="text-foreground/60 hover:text-primary transition-colors font-medium">Privacy</a>
+              <a href="/privacy" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.privacy}</a>
             </p>
           </div>
         </div>
