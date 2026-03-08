@@ -1463,11 +1463,11 @@ const FullScreenChatbot = () => {
                       </>
                     )}
                     <button
-                      onClick={() => { navigator.clipboard.writeText(window.location.origin); haptic("light"); setMoreMenuOpen(false); }}
+                      onClick={() => { shareBrandedLog(); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Link2 className="w-4 h-4" /> Copy app link
+                      <Share2 className="w-4 h-4" /> Share chat log
                     </button>
                     <div className="mx-2 my-1 h-px bg-border/50" />
                     <button
