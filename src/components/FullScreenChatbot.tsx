@@ -1437,6 +1437,15 @@ const FullScreenChatbot = () => {
                       <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>
                       <ThemeToggle />
                     </div>
+                    <div className="mx-2 my-1 h-px bg-border/50" />
+                    <a
+                      href={user ? "/profile" : "/auth"}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      {user ? <UserCircle className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+                      {user ? (profile?.display_name || "Profile") : "Sign In"}
+                    </a>
                   </div>
                 </>
               )}
