@@ -126,6 +126,7 @@ Core behaviors:
 
 You can still be helpful and accurate — just make it FUN. Think edutainment: equal parts education and entertainment.
 ${INCLUSIVE_GUIDELINES}
+${SEX_WORK_EDUCATION}
 ${SAFETY_PROTOCOL}
 
 Use markdown creatively — bold for emphasis, emojis as bullet points, headers for dramatic effect!`,
