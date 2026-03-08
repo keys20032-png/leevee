@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CrisisResourceCard from "@/components/CrisisResourceCard";
 import SafetyCheckScreen from "@/components/SafetyCheckScreen";
+import { useI18n } from "@/i18n/I18nContext";
 
 export interface CrisisResource {
   name: string;
@@ -18,7 +19,20 @@ export interface CrisisResource {
   category: string;
 }
 
-const categories = [
+const categoryKeys = [
+  "catAll",
+  "catMentalHealth",
+  "catYouthChildren",
+  "catLGBTQ",
+  "catViolenceAbuse",
+  "catSubstanceUse",
+  "catDisability",
+  "catFamilyParenting",
+  "catDisasterEmergency",
+] as const;
+
+// Internal category IDs (not displayed, used for filtering)
+const categoryIds = [
   "All",
   "Mental Health",
   "Youth & Children",
@@ -276,6 +290,9 @@ export const resources: CrisisResource[] = [
 ];
 
 const CrisisResources = () => {
+  const { t } = useI18n();
+  const cd = t.crisisDirectory;
+
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [showChecklist, setShowChecklist] = useState(() => {
@@ -315,7 +332,7 @@ const CrisisResources = () => {
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            {cd.backToHome}
           </Link>
 
           <div className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center bg-destructive/15 border border-destructive/30">
@@ -326,11 +343,10 @@ const CrisisResources = () => {
             className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            Crisis Resources Directory
+            {cd.title}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-            If you or someone you know is in crisis, help is available right now.
-            These organizations provide free, confidential support 24/7.
+            {cd.subtitle}
           </p>
 
           {/* Urgent banner */}
@@ -340,7 +356,15 @@ const CrisisResources = () => {
               <span className="relative inline-flex rounded-full h-3 w-3 bg-destructive" />
             </span>
             <span className="text-sm font-semibold text-destructive">
-              In immediate danger? Call <a href="tel:911" className="underline font-bold">911</a> or <a href="tel:988" className="underline font-bold">988</a> now
+              {cd.urgentBanner
+                .replace("{911}", "")
+                .replace("{988}", "")
+                .split(/(\s+)/)
+                .map((word, i) => <span key={i}>{word}</span>)}
+              {" "}
+              <a href="tel:911" className="underline font-bold">911</a>
+              {" / "}
+              <a href="tel:988" className="underline font-bold">988</a>
             </span>
           </div>
         </div>
@@ -354,7 +378,7 @@ const CrisisResources = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search hotlines, organizations..."
+              placeholder={cd.searchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-12 pr-4 py-3.5 rounded-lg bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all text-sm"
@@ -364,25 +388,29 @@ const CrisisResources = () => {
 
           {/* Category pills */}
           <div className="flex flex-wrap justify-center gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-xs tracking-[0.1em] uppercase border transition-all ${
-                  activeCategory === cat
-                    ? "border-primary/60 text-primary bg-primary/10"
-                    : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
-                }`}
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-              >
-                {cat}
-              </button>
-            ))}
+            {categoryKeys.map((key, idx) => {
+              const catId = categoryIds[idx];
+              const label = cd[key];
+              return (
+                <button
+                  key={catId}
+                  onClick={() => setActiveCategory(catId)}
+                  className={`px-4 py-1.5 rounded-full text-xs tracking-[0.1em] uppercase border transition-all ${
+                    activeCategory === catId
+                      ? "border-primary/60 text-primary bg-primary/10"
+                      : "border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
+                  }`}
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Result count */}
           <p className="text-center text-xs text-muted-foreground">
-            Showing {filtered.length} of {resources.length} resources
+            {cd.showing.replace("{count}", String(filtered.length)).replace("{total}", String(resources.length))}
           </p>
         </div>
       </section>
@@ -400,16 +428,16 @@ const CrisisResources = () => {
             <div className="text-center py-16">
               <Search className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
               <p className="text-muted-foreground">
-                No resources found matching "<span className="text-foreground">{search}</span>"
+                {cd.noResults} "<span className="text-foreground">{search}</span>"
                 {activeCategory !== "All" && (
-                  <> in <span className="text-foreground">{activeCategory}</span></>
+                  <> {cd.inCategory} <span className="text-foreground">{cd[categoryKeys[categoryIds.indexOf(activeCategory as typeof categoryIds[number])]]}</span></>
                 )}
               </p>
               <button
                 onClick={() => { setSearch(""); setActiveCategory("All"); }}
                 className="mt-3 text-primary text-sm hover:underline"
               >
-                Clear filters
+                {cd.clearFilters}
               </button>
             </div>
           )}
@@ -421,10 +449,15 @@ const CrisisResources = () => {
         <div className="max-w-2xl mx-auto text-center">
           <div className="rounded-2xl border border-border bg-card p-8">
             <p className="text-foreground font-semibold mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              You are not alone. 💙
+              {cd.notAlone}
             </p>
             <p className="text-sm text-muted-foreground mb-4">
-              If you're not sure which resource to contact, call or text <strong>988</strong> — trained counselors are available 24/7 and can help connect you with the right support.
+              {cd.notSureText.split("{988}").map((part, i, arr) => (
+                <span key={i}>
+                  {part}
+                  {i < arr.length - 1 && <strong>988</strong>}
+                </span>
+              ))}
             </p>
             <a
               href="tel:988"
@@ -432,7 +465,7 @@ const CrisisResources = () => {
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
             >
               <Phone className="w-5 h-5" />
-              Call or Text 988 Now
+              {cd.callOrText988}
             </a>
           </div>
         </div>
