@@ -1094,7 +1094,7 @@ const FullScreenChatbot = () => {
                   <div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} />
                   <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 animate-message-in">
                     <button
-                      onClick={() => { startNewChat(); setMoreMenuOpen(false); }}
+                      onClick={() => { confirmNewChat(); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
