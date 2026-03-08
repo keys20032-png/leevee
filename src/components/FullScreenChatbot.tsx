@@ -1272,6 +1272,13 @@ const FullScreenChatbot = () => {
                 Leevee AI
               </h1>
             </div>
+            <button
+              onClick={() => { navigator.clipboard.writeText(window.location.origin); haptic("light"); }}
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors active:scale-95"
+              title="Copy app link"
+            >
+              <Link2 className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Mode tabs */}
