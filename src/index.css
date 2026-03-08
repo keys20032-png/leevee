@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 225 25% 7%;
+    --foreground: 210 20% 92%;
+
+    --card: 225 22% 11%;
+    --card-foreground: 210 20% 92%;
+
+    --popover: 225 22% 11%;
+    --popover-foreground: 210 20% 92%;
+
+    --primary: 16 80% 56%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 225 22% 15%;
+    --secondary-foreground: 210 20% 92%;
+
+    --muted: 225 18% 16%;
+    --muted-foreground: 215 12% 52%;
+
+    --accent: 262 50% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 225 18% 15%;
+    --input: 225 18% 15%;
+    --ring: 16 80% 56%;
+
+    --radius: 0.75rem;
+
+    --section-icon: 16 80% 56%;
+    --gradient-start: 16 80% 56%;
+    --gradient-end: 262 50% 60%;
+
+    --warm-glow: 32 85% 52%;
+  }
+
+  .light {
+    --background: 220 20% 97%;
+    --foreground: 225 30% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 225 30% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 30% 12%;
+
+    --primary: 16 78% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 93%;
+    --secondary-foreground: 225 30% 12%;
+
+    --muted: 220 12% 91%;
+    --muted-foreground: 220 12% 38%;
+
+    --accent: 262 48% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 86%;
+    --input: 220 14% 86%;
+    --ring: 16 78% 48%;
+
+    --section-icon: 16 78% 48%;
+    --gradient-start: 16 78% 48%;
+    --gradient-end: 262 48% 48%;
+
+    --warm-glow: 32 80% 44%;
+  }
+
+  .dark {
+    --background: 225 28% 5%;
+    --foreground: 210 20% 94%;
+    --card: 225 24% 9%;
+    --card-foreground: 210 20% 94%;
+    --popover: 225 24% 9%;
+    --popover-foreground: 210 20% 94%;
+    --primary: 16 80% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 225 22% 13%;
+    --secondary-foreground: 210 20% 94%;
+    --muted: 225 18% 14%;
+    --muted-foreground: 215 10% 55%;
+    --accent: 262 50% 62%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 60% 35%;
+    --destructive-foreground: 210 20% 94%;
+    --border: 225 18% 14%;
+    --input: 225 18% 14%;
+    --ring: 16 80% 56%;
+    --section-icon: 16 80% 56%;
+    --gradient-start: 16 80% 56%;
+    --gradient-end: 262 50% 62%;
+    --warm-glow: 32 85% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Visible focus rings for keyboard navigation */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary/70;
+    outline-style: solid;
+  }
+
+  /* Remove focus ring for mouse clicks */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* Smooth transitions for theme switching */
+@layer utilities {
+  .transition-theme {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+}

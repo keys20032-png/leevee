@@ -1,0 +1,946 @@
+import { useState, useRef, useEffect } from "react";
+import { MessageCircle, X, Send, Bot, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+type Message = { role: "user" | "assistant"; content: string };
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+const AIChatbot = () => {
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages]);
+
+  const CRISIS_KEYWORDS = [
+    // ===== SUICIDAL IDEATION =====
+    "suicide", "suicidal", "kill myself", "end my life", "want to die", "don't want to live",
+    "self harm", "self-harm", "cutting myself", "hurt myself", "no reason to live",
+    "better off dead", "can't go on", "end it all", "take my life", "not worth living",
+    "give up on life", "wanna die", "wish i was dead", "rather be dead", "no point in living",
+    "overdose", "jump off", "hang myself", "slit my wrist", "pills to die", "drink bleach",
+    "tired of living", "can't take it anymore", "life is meaningless", "don't want to wake up",
+    "wish i wasn't born", "better without me", "no one would miss me", "disappear forever",
+    "planning to die", "ready to die", "goodbye forever", "final goodbye", "last day",
+    "writing my note", "suicide note", "before i go", "won't be here tomorrow",
+    "can't do this anymore", "done with life", "done with everything", "nothing left",
+    "i give up", "no way out", "trapped", "no escape", "suffering too much",
+    "kms", "kys", "ctb", "sui", "unalive", "un alive", "unaliving",
+    "want out", "checking out", "clocking out forever", "final exit",
+    "rope", "bridge", "ledge", "train tracks", "gun to my head",
+    "swallow pills", "slit", "bleed out", "drown myself",
+    "just want the pain to stop", "pain won't stop", "make it stop",
+    "i can't breathe anymore", "suffocating", "drowning in pain",
+    "no one understands", "nobody gets it", "alone in this",
+    "this is my last", "last message", "last post", "last text",
+    "tell my family i love them", "tell them i'm sorry", "forgive me",
+    "i'm sorry for everything", "apologize to everyone", "say goodbye for me",
+    "will anyone miss me", "would anyone notice", "would anyone care",
+    "life insurance", "my will", "leaving everything to", "after i'm gone",
+    "funeral", "my funeral", "when i die", "if i die tonight",
+    "method", "painless way", "quickest way to die", "easiest way to die",
+    "how to die", "ways to die", "best way to end it",
+    "i've made my decision", "my mind is made up", "decided to end",
+    "tonight is the night", "this is it", "finally at peace",
+    "i won't survive this", "can't survive", "not going to make it through",
+    "giving away my stuff", "gave away my things", "don't need my stuff anymore",
+
+    // ===== SELF-HARM =====
+    "burning myself", "hitting myself", "punching walls", "starving myself", "starve myself",
+    "purging", "making myself bleed", "scratching myself", "biting myself",
+    "cutting", "self injury", "self-injury", "hurting myself",
+    "breaking my bones", "pulling my hair out", "ripping my hair",
+    "banging my head", "head banging", "punching myself",
+    "picking my skin", "skin picking", "dermatillomania", "trichotillomania",
+    "digging into my skin", "carving", "carving into my skin",
+    "bruising myself", "giving myself bruises", "marks on my body",
+    "hiding my scars", "scars", "fresh cuts", "new cuts", "relapsed cutting",
+    "need to feel pain", "deserve pain", "deserve to hurt", "punish myself",
+    "i deserve this pain", "pain makes me feel alive", "only way i feel",
+    "need to bleed", "want to bleed", "watch myself bleed",
+    "cigarette burns", "burning my skin", "iron burn", "lighter burn",
+    "erasing my skin", "eraser burn", "eraser challenge",
+    "salt and ice", "salt and ice challenge", "choking game", "blackout challenge",
+    "pass out challenge", "blue whale challenge", "momo challenge",
+
+    // ===== EATING DISORDERS =====
+    "anorexia", "anorexic", "bulimia", "bulimic", "binge and purge", "binge purge",
+    "making myself throw up", "making myself vomit", "force vomit", "purge after eating",
+    "not eating", "refuse to eat", "scared to eat", "afraid to eat", "can't eat",
+    "hate eating", "disgusted by food", "food is the enemy", "calories scare me",
+    "too fat to eat", "need to be thinner", "need to be skinnier", "never thin enough",
+    "body checking", "thigh gap", "pro ana", "pro mia", "proana", "promia",
+    "thinspiration", "thinspo", "bonespo", "meanspo", "sweetspo",
+    "ed twitter", "edtwt", "sh twitter", "shtwt", "ed tumblr",
+    "restrict", "restricting", "restriction", "low restrict", "high restrict",
+    "fasting for days", "water fast", "dry fast", "not eating for days",
+    "laxatives", "laxative abuse", "diet pills", "ipecac",
+    "chew and spit", "chew spit", "c/s", "b/p",
+    "fear food", "fear foods", "safe food", "safe foods only",
+    "calorie counting obsess", "body dysmorphia", "body dysmorphic",
+    "hate my body", "fat and disgusting", "too fat", "so fat", "feel fat",
+    "skin and bones", "want to be skeletal", "want my bones to show",
+    "eating disorder", "ed recovery", "relapse ed", "ed relapse",
+    "orthorexia", "orthorexic", "compulsive exercise", "exercise purging",
+    "over exercising", "compensating", "compensate for eating",
+    "haven't eaten in days", "days without eating", "won't eat until",
+    "stomach is shrinking", "my stomach hurts from not eating",
+    "goal weight", "ugw", "gw", "cw", "hw", "sw", "lw",
+    "want to disappear", "shrink myself", "become invisible",
+    "food diary", "calorie log", "ate too much", "binged",
+    "feel disgusting after eating", "regret eating", "shouldn't have eaten",
+    "need to get rid of this food", "undo eating", "reverse eating",
+    "throwing up blood", "teeth rotting", "hair falling out from not eating",
+    "period stopped", "lost my period", "amenorrhea",
+    "size zero", "size double zero", "size 00", "smallest size",
+    "🦴", "🤮",
+
+    // ===== DEPRESSION & HOPELESSNESS =====
+    "hopeless", "nobody cares", "i'm done", "what's the point", "worthless",
+    "i'm a burden", "everyone hates me", "no one loves me", "all alone",
+    "never gets better", "will never change", "permanent solution", "can't be fixed",
+    "broken beyond repair", "waste of space", "don't belong here", "shouldn't exist",
+    "why bother", "give up", "no hope", "no future", "pointless",
+    "i don't matter", "nobody would care", "world is better without",
+    "i hate my life", "life sucks", "can't anymore", "i'm so done",
+    "tired of everything", "exhausted of living", "don't care anymore",
+    "empty inside", "feel nothing", "numb", "completely numb", "emotionally dead",
+    "can't feel anything", "dead inside", "hollow", "void inside",
+    "crying all the time", "can't stop crying", "tears won't stop",
+    "haven't left my bed", "can't get out of bed", "stayed in bed all day",
+    "haven't showered in days", "can't take care of myself", "stopped eating",
+    "can't function", "barely functioning", "going through the motions",
+    "pretending to be okay", "faking it", "wearing a mask", "hiding my pain",
+    "smile is fake", "nobody knows how i feel", "suffering in silence",
+    "darkness", "surrounded by darkness", "consumed by darkness",
+    "i'm falling apart", "breaking down", "mental breakdown", "nervous breakdown",
+    "losing it", "lost the will", "lost my will to live",
+    "chronic pain", "pain every day", "always in pain", "unbearable pain",
+    "can't escape the pain", "pain is too much", "overwhelming pain",
+    "hate waking up", "dread every day", "dread tomorrow", "scared of tomorrow",
+    "what's the point of trying", "nothing matters anymore", "everything is pointless",
+    "i'm invisible", "nobody sees me", "nobody notices me", "i don't exist",
+    "failure", "i'm a failure", "failed at everything", "can't do anything right",
+    "disappointed everyone", "let everyone down", "ruined everything",
+    "unlovable", "nobody could love me", "don't deserve love", "don't deserve happiness",
+    "i'm disgusting", "i'm pathetic", "i'm weak", "i'm useless",
+    "no purpose", "no meaning", "meaningless existence", "why am i here",
+    "wish i could disappear", "want to vanish", "cease to exist",
+
+    // ===== ANXIETY & PANIC =====
+    "panic attack", "having a panic attack", "can't breathe", "heart racing",
+    "chest tight", "chest pain", "feel like i'm dying", "think i'm dying",
+    "going to have a heart attack", "losing my mind", "going insane",
+    "can't calm down", "can't relax", "constant fear", "always afraid",
+    "terrified", "paralyzed with fear", "frozen with fear", "can't move",
+    "agoraphobia", "can't leave my house", "afraid to go outside",
+    "afraid of everything", "everything scares me", "constant dread",
+    "intrusive thoughts", "can't stop the thoughts", "thoughts won't stop",
+    "obsessive thoughts", "compulsive", "ocd crisis", "ocd is ruining my life",
+    "contamination fear", "checking over and over", "can't stop checking",
+    "hyperventilating", "hyperventilate", "breathing too fast",
+    "shaking uncontrollably", "trembling", "can't stop shaking",
+    "derealization", "depersonalization", "nothing feels real",
+    "feel detached", "watching myself from outside", "out of my body",
+    "impending doom", "something terrible is going to happen",
+    "world is ending", "everything is falling apart",
+
+    // ===== PTSD & TRAUMA =====
+    "flashback", "flashbacks", "having flashbacks", "reliving it",
+    "nightmares every night", "can't sleep because of nightmares", "night terrors",
+    "trauma", "traumatized", "ptsd", "post traumatic", "triggered",
+    "can't stop reliving", "keeps replaying", "haunted by",
+    "survivor guilt", "guilt is killing me", "it was my fault",
+    "shouldn't have survived", "why did i survive", "wish i didn't survive",
+    "the memories won't stop", "can't forget", "tortured by memories",
+    "flinch at everything", "startle easily", "always on edge", "hypervigilant",
+    "afraid to sleep", "scared to close my eyes", "afraid of the dark",
+    "body remembers", "somatic flashback", "body flashback",
+    "smell triggers me", "sound triggers me", "can't hear that sound",
+    "combat veteran", "war trauma", "battlefield", "deployment trauma",
+    "childhood trauma", "childhood abuse", "grew up abused",
+    "incest", "molestation", "groomed", "grooming", "was groomed",
+    "repressed memories", "recovered memories", "just remembered what happened",
+    "complex ptsd", "cptsd", "c-ptsd", "developmental trauma",
+
+    // ===== HOMICIDAL / VIOLENCE =====
+    "kill someone", "kill him", "kill her", "kill them", "kill people", "murder",
+    "want to hurt someone", "hurt people", "shoot up", "shoot someone", "stab someone",
+    "bomb", "attack people", "mass shooting", "going to kill", "gonna kill",
+    "homicidal", "want them dead", "make them pay", "violent thoughts",
+    "hurt a child", "hurt my kids", "harm others", "revenge killing", "blood on my hands",
+    "shoot this place up", "burn it down", "blow up", "massacre", "rampage",
+    "kill my family", "strangle", "choke them", "beat them to death",
+    "violent urges", "urge to hurt", "urge to kill", "rage", "uncontrollable anger",
+    "snapping", "about to snap", "losing control", "can't control myself",
+    "want to fight", "hurt everyone", "destroy everything",
+    "fantasize about killing", "dream about killing", "imagine killing",
+    "hit list", "kill list", "target list", "enemies list",
+    "they all need to die", "everyone needs to die", "burn them all",
+    "skin them alive", "torture them", "make them suffer",
+    "watching them die", "want to watch them die", "enjoy their pain",
+    "no mercy", "show no mercy", "without mercy",
+    "bloodbath", "bloodshed", "carnage", "slaughter",
+    "shoot the school", "shoot the office", "shoot the church",
+    "bomb threat", "pipe bomb", "explosive", "detonate",
+    "ar-15", "ak-47", "ammunition", "ammo", "loaded gun",
+    "sharpening my knife", "bought a gun", "got a weapon",
+
+    // ===== PSYCHOSIS & DISSOCIATION =====
+    "voices telling me", "hearing voices", "voices in my head", "people are following me",
+    "they're watching me", "paranoid", "losing my mind", "going crazy", "not real",
+    "hallucinating", "hallucination", "delusions", "delusional", "psychosis",
+    "conspiracy against me", "people are out to get me", "can't tell what's real",
+    "seeing things", "demons", "possessed", "mind control", "implanted thoughts",
+    "the voices say", "voices told me to", "shadow people", "they're in my walls",
+    "chips in my brain", "being watched", "government tracking me", "poisoning me",
+    "aliens controlling", "someone is controlling me", "reality isn't real",
+    "i'm not real", "nothing is real", "losing touch with reality", "blacking out",
+    "dissociating", "don't know who i am", "can't remember anything",
+    "thought insertion", "thought broadcasting", "telepathy", "reading my thoughts",
+    "they put thoughts in my head", "can hear my thoughts", "bugs in my skin",
+    "insects crawling", "under my skin", "faces changing", "shapeshifting",
+    "time isn't real", "stuck in a simulation", "matrix", "clone", "replaced",
+    "everyone is fake", "body is changing", "rotting inside", "organs missing",
+    "dead already", "i'm already dead", "living in a dream", "walls breathing",
+    "floor moving", "colors changing", "world ending", "apocalypse", "chosen one",
+    "special mission", "god told me", "messages from tv", "radio talking to me",
+    "signs everywhere", "coded messages", "they're sending signals", "third eye",
+    "spiritual attack", "cursed", "hexed", "spell on me", "dark energy",
+    "entities", "spirits talking", "astral", "dimension shifting", "portal",
+    "psychotic break", "psychotic episode", "manic episode", "mania",
+    "haven't slept in days", "can't sleep won't sleep", "wired", "feel invincible",
+    "grandiose", "i am god", "i have powers", "superhuman", "can fly",
+    "cotard", "cotard's delusion", "my organs are rotting", "i'm decomposing",
+    "capgras", "impostor", "replaced by a clone", "not the real",
+    "catatonic", "can't move my body", "frozen in place", "won't respond",
+    "fugue state", "lost time", "missing hours", "missing days",
+    "multiple personalities", "alter", "switching", "did", "dissociative identity",
+
+    // ===== ABUSE & TRAFFICKING =====
+    "being abused", "he hits me", "she hits me", "they hit me", "domestic violence",
+    "sexually assaulted", "raped", "molested", "trafficking", "being trafficked",
+    "forced to work", "locked in", "can't leave", "held against my will", "trapped in house",
+    "won't let me leave", "controlling me", "threatens to kill me", "afraid for my life",
+    "abused", "beaten", "assaulted", "violated", "touched me", "forced me",
+    "hurts me", "hits me", "scared of him", "scared of her", "fear for my life",
+    "stalking me", "stalker", "being stalked", "following me everywhere",
+    "restraining order", "protective order", "broke the restraining order",
+    "choked me", "choking me", "strangled me", "tried to strangle",
+    "threw me", "pushed me down stairs", "dragged me", "slammed me",
+    "broke my bones", "black eye", "bruises from him", "bruises from her",
+    "took my phone", "isolated me", "won't let me talk to anyone",
+    "controls my money", "financial abuse", "took my money", "won't let me work",
+    "threatens my children", "threatens my family", "threatens my pets",
+    "killed my pet", "hurt my pet", "hurt my dog", "hurt my cat",
+    "marital rape", "spousal abuse", "partner abuse", "intimate partner violence",
+    "honor killing", "honor violence", "forced marriage", "arranged marriage against my will",
+    "bride price", "dowry abuse", "dowry violence",
+    "sex trafficking", "labor trafficking", "forced prostitution", "forced into sex work",
+    "pimp", "sold me", "bought me", "owned by", "belong to him",
+    "branded me", "tattooed me against my will", "marked me",
+    "child bride", "underage marriage", "married off",
+
+    // ===== CHILD ABUSE =====
+    "my parent hits me", "my dad hits me", "my mom hits me", "parent beats me",
+    "touched by adult", "adult touched me", "uncle touched me", "cousin touched me",
+    "teacher touched me", "coach touched me", "priest touched me", "pastor touched me",
+    "babysitter hurt me", "locked in room", "locked in closet", "starved by parents",
+    "not allowed to eat", "parents don't feed me", "no food at home",
+    "parents are on drugs", "mom is on drugs", "dad is on drugs",
+    "nobody takes care of me", "taking care of myself", "raising myself",
+    "sleeping in car", "homeless child", "runaway", "ran away from home",
+    "foster care abuse", "group home abuse", "residential abuse",
+    "shaken baby", "cigarette burns from parent", "belt marks", "whip marks",
+    "locked outside", "left alone", "home alone for days", "abandoned by parents",
+    "my parent screams at me", "verbally abused by parent", "called worthless by parent",
+    "parentification", "taking care of my parents", "raising my siblings",
+    "child labor", "made to work", "not allowed to go to school",
+
+    // ===== ELDER ABUSE =====
+    "nursing home abuse", "caregiver abuse", "neglected by caregiver",
+    "stealing from elderly", "elderly abuse", "elder neglect",
+    "abandoned at hospital", "not giving medication", "withholding medication",
+    "bedsores", "left in filth", "not being fed", "not being bathed",
+    "power of attorney abuse", "financial exploitation elderly",
+    "yelling at grandparent", "hitting grandparent", "hurting elderly",
+
+    // ===== SUBSTANCE CRISIS =====
+    "overdosing", "took too many pills", "drank too much", "can't stop using",
+    "withdrawal", "relapsing", "drug crisis", "alcohol poisoning",
+    "od", "oding", "took too much", "mixing drugs", "fentanyl",
+    "can't stop drinking", "drinking myself to death", "drink to forget",
+    "need a fix", "going through withdrawal", "withdrawals are killing me",
+    "seizures from withdrawal", "dt's", "delirium tremens",
+    "shooting up", "mainlining", "injecting", "track marks",
+    "heroin", "meth", "crack", "cocaine binge", "bender",
+    "blackout drunk", "blacked out again", "don't remember last night",
+    "kids found my drugs", "using around my kids", "high around my children",
+    "lost my job from using", "about to lose everything", "drugs ruined my life",
+    "alcohol ruined my life", "can't function without it", "need it to survive",
+    "benzos", "benzo withdrawal", "xanax withdrawal", "opioid withdrawal",
+    "nodding off", "nodding out", "on the nod", "fading out",
+    "narcan", "naloxone", "need narcan", "blue lips", "not breathing",
+    "someone is overdosing", "friend is overdosing", "they're not waking up",
+    "cold and blue", "unresponsive", "won't wake up",
+
+    // ===== GRIEF & LOSS =====
+    "lost my child", "my child died", "my baby died", "stillborn", "miscarriage",
+    "sids", "lost my spouse", "lost my partner", "widow", "widower",
+    "they killed themselves", "friend killed themselves", "lost someone to suicide",
+    "suicide loss", "survivor of suicide loss", "grief after suicide",
+    "can't live without them", "want to be with them", "want to join them",
+    "want to follow them", "meet them on the other side", "reunite with them",
+    "anniversary of their death", "death anniversary", "would have been their birthday",
+    "empty without them", "life means nothing without", "half of me died",
+    "complicated grief", "prolonged grief", "can't move on", "stuck in grief",
+    "shouldn't be alive when they're not", "unfair that i'm alive",
+    "pet died", "lost my pet", "pet was killed", "euthanized my pet",
+
+    // ===== BULLYING & CYBERBULLYING =====
+    "being bullied", "cyberbullied", "cyberbullying", "online harassment",
+    "everyone is bullying me", "bullied at school", "bullied at work",
+    "they post about me", "they share my photos", "revenge porn",
+    "intimate images", "leaked my nudes", "shared my nudes", "sextortion",
+    "blackmailing me", "extortion", "threatening to expose me",
+    "doxxed", "doxxing", "posted my address", "posted my info",
+    "death threats", "receiving threats", "threatening me online",
+    "told me to kill myself", "everyone tells me to die",
+    "harassed", "harassment", "hate messages", "hate speech",
+    "no one stands up for me", "everyone laughs at me", "humiliated",
+    "public humiliation", "shamed", "slut shaming", "body shaming",
+    "canceled", "canceled online", "mob after me", "internet mob",
+    "afraid to go to school", "afraid to go to work", "afraid to go online",
+
+    // ===== LGBTQ+ CRISIS =====
+    "kicked out for being gay", "disowned for being trans", "family rejected me",
+    "conversion therapy", "pray the gay away", "sent to conversion camp",
+    "can't come out", "afraid to come out", "outed", "outed me",
+    "trans panic", "gender dysphoria crisis", "hate crime",
+    "attacked for being gay", "attacked for being trans", "beaten for being queer",
+    "no support as lgbtq", "homeless lgbtq", "lgbtq youth homeless",
+    "deadnamed", "deadnaming", "misgendered", "denied my identity",
+    "bathroom bill", "banned from bathroom", "discriminated against",
+    "can't access hormones", "denied healthcare", "medical discrimination",
+    "chosen family gone", "lost my queer community", "isolated from community",
+
+    // ===== HOUSING & HOMELESSNESS CRISIS =====
+    "homeless", "about to be homeless", "evicted", "getting evicted",
+    "sleeping on the street", "living in my car", "shelter is full",
+    "no place to sleep", "nowhere to go", "couch surfing", "unstable housing",
+    "can't pay rent", "behind on rent", "about to lose my home",
+    "foreclosure", "living in a tent", "encampment",
+    "fleeing abuse no housing", "left my abuser nowhere to go",
+    "kids are homeless", "family is homeless", "pregnant and homeless",
+
+    // ===== FINANCIAL CRISIS =====
+    "can't afford food", "can't feed my kids", "children are hungry",
+    "no money for medicine", "can't afford medication", "rationing medication",
+    "utilities shut off", "no heat", "no electricity", "water shut off",
+    "drowning in debt", "debt collectors", "bankruptcy", "can't pay bills",
+    "going to lose everything", "financial ruin", "destitute",
+    "can't afford therapy", "can't afford help", "no insurance",
+    "medical debt", "medical bills", "can't afford treatment",
+
+    // ===== SCHOOL & WORKPLACE CRISIS =====
+    "school shooting threat", "threat at school", "someone has a gun at school",
+    "bomb threat at school", "lockdown", "active shooter",
+    "workplace violence", "threatened at work", "boss threatens me",
+    "sexual harassment at work", "sexual harassment at school",
+    "hostile work environment", "hostile school environment",
+    "expelled", "suspended unfairly", "discriminated at school",
+    "teacher abuses me", "coach abuses me", "professor harasses me",
+
+    // ===== PERINATAL & POSTPARTUM =====
+    "postpartum depression", "ppd", "postpartum anxiety", "postpartum psychosis",
+    "want to hurt my baby", "afraid i'll hurt my baby", "thoughts of harming my baby",
+    "don't love my baby", "regret having my baby", "can't bond with my baby",
+    "intrusive thoughts about my baby", "dropping my baby", "shaking my baby",
+    "failing as a mother", "failing as a father", "worst parent",
+    "my baby won't stop crying", "can't take the crying", "snapping at my baby",
+    "pregnancy loss", "ectopic pregnancy", "termination grief", "abortion grief",
+    "infertility crisis", "ivf failed", "can't get pregnant", "fertility grief",
+
+    // ===== CAREGIVER BURNOUT =====
+    "caregiver burnout", "can't take care of them anymore", "want to abandon them",
+    "resentful of caregiving", "hate being a caregiver", "trapped as caregiver",
+    "compassion fatigue", "secondary trauma", "vicarious trauma",
+    "burnout", "completely burned out", "can't do this job anymore",
+    "first responder trauma", "nurse burnout", "doctor burnout",
+    "moral injury", "moral distress", "ethical distress",
+
+    // ===== INCARCERATION & JUSTICE =====
+    "prison abuse", "jail abuse", "guard abuse", "inmate abuse",
+    "solitary confinement", "isolation cell", "in the hole",
+    "wrongfully convicted", "innocent in prison", "years of my life stolen",
+    "facing prison", "going to prison", "about to be sentenced",
+    "on death row", "death sentence", "execution date",
+    "juvenile detention abuse", "juvie abuse",
+    "probation violation", "parole violation", "going back to prison",
+    "sex offender registry", "registered sex offender", "can't find housing felon",
+
+    // ===== NATURAL DISASTER & CRISIS =====
+    "lost everything in fire", "house burned down", "lost everything in flood",
+    "hurricane destroyed", "tornado destroyed", "earthquake destroyed",
+    "wildfire", "evacuated", "displacement", "refugee",
+    "war zone", "conflict zone", "bombing", "shelling", "air strike",
+    "asylum seeker", "detained at border", "separated from children",
+    "deportation", "facing deportation", "ice raid", "immigration detention",
+
+    // ===== DOG WHISTLES & CODED LANGUAGE (SELF-HARM) =====
+    "catch the bus", "catching the bus", "go to sleep forever", "permanent sleep",
+    "long sleep", "dirt nap", "take a long nap", "eternal rest", "peace at last",
+    "join the 27 club", "join the club", "see the other side", "cross over",
+    "leave this world", "exit bag", "exit plan", "final solution", "one way ticket",
+    "paint the walls", "paint the ceiling", "red paint", "see red",
+    "yeet myself", "yeet off", "neck rope", "toaster bath",
+    "go commit", "commit not alive", "commit die", "commit toaster",
+    "commit neck rope", "commit oxygen not reaching brain",
+    "game over", "respawn", "alt f4", "alt-f4", "ctrl alt delete myself",
+    "delete myself", "delete my account", "log out permanently", "log off forever",
+    "go offline forever", "disconnect permanently", "uninstall life",
+    "touch grass permanently", "grass nap", "forever box",
+    "become a statistic", "become a memory", "become past tense",
+    "swim with the fishes", "sleep with the fishes", "six feet under",
+    "push daisies", "pushing daisies", "worm food",
+    "not gonna make it", "ngmi", "it's so over", "it's over for me",
+    "the void", "enter the void", "embrace the void", "into the void",
+    "lights out", "curtain call", "final curtain", "take a bow",
+    "last dance", "swan song", "one last time",
+    "send me to jesus", "meet my maker", "going home to god",
+    "angel wings", "earn my wings", "getting my wings",
+    "rest in peace me", "rip me", "rip soon", "future rip",
+    "heaven is calling", "hear the angels", "see the light",
+    "off myself", "do myself in", "top myself", "neck myself",
+    "take the plunge", "take the leap", "step off",
+    "eternal sleep", "big sleep", "long goodbye",
+    "close my eyes forever", "never wake up", "sleep forever",
+
+    // ===== DOG WHISTLES & CODED LANGUAGE (VIOLENCE) =====
+    "go postal", "going postal", "see god", "send them to god",
+    "make them see god", "put them down", "put him down", "put her down",
+    "lights out for them", "teach them a lesson", "final lesson",
+    "make an example", "scorched earth", "burn it all",
+    "watch it burn", "watch them burn", "let it all burn",
+    "rain fire", "bring the thunder", "judgment day", "day of reckoning",
+    "they'll be sorry", "they'll regret it", "make them regret",
+    "show them", "show them all", "they'll see", "they don't know what's coming",
+    "surprise for them", "surprise for everyone", "big surprise",
+    "tick tick", "tick tock", "boom", "kaboom", "💣", "bang bang",
+    "pop pop", "pew pew", "body count", "high score",
+    "no witnesses", "no survivors", "scoreboard", "target practice",
+    "hunting season", "open season", "fair game",
+    "they deserve it", "they had it coming", "karma is coming",
+    "i'll be the karma", "deliver justice", "my own justice",
+    "vigilante", "punisher", "wrath", "vengeance", "retribution",
+    "cleanse", "purge them", "exterminate", "eradicate",
+    "manifest destiny", "ethnic cleansing", "final solution for them",
+
+    // ===== EMOJI-BASED CRISIS SIGNALS =====
+    "🔪", "🔫", "💀", "☠️", "⚰️", "🪦", "🩸", "💉", "💊",
+    "🤕", "😵", "🥀", "🖤", "⛓️", "🪢", "🧨", "💥",
+    "🔥🔥🔥", "😈", "👹", "☠", "⚔️", "🗡️", "🏴‍☠️",
+    "🆘", "😭😭😭", "💔", "🫠", "😶‍🌫️", "🫥", "😵‍💫",
+
+    // ===== LEETSPEAK & OBFUSCATION =====
+    "k1ll", "k!ll", "d1e", "d!e", "su1c1de", "su!c!de", "s3lf h4rm",
+    "sh00t", "sh0ot", "st4b", "k1ll m3", "d13", "h4rm", "p01son",
+    "mu rd er", "murd3r", "r4pe", "4buse", "v10lence",
+    "sewer slide", "sewer cide", "sewerslide", "sewercide",
+    "not alive", "un-alive", "no longer alive", "cease living",
+    "d3ath", "d34th", "h0micid3", "su1c1d3", "0verdose",
+    "s uicide", "su icide", "sui cide", "suicid e",
+    "k i l l", "m u r d e r", "d i e", "h a r m",
+    "s.u.i.c.i.d.e", "k.i.l.l", "d.i.e", "s.e.l.f.h.a.r.m",
+    "su!cide", "ki!!",  "se!f harm", "ha.rm", "ki.ll"
+  ];
+
+  // Aggressive root-word matching for maximum safety coverage
+  const CRISIS_ROOTS = [
+    "suicid", "kill", "die", "dying", "death", "dead", "harm", "hurt",
+    "bleed", "blood", "gun", "weapon", "knife", "poison", "drown",
+    "abuse", "assault", "rape", "traffick", "molest", "violence",
+    "hallucin", "psycho", "voices", "paranoi",
+    "overdos", "od'd", "postal", "vengean", "retribut", "vigilant",
+    "homicid", "suicid", "depress", "anxiet", "panic",
+    "ptsd", "trauma", "flashback", "nightmar", "dissociat",
+    "starv", "purg", "anorexi", "bulimi", "binge",
+    "self-harm", "selfharm", "self harm",
+    "stalk", "batter", "exploit", "groom",
+    "neglect", "abandon", "endanger",
+    "psychot", "delusion", "hallucinat", "catatoni",
+    "withdraw", "relaps", "addict", "intoxicat",
+    "homeless", "evict", "destitut",
+    "hopeless", "worthless", "helpless", "powerless",
+    "tortur", "captiv", "enslave", "imprison"
+  ];
+
+  // Specialized redirect URLs by crisis category
+  const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string }[] = [
+    {
+      label: "Child Abuse",
+      url: "https://www.childhelp.org/",
+      keywords: [
+        "my parent hits me", "my dad hits me", "my mom hits me", "parent beats me",
+        "touched by adult", "adult touched me", "uncle touched me", "cousin touched me",
+        "teacher touched me", "coach touched me", "priest touched me", "pastor touched me",
+        "babysitter hurt me", "locked in room", "locked in closet", "starved by parents",
+        "not allowed to eat", "parents don't feed me", "no food at home",
+        "parents are on drugs", "mom is on drugs", "dad is on drugs",
+        "nobody takes care of me", "taking care of myself", "raising myself",
+        "sleeping in car", "homeless child", "runaway", "ran away from home",
+        "foster care abuse", "group home abuse", "residential abuse",
+        "shaken baby", "cigarette burns from parent", "belt marks", "whip marks",
+        "locked outside", "left alone", "home alone for days", "abandoned by parents",
+        "my parent screams at me", "verbally abused by parent", "called worthless by parent",
+        "parentification", "taking care of my parents", "raising my siblings",
+        "child labor", "made to work", "not allowed to go to school",
+        "hurt a child", "hurt my kids", "child bride", "underage marriage", "married off",
+      ],
+    },
+    {
+      label: "LGBTQ+ Crisis",
+      url: "https://www.thetrevorproject.org/",
+      keywords: [
+        "kicked out for being gay", "disowned for being trans", "family rejected me",
+        "conversion therapy", "pray the gay away", "sent to conversion camp",
+        "can't come out", "afraid to come out", "outed", "outed me",
+        "trans panic", "gender dysphoria crisis", "hate crime",
+        "attacked for being gay", "attacked for being trans", "beaten for being queer",
+        "no support as lgbtq", "homeless lgbtq", "lgbtq youth homeless",
+        "deadnamed", "deadnaming", "misgendered", "denied my identity",
+        "bathroom bill", "banned from bathroom", "discriminated against",
+        "can't access hormones", "denied healthcare", "medical discrimination",
+        "chosen family gone", "lost my queer community", "isolated from community",
+        "lgbtq", "lgbt", "gay", "lesbian", "bisexual", "transgender", "trans",
+        "nonbinary", "non-binary", "queer", "questioning sexuality", "questioning gender",
+      ],
+    },
+    {
+      label: "Domestic Violence",
+      url: "https://www.thehotline.org/",
+      keywords: [
+        "domestic violence", "he hits me", "she hits me", "they hit me",
+        "being abused", "won't let me leave", "controlling me",
+        "threatens to kill me", "afraid for my life", "fear for my life",
+        "choked me", "choking me", "strangled me", "tried to strangle",
+        "threw me", "pushed me down stairs", "dragged me", "slammed me",
+        "broke my bones", "black eye", "bruises from him", "bruises from her",
+        "took my phone", "isolated me", "won't let me talk to anyone",
+        "controls my money", "financial abuse", "took my money", "won't let me work",
+        "threatens my children", "threatens my family", "threatens my pets",
+        "killed my pet", "hurt my pet", "hurt my dog", "hurt my cat",
+        "marital rape", "spousal abuse", "partner abuse", "intimate partner violence",
+        "honor killing", "honor violence", "forced marriage", "arranged marriage against my will",
+        "bride price", "dowry abuse", "dowry violence",
+        "stalking me", "stalker", "being stalked", "following me everywhere",
+        "restraining order", "protective order", "broke the restraining order",
+        "hurts me", "hits me", "scared of him", "scared of her",
+        "beaten", "abused by partner", "abused by husband", "abused by wife",
+      ],
+    },
+    {
+      label: "Sexual Assault",
+      url: "https://www.rainn.org/",
+      keywords: [
+        "sexually assaulted", "raped", "molested", "violated", "touched me", "forced me",
+        "revenge porn", "intimate images", "leaked my nudes", "shared my nudes", "sextortion",
+        "blackmailing me", "extortion", "threatening to expose me",
+        "groomed", "grooming", "was groomed",
+        "incest", "molestation",
+        "sexual harassment at work", "sexual harassment at school",
+        "professor harasses me", "coach abuses me",
+      ],
+    },
+    {
+      label: "Human Trafficking",
+      url: "https://humantraffickinghotline.org/",
+      keywords: [
+        "trafficking", "being trafficked", "sex trafficking", "labor trafficking",
+        "forced prostitution", "forced into sex work",
+        "pimp", "sold me", "bought me", "owned by", "belong to him",
+        "branded me", "tattooed me against my will", "marked me",
+        "forced to work", "locked in", "held against my will", "trapped in house",
+      ],
+    },
+    {
+      label: "Eating Disorders",
+      url: "https://www.nationaleatingdisorders.org/",
+      keywords: [
+        "anorexia", "anorexic", "bulimia", "bulimic", "binge and purge", "binge purge",
+        "making myself throw up", "making myself vomit", "force vomit", "purge after eating",
+        "not eating", "refuse to eat", "scared to eat", "afraid to eat",
+        "hate eating", "disgusted by food", "food is the enemy", "calories scare me",
+        "too fat to eat", "need to be thinner", "need to be skinnier", "never thin enough",
+        "pro ana", "pro mia", "proana", "promia", "thinspo", "bonespo", "meanspo",
+        "edtwt", "shtwt", "restrict", "restricting", "restriction",
+        "fasting for days", "water fast", "dry fast", "not eating for days",
+        "laxatives", "laxative abuse", "diet pills", "ipecac",
+        "chew and spit", "chew spit", "fear food", "fear foods",
+        "body dysmorphia", "body dysmorphic", "eating disorder",
+        "starving myself", "starve myself", "haven't eaten in days",
+        "days without eating", "won't eat until", "purging",
+        "throwing up blood", "teeth rotting", "hair falling out from not eating",
+        "period stopped", "lost my period", "amenorrhea",
+        "orthorexia", "orthorexic", "compulsive exercise", "exercise purging",
+        "over exercising", "compensating", "compensate for eating",
+        "ugw", "gw", "cw", "hw", "sw", "lw",
+        "need to get rid of this food", "undo eating", "reverse eating",
+        "size zero", "size double zero", "size 00", "smallest size",
+      ],
+    },
+    {
+      label: "Substance Abuse",
+      url: "https://www.samhsa.gov/find-help/national-helpline",
+      keywords: [
+        "overdosing", "took too many pills", "drank too much", "can't stop using",
+        "withdrawal", "relapsing", "drug crisis", "alcohol poisoning",
+        "oding", "took too much", "mixing drugs", "fentanyl",
+        "can't stop drinking", "drinking myself to death", "drink to forget",
+        "need a fix", "going through withdrawal", "withdrawals are killing me",
+        "seizures from withdrawal", "dt's", "delirium tremens",
+        "shooting up", "mainlining", "injecting", "track marks",
+        "heroin", "meth", "crack", "cocaine binge", "bender",
+        "blackout drunk", "blacked out again", "don't remember last night",
+        "kids found my drugs", "using around my kids", "high around my children",
+        "lost my job from using", "about to lose everything", "drugs ruined my life",
+        "alcohol ruined my life", "can't function without it", "need it to survive",
+        "benzos", "benzo withdrawal", "xanax withdrawal", "opioid withdrawal",
+        "nodding off", "nodding out", "on the nod", "fading out",
+        "narcan", "naloxone", "need narcan", "blue lips", "not breathing",
+        "someone is overdosing", "friend is overdosing", "they're not waking up",
+        "cold and blue", "unresponsive", "won't wake up",
+      ],
+    },
+    {
+      label: "Elder Abuse",
+      url: "https://ncea.acl.gov/",
+      keywords: [
+        "nursing home abuse", "caregiver abuse", "neglected by caregiver",
+        "stealing from elderly", "elderly abuse", "elder neglect",
+        "abandoned at hospital", "not giving medication", "withholding medication",
+        "bedsores", "left in filth", "not being fed", "not being bathed",
+        "power of attorney abuse", "financial exploitation elderly",
+        "yelling at grandparent", "hitting grandparent", "hurting elderly",
+      ],
+    },
+    {
+      label: "Postpartum Crisis",
+      url: "https://www.postpartum.net/",
+      keywords: [
+        "postpartum depression", "ppd", "postpartum anxiety", "postpartum psychosis",
+        "want to hurt my baby", "afraid i'll hurt my baby", "thoughts of harming my baby",
+        "don't love my baby", "regret having my baby", "can't bond with my baby",
+        "intrusive thoughts about my baby", "dropping my baby", "shaking my baby",
+        "failing as a mother", "failing as a father", "worst parent",
+        "my baby won't stop crying", "can't take the crying", "snapping at my baby",
+        "pregnancy loss", "ectopic pregnancy", "termination grief", "abortion grief",
+        "infertility crisis", "ivf failed", "can't get pregnant", "fertility grief",
+        "miscarriage", "stillborn",
+      ],
+    },
+    {
+      label: "Cyberbullying",
+      url: "https://www.stopbullying.gov/",
+      keywords: [
+        "being bullied", "cyberbullied", "cyberbullying", "online harassment",
+        "everyone is bullying me", "bullied at school", "bullied at work",
+        "they post about me", "they share my photos",
+        "doxxed", "doxxing", "posted my address", "posted my info",
+        "death threats", "receiving threats", "threatening me online",
+        "told me to kill myself", "everyone tells me to die",
+        "harassed", "harassment", "hate messages", "hate speech",
+        "no one stands up for me", "everyone laughs at me", "humiliated",
+        "public humiliation", "shamed", "slut shaming", "body shaming",
+        "canceled", "canceled online", "mob after me", "internet mob",
+        "afraid to go to school", "afraid to go to work", "afraid to go online",
+      ],
+    },
+    {
+      label: "Veterans Crisis",
+      url: "https://www.veteranscrisisline.net/",
+      keywords: [
+        "combat veteran", "war trauma", "battlefield", "deployment trauma",
+        "veteran suicide", "vet crisis", "military trauma", "military sexual trauma",
+        "mst", "combat ptsd", "service-related", "va denied",
+        "moral injury", "moral distress",
+      ],
+    },
+    {
+      label: "Disaster Relief",
+      url: "https://www.redcross.org/",
+      keywords: [
+        "lost everything in fire", "house burned down", "lost everything in flood",
+        "hurricane destroyed", "tornado destroyed", "earthquake destroyed",
+        "wildfire", "evacuated", "displacement", "refugee",
+        "war zone", "conflict zone", "bombing", "shelling", "air strike",
+        "asylum seeker", "detained at border", "separated from children",
+        "deportation", "facing deportation", "ice raid", "immigration detention",
+      ],
+    },
+  ];
+
+  const detectCrisis = (text: string): string | null => {
+    const lower = text.toLowerCase().replace(/[^\w\s']/g, "");
+
+    // Check specialized categories first (most specific match)
+    for (const category of CRISIS_CATEGORIES) {
+      if (category.keywords.some((kw) => lower.includes(kw))) {
+        return category.url;
+      }
+    }
+
+    // General crisis keywords → default 988
+    if (CRISIS_KEYWORDS.some((kw) => lower.includes(kw))) return "https://988lifeline.org/";
+    // Root-word matching → default 988
+    if (CRISIS_ROOTS.some((root) => lower.includes(root))) return "https://988lifeline.org/";
+
+    return null;
+  };
+
+  const sendMessage = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+
+    // Immediate crisis detection — redirect to specialized resource
+    const crisisUrl = detectCrisis(text);
+    if (crisisUrl) {
+      localStorage.setItem("safehub_crisis_redirect", "true");
+      window.location.href = crisisUrl;
+      return;
+    }
+
+    const userMsg: Message = { role: "user", content: text };
+    const allMessages = [...messages, userMsg];
+    setMessages(allMessages);
+    setInput("");
+    setLoading(true);
+
+    let assistantSoFar = "";
+
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: allMessages }),
+      });
+
+      if (!resp.ok || !resp.body) {
+        throw new Error("Failed to connect");
+      }
+
+      // Check for server-side crisis detection (JSON response instead of stream)
+      const contentType = resp.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const json = await resp.json();
+        if (json.crisis && json.redirect) {
+          window.location.href = json.redirect;
+          return;
+        }
+      }
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              assistantSoFar += content;
+              setMessages((prev) => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant") {
+                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
+                }
+                return [...prev, { role: "assistant", content: assistantSoFar }];
+              });
+            }
+          } catch {
+            buffer = line + "\n" + buffer;
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." }]);
+    }
+
+    setLoading(false);
+  };
+
+  const renderContent = (text: string) => {
+    // Simple markdown-like link rendering
+    const parts = text.split(/(\[.*?\]\(.*?\))/g);
+    return parts.map((part, i) => {
+      const match = part.match(/\[(.*?)\]\((.*?)\)/);
+      if (match) {
+        return (
+          <a key={i} href={match[2]} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">
+            {match[1]}
+          </a>
+        );
+      }
+      // Bold
+      const boldParts = part.split(/(\*\*.*?\*\*)/g);
+      return boldParts.map((bp, j) => {
+        const boldMatch = bp.match(/\*\*(.*?)\*\*/);
+        if (boldMatch) return <strong key={`${i}-${j}`}>{boldMatch[1]}</strong>;
+        return <span key={`${i}-${j}`}>{bp}</span>;
+      });
+    });
+  };
+
+  return (
+    <>
+      {/* Floating button */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-105"
+        style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}
+        aria-label="Chat with AI assistant"
+      >
+        {open ? <X className="w-6 h-6 text-primary-foreground" /> : <MessageCircle className="w-6 h-6 text-primary-foreground" />}
+      </button>
+
+      {/* Chat window */}
+      {open && (
+        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-8rem)] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
+          {/* Header */}
+          <div
+            className="px-5 py-4 flex items-center gap-3 flex-shrink-0"
+            style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--accent) / 0.1))" }}
+          >
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}
+            >
+              <Bot className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                SafeHubHelp Assistant
+              </p>
+              <p className="text-xs text-muted-foreground">Ask me about our resources</p>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+            {messages.length === 0 && (
+              <div className="text-center py-6">
+                <Bot className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <div className="mb-3 px-3 py-2 rounded-lg bg-destructive/15 border border-destructive/30">
+                  <p className="text-xs font-semibold text-destructive">
+                    🚨 In crisis? Call or text <a href="tel:988" className="underline font-bold">988</a> now
+                  </p>
+                </div>
+                <div className="mb-3 px-3 py-2 rounded-lg bg-muted border border-border">
+                  <p className="text-xs text-muted-foreground">
+                    ⚠️ This AI is <span className="font-semibold text-foreground">not a therapist</span> and does not provide medical or mental health advice. Please consult a licensed professional for support.
+                  </p>
+                </div>
+                <p className="text-sm text-muted-foreground">Hi! 👋 I can help you find the right resources. What do you need help with?</p>
+                <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                  {["Mental health support", "Financial help", "Safety resources", "Learning materials"].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => { setInput(q); }}
+                      className="px-3 py-1.5 text-xs rounded-full border border-border text-muted-foreground hover:border-primary/40 hover:text-foreground transition-all"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {messages.map((msg, i) => (
+              <div key={i} className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                {msg.role === "assistant" && (
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-secondary">
+                    <Bot className="w-4 h-4 text-primary" />
+                  </div>
+                )}
+                <div
+                  className={`max-w-[80%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                    msg.role === "user"
+                      ? "bg-primary text-primary-foreground rounded-br-md"
+                      : "bg-secondary text-foreground rounded-bl-md"
+                  }`}
+                >
+                  {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
+                </div>
+                {msg.role === "user" && (
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 bg-primary/20">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                )}
+              </div>
+            ))}
+            {loading && messages[messages.length - 1]?.role !== "assistant" && (
+              <div className="flex gap-2.5">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 bg-secondary">
+                  <Bot className="w-4 h-4 text-primary" />
+                </div>
+                <div className="bg-secondary px-4 py-3 rounded-2xl rounded-bl-md">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="px-4 py-3 border-t border-border flex-shrink-0">
+            <form
+              onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+              className="flex gap-2"
+            >
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about resources..."
+                className="flex-1 bg-secondary border-none rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || loading}
+                className="w-10 h-10 rounded-xl flex items-center justify-center disabled:opacity-40 transition-all hover:scale-105"
+                style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}
+              >
+                <Send className="w-4 h-4 text-primary-foreground" />
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default AIChatbot;
