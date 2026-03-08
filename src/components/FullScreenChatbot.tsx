@@ -3,7 +3,7 @@ import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
-  Paperclip, FileText,
+  Paperclip, FileText, Pencil,
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
