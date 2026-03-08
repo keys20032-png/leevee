@@ -80,10 +80,10 @@ describe("detectCrisis", () => {
   // --- Genuine crisis MUST still trigger even with safe-phrase substrings ---
   describe("genuine crisis with safe-phrase substring → should still redirect", () => {
     const overrideCases: [string, string][] = [
-      ["I'm dead serious about ending my life", "dead serious + ending my life"],
-      ["I'm dead tired of living and want to kill myself", "dead tired + kill myself"],
-      ["I'm dying to end it all", "dying to + end it all"],
-      ["I'm dead serious I want to die", "dead serious + want to die"],
+      ["I am dead serious about ending my life", "dead serious + ending my life"],
+      ["I am dead tired of living and want to kill myself", "dead tired + kill myself"],
+      ["I am dying to end it all", "dying to + end it all"],
+      ["I am dead serious I want to die", "dead serious + want to die"],
     ];
 
     it.each(overrideCases)('"%s" triggers crisis (%s)', (input) => {
