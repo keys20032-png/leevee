@@ -428,12 +428,29 @@ const FullScreenChatbot = () => {
           ...(currentImage ? { imageData: currentImage } : {}),
         }),
       });
-      if (!resp.ok || !resp.body) throw new Error("Failed to connect");
+
+      // Handle non-OK responses (including moderation blocks)
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({ error: "Failed to connect" }));
+        if (errData.moderation) {
+          setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ **Content Blocked**: ${errData.error}` }]);
+          setLoading(false);
+          return;
+        }
+        throw new Error(errData.error || "Failed to connect");
+      }
+
+      if (!resp.body) throw new Error("No response body");
 
       const contentType = resp.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
         const json = await resp.json();
         if (json.crisis && json.redirect) { localStorage.setItem("crisis_redirect_time", Date.now().toString()); window.location.href = json.redirect; return; }
+        if (json.moderation) {
+          setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ **Content Blocked**: ${json.error}` }]);
+          setLoading(false);
+          return;
+        }
       }
 
       const reader = resp.body.getReader();
