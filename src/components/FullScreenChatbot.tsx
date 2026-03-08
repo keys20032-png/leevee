@@ -333,10 +333,10 @@ const FullScreenChatbot = () => {
   return (
     <div className="flex flex-col h-full bg-background" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       {/* Top Bar */}
-      <header className="flex items-center justify-between px-3 sm:px-6 h-12 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+      <header className="flex items-center justify-between px-3 sm:px-6 h-14 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="flex items-center gap-3">
           <div className="p-[1.5px] rounded-xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-            <img src={logo} alt="Leevee AI" className="w-8 h-8 rounded-[10px] object-cover" />
+            <img src={logo} alt="Leevee AI" className="w-9 h-9 sm:w-8 sm:h-8 rounded-[10px] object-cover" />
           </div>
           <div className="hidden sm:block">
             <h1 className="text-sm font-bold tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -355,14 +355,14 @@ const FullScreenChatbot = () => {
               <button
                 key={key}
                 onClick={() => switchMode(key)}
-                className={`relative inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex-shrink-0 min-h-[36px] ${
+                className={`relative inline-flex items-center gap-1.5 px-3 sm:px-3 py-2 sm:py-1.5 rounded-lg text-[13px] sm:text-xs font-medium transition-all duration-200 flex-shrink-0 min-h-[40px] sm:min-h-[36px] ${
                   isActive
                     ? "text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
                 }`}
                 style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 <span className="hidden sm:inline">{cfg.label}</span>
               </button>
             );
@@ -373,10 +373,10 @@ const FullScreenChatbot = () => {
         <div className="flex items-center gap-1.5">
           <a
             href="tel:988"
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors"
+            className="inline-flex items-center gap-1 px-3 sm:px-2.5 py-1.5 rounded-lg text-[11px] sm:text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors min-h-[36px]"
             title="Crisis Line: 988"
           >
-            <Phone className="w-3 h-3" />
+            <Phone className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
             <span className="hidden sm:inline">988</span>
           </a>
           <LanguageSelector />
@@ -394,39 +394,39 @@ const FullScreenChatbot = () => {
               <div className="animate-float">
                 <div className="p-[2px] rounded-3xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
                   <div className="bg-background rounded-[22px] p-3">
-                    <img src={logo} alt="Leevee AI" className="w-14 h-14 rounded-2xl object-cover" />
+                    <img src={logo} alt="Leevee AI" className="w-16 h-16 sm:w-14 sm:h-14 rounded-2xl object-cover" />
                   </div>
                 </div>
               </div>
               <div className="space-y-3">
                 <h2
-                  className="text-2xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
+                  className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
                   style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
                 >
                   Hey, I'm Leevee
                 </h2>
-                <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
+                <p className="text-muted-foreground text-sm sm:text-sm max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                   {currentMode.description}
                 </p>
               </div>
 
               {/* Quick Prompts */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-md w-full px-2 sm:px-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-2 max-w-md w-full px-2 sm:px-0">
                 {currentMode.prompts.slice(0, 4).map((q) => (
                   <button
                     key={q}
                     onClick={() => sendMessage(q)}
-                    className="group px-4 py-3 sm:py-3.5 text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2.5 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98]"
+                    className="group px-4 py-3.5 sm:py-3.5 text-[13px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2.5 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98]"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary flex-shrink-0 mt-0.5 transition-colors" />
+                    <Sparkles className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-primary/40 group-hover:text-primary flex-shrink-0 mt-0.5 transition-colors" />
                     <span className="leading-snug">{q}</span>
                   </button>
                 ))}
               </div>
 
               {/* Crisis info subtle */}
-              <div className="flex items-center gap-2 text-[11px] text-muted-foreground/60">
+              <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/60">
                 <span>In crisis?</span>
                 <a href="tel:988" className="text-destructive/70 hover:text-destructive font-medium transition-colors">
                   Call or text 988
@@ -441,18 +441,18 @@ const FullScreenChatbot = () => {
 
           {/* Messages */}
           {messages.map((msg, i) => (
-            <div key={i} className={`flex gap-3 py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div key={i} className={`flex gap-3 py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
                 <div
-                  className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"
+                  className="w-8 h-8 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"
                   style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
                 >
-                  <Bot className="w-3.5 h-3.5 text-primary-foreground" />
+                  <Bot className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-primary-foreground" />
                 </div>
               )}
               <div className="max-w-[85%] sm:max-w-[78%] flex flex-col gap-1">
                 <div
-                  className={`px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                  className={`px-4 py-3.5 sm:py-3 text-[15px] sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
                       ? "rounded-2xl rounded-br-md text-primary-foreground shadow-md"
                       : "rounded-2xl rounded-bl-md bg-card border border-border/50 text-foreground shadow-sm"
@@ -487,13 +487,13 @@ const FullScreenChatbot = () => {
                     className="self-start ml-1 p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
                     aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
                   >
-                    {speakingIndex === i ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                    {speakingIndex === i ? <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> : <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
                   </button>
                 )}
               </div>
               {msg.role === "user" && (
-                <div className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 bg-secondary border border-border/50">
-                  <User className="w-3.5 h-3.5 text-muted-foreground" />
+                <div className="w-8 h-8 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 bg-secondary border border-border/50">
+                  <User className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
                 </div>
               )}
             </div>
@@ -543,10 +543,10 @@ const FullScreenChatbot = () => {
 
       {/* Input Area */}
       <div className="border-t border-border/50 glass flex-shrink-0">
-        <div className="max-w-2xl mx-auto px-3 sm:px-6 py-2 sm:py-3">
+        <div className="max-w-2xl mx-auto px-3 sm:px-6 py-3 sm:py-3">
           <form
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-            className="flex items-end gap-2"
+            className="flex items-end gap-2.5"
           >
             <div className="flex-1 relative">
               <textarea
@@ -560,30 +560,30 @@ const FullScreenChatbot = () => {
                     : "Message Leevee..."
                 }
                 rows={1}
-                className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3 pr-12 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none scrollbar-none text-[16px] sm:text-sm"
-                style={{ fontFamily: "'Space Grotesk', sans-serif", maxHeight: "120px" }}
+                className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3.5 pr-12 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none scrollbar-none text-[16px] sm:text-sm"
+                style={{ fontFamily: "'Space Grotesk', sans-serif", maxHeight: "140px" }}
               />
               {/* Voice button inside input */}
               <button
                 type="button"
                 onClick={isListening ? stopListening : startListening}
-                className={`absolute right-3 bottom-2.5 p-1.5 rounded-lg transition-all ${
+                className={`absolute right-3 bottom-3 p-2 rounded-lg transition-all ${
                   isListening
                     ? "text-destructive animate-pulse"
                     : "text-muted-foreground/40 hover:text-muted-foreground"
                 }`}
                 aria-label={isListening ? "Stop listening" : "Voice input"}
               >
-                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                {isListening ? <MicOff className="w-5 h-5 sm:w-4 sm:h-4" /> : <Mic className="w-5 h-5 sm:w-4 sm:h-4" />}
               </button>
             </div>
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="w-10 h-10 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex-shrink-0 glow-primary"
+              className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex-shrink-0 glow-primary"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
             >
-              {mode === "image" ? <ImageIcon className="w-4 h-4 text-primary-foreground" /> : <Send className="w-4 h-4 text-primary-foreground" />}
+              {mode === "image" ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
             </button>
           </form>
           <p className="text-[10px] text-muted-foreground/30 text-center mt-2 tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
