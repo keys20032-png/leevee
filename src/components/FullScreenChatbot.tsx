@@ -622,6 +622,12 @@ const FullScreenChatbot = () => {
           {messages.map((msg, i) => (
             <div key={i} className={`flex py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[85%] sm:max-w-[78%] flex flex-col gap-1`}>
+                {/* Uploaded image preview in user message */}
+                {msg.uploadedImage && (
+                  <div className="rounded-2xl overflow-hidden border border-border/50 shadow-sm mb-1">
+                    <img src={msg.uploadedImage} alt="Uploaded" className="w-full max-w-xs rounded-2xl" loading="lazy" />
+                  </div>
+                )}
                 <div
                   className={`px-4 py-3.5 sm:py-3 text-[15px] sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
