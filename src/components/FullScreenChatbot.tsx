@@ -209,7 +209,7 @@ const FullScreenChatbot = () => {
     const crisisUrl = detectCrisis(text);
     if (crisisUrl) {
       localStorage.setItem("crisis_redirect", "true");
-      window.location.href = "/crisis-resources";
+      window.location.href = crisisUrl;
       return;
     }
 
