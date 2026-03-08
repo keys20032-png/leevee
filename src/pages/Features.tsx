@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { ArrowLeft, MessageSquare, Flame, GraduationCap, PartyPopper, PenTool, Swords, ImageIcon, Brain, Shield, Mic, Download, Search, RefreshCw, Zap, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -51,6 +51,80 @@ const COMPARISON: { feature: string; leevee: boolean | string; grok: boolean | s
 ];
 
 const Features = () => {
+  useEffect(() => {
+    // SEO meta tags
+    document.title = "Leevee AI Features — 7 Chat Modes, Image Gen, Memory, Crisis Safety";
+    const setMeta = (name: string, content: string, property = false) => {
+      const attr = property ? "property" : "name";
+      let el = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement;
+      if (!el) { el = document.createElement("meta"); el.setAttribute(attr, name); document.head.appendChild(el); }
+      el.content = content;
+    };
+    setMeta("description", "Leevee AI is a multimodal AI companion with 7 dedicated chat modes (General, Vent, Learn, Play, Create, Debate, Imagine), image generation & editing, persistent memory, voice input, real-time web search, crisis detection with 988 integration, and 10+ frontier AI models including GPT-5 and Gemini 2.5 Pro. Free, indie-built, installable PWA.");
+    setMeta("keywords", "Leevee AI, AI chatbot, AI companion, multimodal AI, image generation, persistent memory, crisis support, vent mode, debate mode, GPT-5, Gemini, indie AI, PWA, free AI");
+    setMeta("og:title", "Leevee AI Features — 7 Chat Modes, Image Gen, Memory & More", true);
+    setMeta("og:description", "Multimodal AI companion with 7 chat modes, image generation, persistent memory, voice input, web search, crisis safety, and 10+ AI models. Free and indie-built.", true);
+    setMeta("og:type", "website", true);
+    setMeta("og:url", "https://leevee.lovable.app/features", true);
+    setMeta("twitter:title", "Leevee AI Features — 7 Chat Modes, Image Gen, Memory & More");
+    setMeta("twitter:description", "Multimodal AI companion with 7 chat modes, image generation, persistent memory, voice input, web search, crisis safety, and 10+ AI models. Free and indie-built.");
+
+    // JSON-LD Structured Data
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Leevee AI",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web, PWA",
+      "url": "https://leevee.lovable.app",
+      "description": "Leevee AI is a multimodal AI companion with 7 dedicated chat modes, image generation and editing, persistent memory bank, voice input, real-time web search, built-in crisis detection with 988 Suicide & Crisis Lifeline integration, and 10+ frontier AI models. Free tier available. Indie-built with no corporate censorship.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "description": "Free tier with daily message limits"
+      },
+      "featureList": [
+        "7 Chat Modes: General, Vent, Learn, Play, Create, Debate, Imagine",
+        "Image Generation from text prompts",
+        "Image Editing with natural language instructions",
+        "Persistent Memory Bank across sessions",
+        "Voice Input via Speech-to-Text",
+        "Real-Time Web Search",
+        "Crisis Detection with 988 Lifeline Integration",
+        "Safety Plan Builder",
+        "Quick Exit Button for domestic violence safety",
+        "Data Export as PDF",
+        "Device Sync without account",
+        "Multi-language UI (English, Spanish, French, Arabic, Chinese)",
+        "PWA / Installable on mobile and desktop",
+        "10+ Frontier AI Models (GPT-5, Gemini 2.5 Pro, Gemini 3 Flash, GPT-5-mini)",
+        "Sex Work Education (objective, non-judgmental)",
+        "LGBTQ+ Inclusive by Design",
+        "AAVE and multilingual register fluency"
+      ],
+      "creator": {
+        "@type": "Organization",
+        "name": "Leevee AI",
+        "url": "https://leevee.lovable.app"
+      },
+      "aggregateRating": undefined,
+      "softwareVersion": "2.0",
+      "applicationSubCategory": "AI Chatbot, Mental Health Support, Creative Writing, Education"
+    };
+    // Remove undefined fields
+    const cleanJsonLd = JSON.parse(JSON.stringify(jsonLd));
+    let script = document.getElementById("features-jsonld") as HTMLScriptElement;
+    if (!script) { script = document.createElement("script"); script.id = "features-jsonld"; script.type = "application/ld+json"; document.head.appendChild(script); }
+    script.textContent = JSON.stringify(cleanJsonLd);
+
+    return () => {
+      document.title = "Leevee AI";
+      const s = document.getElementById("features-jsonld");
+      if (s) s.remove();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
