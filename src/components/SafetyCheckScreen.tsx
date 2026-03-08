@@ -45,6 +45,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
 
   const toggleItem = (index: number) => {
     if (locked) return;
+    haptic("light");
     setChecked((prev) => prev.map((v, i) => (i === index ? !v : v)));
   };
 
