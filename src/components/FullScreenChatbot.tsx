@@ -1171,14 +1171,14 @@ const FullScreenChatbot = () => {
           <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setShowSyncModal(false)} />
           <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] max-w-sm bg-card border border-border/60 rounded-2xl shadow-2xl p-6 animate-message-in">
             <h3 className="text-base font-bold text-foreground mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              <Smartphone className="w-4 h-4 inline mr-2" />Sync Across Devices
+              <Smartphone className="w-4 h-4 inline mr-2" />{t.home.syncTitle}
             </h3>
             <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              Your sync code links your conversations, memories, and history across devices. Enter it on another device to sync.
+              {t.home.syncDesc}
             </p>
             <div className="space-y-3">
               <div>
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Your Sync Code</label>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.yourSyncCode}</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -1196,11 +1196,11 @@ const FullScreenChatbot = () => {
                 </div>
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Import From Another Device</label>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.importFromDevice}</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Paste sync code..."
+                    placeholder={t.home.pasteSyncCode}
                     value={syncInput}
                     onChange={(e) => setSyncInput(e.target.value)}
                     className="flex-1 bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -1208,7 +1208,7 @@ const FullScreenChatbot = () => {
                   <button
                     onClick={() => {
                       if (syncInput.trim() && syncInput.trim() !== getSyncCode()) {
-                        if (window.confirm("This will switch to the synced session. Your current local session will be replaced. Continue?")) {
+                        if (window.confirm(t.home.confirmSync)) {
                           importSession(syncInput.trim());
                         }
                       }
@@ -1217,7 +1217,7 @@ const FullScreenChatbot = () => {
                     className="px-3 py-2 rounded-lg text-xs font-medium text-primary-foreground disabled:opacity-30 transition-all active:scale-95"
                     style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
                   >
-                    Sync
+                    {t.home.sync}
                   </button>
                 </div>
               </div>
