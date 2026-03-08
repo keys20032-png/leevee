@@ -16,7 +16,7 @@ export const ar = {
   },
   hero: {
     badge: "مركز موارد موثوق",
-    title: "Polly AI",
+    title: "Leevee AI",
     subtitle: "اعثر على الدعم بسرعة",
     description: "دليلك الشامل للدعم والتعليم وموارد الرفاهية. يوصلك بأدوات موثوقة للتعلم والصحة النفسية والسلامة والرفاهية المالية.",
     explore: "استكشاف الموارد",
@@ -51,8 +51,8 @@ export const ar = {
   },
   about: {
     label: "عنا",
-    title: "لماذا Polly AI؟",
-    description: "نؤمن بأن الجميع يستحق الوصول إلى الدعم الذي يحتاجه. Polly AI منصة مجانية مدفوعة من المجتمع تربط الناس بموارد موثوقة.",
+    title: "لماذا Leevee AI؟",
+    description: "نؤمن بأن الجميع يستحق الوصول إلى الدعم الذي يحتاجه. Leevee AI منصة مجانية مدفوعة من المجتمع تربط الناس بموارد موثوقة.",
     curatedTitle: "موارد مختارة",
     curatedDesc: "كل مورد يتم اختياره بعناية لتقديم دعم حقيقي ومتاح لمن يحتاجه.",
     communityTitle: "مدفوع من المجتمع",
@@ -95,14 +95,14 @@ export const ar = {
     crisisResources: "موارد الأزمات",
     getInTouch: "تواصل معنا",
     suggestResource: "لديك مورد تقترحه؟ تريد التعاون؟ يسعدنا أن نسمع منك.",
-    copyright: "Polly AI © {year} — جميع الحقوق محفوظة",
+    copyright: "Leevee AI © {year} — جميع الحقوق محفوظة",
     madeWith: "صنع بـ",
     forThose: "لمن يحتاجه",
   },
   quickExit: "خروج سريع - مغادرة هذا الموقع فوراً",
   chatbot: {
     toggle: "الدردشة مع مساعد الذكاء الاصطناعي",
-    title: "مساعد Polly AI",
+    title: "مساعد Leevee AI",
     placeholder: "اكتب رسالتك...",
   },
 };
