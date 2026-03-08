@@ -1870,10 +1870,10 @@ const FullScreenChatbot = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={
-                    pendingImage ? "Ask about this image..."
-                      : isListening ? "Listening..."
-                      : mode === "image" ? "Describe what you want to see..."
-                      : "Message Leevee..."
+                    pendingImage ? t.home.askAboutImage
+                      : isListening ? t.home.listening
+                      : mode === "image" ? t.home.describeImage
+                      : t.home.messageLeevee
                   }
                   rows={1}
                   className="w-full bg-card/80 border border-border/60 rounded-2xl px-4 py-3.5 pr-12 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all duration-300 resize-none scrollbar-none text-[16px] sm:text-sm group-hover:border-border"
@@ -1904,11 +1904,11 @@ const FullScreenChatbot = () => {
             {tier !== "premium" && (
               <div className="flex items-center justify-center gap-2 mt-1.5">
                 <span className={`text-[10px] tracking-wider uppercase ${remaining <= 3 ? "text-destructive" : "text-muted-foreground/30"}`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  {remaining}/{limit === Infinity ? "∞" : limit} messages left today
+                  {remaining}/{limit === Infinity ? "∞" : limit} {t.home.messagesLeftToday}
                 </span>
                 {remaining <= 5 && (
                   <a href="/pricing" className="text-[10px] text-primary hover:underline tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                    Upgrade
+                    {t.home.upgrade}
                   </a>
                 )}
               </div>
