@@ -498,6 +498,11 @@ const FullScreenChatbot = () => {
       setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." }]);
     }
     setLoading(false);
+    // Generate follow-up suggestions (fire and forget)
+    if (assistantSoFar) {
+      setFollowUps([]);
+      generateFollowUps([...allMessages, { role: "assistant", content: assistantSoFar }]);
+    }
   };
 
   const downloadImage = (dataUrl: string, index: number) => {
