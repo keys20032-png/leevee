@@ -66,6 +66,10 @@ describe("detectCrisis", () => {
       "lmao this test killed me 💀",
       "I'm so dead rn haha",
       "this homework is killing me bruh",
+      "I want to die laughing",
+      "the suspense is killing me ngl",
+      "that joke killed me I died laughing",
+      "this food is to die for",
     ];
 
     it.each(humorCases.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {

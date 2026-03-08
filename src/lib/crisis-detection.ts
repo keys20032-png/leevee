@@ -704,7 +704,9 @@ const SAFE_PHRASES = [
   "drop dead gorgeous", "over my dead body", "dead on arrival",
   "scared to death", "bored to death", "worried to death", "sick to death",
   "homework is killing", "work is killing", "job is killing", "test is killing",
-  "traffic is killing", "heat is killing", "cold is killing",
+  "traffic is killing", "heat is killing", "cold is killing", "suspense is killing",
+  "die laughing", "dying laughing", "died laughing", "to die for",
+  "want to die laughing", "could die laughing",
 ];
 
 // Humor markers that indicate casual/non-crisis context
