@@ -9,14 +9,6 @@ import {
   Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
   LogIn, UserCircle,
 } from "lucide-react";
-  Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
-  Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
-  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
-  Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
-  ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
-  Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
-  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
-} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
@@ -25,6 +17,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import { jsPDF } from "jspdf";
 import { useConversations, type ChatMessage } from "@/hooks/use-conversations";
+import { useAuth } from "@/hooks/use-auth";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
