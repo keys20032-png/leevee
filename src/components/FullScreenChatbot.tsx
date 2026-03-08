@@ -868,26 +868,26 @@ const FullScreenChatbot = () => {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="flex items-center justify-between px-3 sm:px-6 h-14 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-          <div className="flex items-center gap-2">
+        <header className="flex items-center justify-between px-2 sm:px-6 h-12 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Sidebar toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              className="p-2.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors active:scale-95"
               title="Chat history"
             >
-              <PanelLeftOpen className="w-4 h-4" />
+              <PanelLeftOpen className="w-5 h-5 sm:w-4 sm:h-4" />
             </button>
-            {/* New chat */}
+            {/* New chat - hidden on mobile, accessible from sidebar */}
             <button
               onClick={startNewChat}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              className="hidden sm:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
               title="New chat"
             >
               <Plus className="w-4 h-4" />
             </button>
-            <div className="p-[1.5px] rounded-xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-              <img src={logo} alt="Leevee AI" className="w-9 h-9 sm:w-8 sm:h-8 rounded-[10px] object-cover" />
+            <div className="p-[1.5px] rounded-xl hidden sm:block" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
+              <img src={logo} alt="Leevee AI" className="w-8 h-8 rounded-[10px] object-cover" />
             </div>
             <div className="hidden sm:block">
               <h1 className="text-sm font-bold tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
