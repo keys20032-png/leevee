@@ -5,7 +5,7 @@ import {
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
-  Share2, X, ChevronUp, Link2, MoreHorizontal,
+  Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
@@ -794,26 +794,84 @@ const FullScreenChatbot = () => {
     return d.toLocaleDateString();
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Ctrl/Cmd+Shift+N = new chat
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "N") {
+        e.preventDefault();
+        startNewChat();
+      }
+      // Ctrl/Cmd+K = search in chat
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setChatSearchOpen((v) => !v);
+        setChatSearch("");
+        setChatSearchIdx(0);
+      }
+      // Ctrl/Cmd+B = toggle sidebar
+      if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+        e.preventDefault();
+        setSidebarOpen((v) => !v);
+      }
+      // Escape = close modals
+      if (e.key === "Escape") {
+        if (chatSearchOpen) { setChatSearchOpen(false); setChatSearch(""); }
+        if (mobileModesOpen) setMobileModesOpen(false);
+        if (shareMenuOpen) setShareMenuOpen(false);
+        if (moreMenuOpen) setMoreMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [chatSearchOpen, mobileModesOpen, shareMenuOpen, moreMenuOpen]);
+
+  // Confirm before clearing chat with messages
+  const confirmNewChat = () => {
+    if (messages.length > 0) {
+      if (window.confirm("Start a new chat? Your current conversation is saved in history.")) {
+        startNewChat();
+      }
+    } else {
+      startNewChat();
+    }
+  };
+
+  // Retry last message
+  const retryLastMessage = () => {
+    const lastUserIdx = [...messages].reverse().findIndex((m) => m.role === "user");
+    if (lastUserIdx === -1) return;
+    const idx = messages.length - 1 - lastUserIdx;
+    const lastUserMsg = messages[idx];
+    // Remove everything from that point forward
+    setMessages((prev) => prev.slice(0, idx));
+    setFollowUps([]);
+    haptic("light");
+    setTimeout(() => sendMessage(lastUserMsg.content), 100);
+  };
+
   return (
     <div className="flex h-full bg-background" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       {/* Conversation History Sidebar */}
       {sidebarOpen && (
         <>
           <div className="fixed inset-0 z-30 bg-background/60 backdrop-blur-sm sm:hidden" onClick={() => setSidebarOpen(false)} />
-           <aside className="fixed sm:relative z-40 h-full w-[80vw] max-w-72 sm:w-64 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
+          <aside className="fixed sm:relative z-40 h-full w-[80vw] max-w-72 sm:w-72 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
             <div className="flex items-center justify-between px-3 py-3.5 sm:py-3 border-b border-border/50">
               <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>History</span>
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => { startNewChat(); setSidebarOpen(false); }}
                   className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
-                  title="New chat"
+                  title="New chat (Ctrl+Shift+N)"
+                  aria-label="New chat"
                 >
                   <Plus className="w-5 h-5 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
+                  aria-label="Close sidebar"
                 >
                   <PanelLeftClose className="w-5 h-5 sm:w-4 sm:h-4" />
                 </button>
@@ -830,43 +888,57 @@ const FullScreenChatbot = () => {
                   onChange={(e) => setSearchHistory(e.target.value)}
                   className="w-full bg-secondary/50 border border-border/40 rounded-lg pl-8 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  aria-label="Search conversation history"
                 />
               </div>
             </div>
             {/* Conversation list */}
-            <div className="flex-1 overflow-y-auto px-1.5 pb-2 space-y-0.5">
+            <div className="flex-1 overflow-y-auto px-1.5 pb-2 space-y-0.5 scrollbar-none">
               {filteredConversations.length === 0 && (
                 <div className="text-center text-xs text-muted-foreground/50 py-8">
                   {searchHistory ? "No matching chats" : "No conversations yet"}
                 </div>
               )}
-              {filteredConversations.map((c) => (
-                <div
-                  key={c.id}
-                  className={`group flex items-center gap-2.5 px-3 py-3.5 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-150 active:scale-[0.98] ${
-                    activeConversationId === c.id
-                      ? "bg-primary/10 text-foreground"
-                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                  }`}
-                  onClick={() => { setActiveConversationId(c.id); setMode(c.mode as ChatMode); setSidebarOpen(false); }}
-                >
-                  <MessageSquare className="w-4 h-4 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] sm:text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
-                    <p className="text-[11px] sm:text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
-                      <Clock className="w-2.5 h-2.5" />
-                      {formatDate(c.updated_at)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); deleteConversation(c.id); }}
-                    className="p-2 sm:p-1 rounded-md sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
-                    title="Delete"
+              {filteredConversations.map((c) => {
+                const modeEmoji = MODE_CONFIG[c.mode as ChatMode]?.emoji || "💭";
+                return (
+                  <div
+                    key={c.id}
+                    className={`group flex items-center gap-2.5 px-3 py-3.5 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-150 active:scale-[0.98] ${
+                      activeConversationId === c.id
+                        ? "bg-primary/10 text-foreground"
+                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
+                    }`}
+                    onClick={() => { setActiveConversationId(c.id); setMode(c.mode as ChatMode); setSidebarOpen(false); }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open conversation: ${c.title}`}
                   >
-                    <Trash2 className="w-4 h-4 sm:w-3 sm:h-3" />
-                  </button>
-                </div>
-              ))}
+                    <span className="text-sm flex-shrink-0">{modeEmoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] sm:text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
+                      <p className="text-[11px] sm:text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
+                        <Clock className="w-2.5 h-2.5" />
+                        {formatDate(c.updated_at)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); if (window.confirm("Delete this conversation?")) deleteConversation(c.id); }}
+                      className="p-2 sm:p-1 rounded-md sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
+                      title="Delete"
+                      aria-label="Delete conversation"
+                    >
+                      <Trash2 className="w-4 h-4 sm:w-3 sm:h-3" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+            {/* Sidebar footer with keyboard shortcuts hint (desktop only) */}
+            <div className="hidden sm:block border-t border-border/50 px-3 py-2">
+              <p className="text-[10px] text-muted-foreground/40 text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                ⌘B sidebar · ⌘K search · ⌘⇧N new
+              </p>
             </div>
           </aside>
         </>
@@ -875,21 +947,23 @@ const FullScreenChatbot = () => {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="flex items-center justify-between px-2 sm:px-6 h-12 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <header className="flex items-center justify-between px-2 sm:px-5 h-12 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Sidebar toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-2.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors active:scale-95"
-              title="Chat history"
+              title="Chat history (Ctrl+B)"
+              aria-label="Toggle chat history"
             >
               <PanelLeftOpen className="w-5 h-5 sm:w-4 sm:h-4" />
             </button>
-            {/* New chat - hidden on mobile, accessible from sidebar */}
+            {/* New chat */}
             <button
-              onClick={startNewChat}
+              onClick={confirmNewChat}
               className="hidden sm:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
-              title="New chat"
+              title="New chat (Ctrl+Shift+N)"
+              aria-label="Start new chat"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -1020,7 +1094,7 @@ const FullScreenChatbot = () => {
                   <div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} />
                   <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 animate-message-in">
                     <button
-                      onClick={() => { startNewChat(); setMoreMenuOpen(false); }}
+                      onClick={() => { confirmNewChat(); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
@@ -1324,6 +1398,21 @@ const FullScreenChatbot = () => {
                 </div>
               </div>
             ))}
+
+            {/* Retry button after last assistant error/response */}
+            {!loading && messages.length > 1 && messages[messages.length - 1]?.role === "assistant" && (
+              <div className="flex items-center gap-2 py-1 pl-1 animate-message-in">
+                <button
+                  onClick={retryLastMessage}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  aria-label="Retry last message"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  Retry
+                </button>
+              </div>
+            )}
 
             {/* Follow-up suggestions */}
             {followUps.length > 0 && !loading && messages.length > 0 && messages[messages.length - 1]?.role === "assistant" && (
