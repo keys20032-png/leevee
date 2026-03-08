@@ -328,9 +328,9 @@ const FullScreenChatbot = () => {
 
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex flex-col h-full bg-background" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       {/* Top Bar */}
-      <header className="flex items-center justify-between px-4 sm:px-6 h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10">
+      <header className="flex items-center justify-between px-3 sm:px-6 h-12 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="flex items-center gap-3">
           <div className="p-[1.5px] rounded-xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
             <img src={logo} alt="Leevee AI" className="w-8 h-8 rounded-[10px] object-cover" />
@@ -343,7 +343,7 @@ const FullScreenChatbot = () => {
         </div>
 
         {/* Mode tabs — center */}
-        <nav className="flex items-center gap-0.5 overflow-x-auto scrollbar-none">
+        <nav className="flex items-center gap-0.5 overflow-x-auto scrollbar-none -mx-1 px-1">
           {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
             const cfg = MODE_CONFIG[key];
             const Icon = cfg.icon;
@@ -352,7 +352,7 @@ const FullScreenChatbot = () => {
               <button
                 key={key}
                 onClick={() => switchMode(key)}
-                className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex-shrink-0 ${
+                className={`relative inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex-shrink-0 min-h-[36px] ${
                   isActive
                     ? "text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
@@ -383,11 +383,11 @@ const FullScreenChatbot = () => {
 
       {/* Chat Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-1">
+        <div className="max-w-2xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-1">
 
           {/* Empty State */}
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-message-in">
+            <div className="flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[60vh] text-center space-y-6 sm:space-y-8 animate-message-in">
               <div className="animate-float">
                 <div className="p-[2px] rounded-3xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
                   <div className="bg-background rounded-[22px] p-3">
@@ -397,7 +397,7 @@ const FullScreenChatbot = () => {
               </div>
               <div className="space-y-3">
                 <h2
-                  className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
+                  className="text-2xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
                   style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
                 >
                   Hey, I'm Leevee
@@ -408,12 +408,12 @@ const FullScreenChatbot = () => {
               </div>
 
               {/* Quick Prompts */}
-              <div className="grid grid-cols-2 gap-2 max-w-md w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-md w-full px-2 sm:px-0">
                 {currentMode.prompts.slice(0, 4).map((q) => (
                   <button
                     key={q}
                     onClick={() => sendMessage(q)}
-                    className="group px-4 py-3.5 text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2.5 hover:shadow-lg hover:shadow-primary/5"
+                    className="group px-4 py-3 sm:py-3.5 text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2.5 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98]"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
                     <Sparkles className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary flex-shrink-0 mt-0.5 transition-colors" />
@@ -447,7 +447,7 @@ const FullScreenChatbot = () => {
                   <Bot className="w-3.5 h-3.5 text-primary-foreground" />
                 </div>
               )}
-              <div className="max-w-[78%] flex flex-col gap-1">
+              <div className="max-w-[85%] sm:max-w-[78%] flex flex-col gap-1">
                 <div
                   className={`px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
@@ -540,7 +540,7 @@ const FullScreenChatbot = () => {
 
       {/* Input Area */}
       <div className="border-t border-border/50 glass flex-shrink-0">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3">
+        <div className="max-w-2xl mx-auto px-3 sm:px-6 py-2 sm:py-3">
           <form
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
             className="flex items-end gap-2"
@@ -557,7 +557,7 @@ const FullScreenChatbot = () => {
                     : "Message Leevee..."
                 }
                 rows={1}
-                className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3 pr-12 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none scrollbar-none"
+                className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3 pr-12 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none scrollbar-none text-[16px] sm:text-sm"
                 style={{ fontFamily: "'Space Grotesk', sans-serif", maxHeight: "120px" }}
               />
               {/* Voice button inside input */}
