@@ -491,7 +491,8 @@ serve(async (req) => {
     }
 
     // ===== SERVER-SIDE CRISIS DETECTION (backup safety net) =====
-    const lastUserMsg = messages?.filter((m: { role: string }) => m.role === "user").pop()?.content || "";
+    const lastUserMsgObj = messages?.filter((m: { role: string }) => m.role === "user").pop();
+    const lastUserMsg = typeof lastUserMsgObj?.content === "string" ? lastUserMsgObj.content : "";
     const lower = lastUserMsg.toLowerCase().replace(/[^\w\s']/g, "");
 
     // LETHALITY GATE — hard block on specific means/methods
