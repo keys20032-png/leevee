@@ -1,7 +1,38 @@
+import { useState, useEffect } from "react";
 import FullScreenChatbot from "@/components/FullScreenChatbot";
 import InstallBanner from "@/components/InstallBanner";
+import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 
 const Index = () => {
+  const [showSafetyCheck, setShowSafetyCheck] = useState(() => {
+    const flag = localStorage.getItem("crisis_redirect");
+    return flag === "true";
+  });
+
+  // Also listen for storage changes (e.g., flag set in same tab before redirect)
+  useEffect(() => {
+    const check = () => {
+      if (localStorage.getItem("crisis_redirect") === "true") {
+        setShowSafetyCheck(true);
+      }
+    };
+    window.addEventListener("focus", check);
+    window.addEventListener("pageshow", check);
+    return () => {
+      window.removeEventListener("focus", check);
+      window.removeEventListener("pageshow", check);
+    };
+  }, []);
+
+  const handleSafetyComplete = () => {
+    localStorage.removeItem("crisis_redirect");
+    setShowSafetyCheck(false);
+  };
+
+  if (showSafetyCheck) {
+    return <SafetyCheckScreen onContinue={handleSafetyComplete} />;
+  }
+
   return (
     <div className="h-dvh flex flex-col bg-background overflow-hidden">
       <InstallBanner />
