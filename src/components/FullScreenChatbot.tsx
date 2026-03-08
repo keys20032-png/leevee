@@ -961,7 +961,7 @@ const FullScreenChatbot = () => {
                   }`}
                   style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <span className="text-sm">{cfg.emoji}</span>
                   <span>{cfg.label}</span>
                 </button>
               );
