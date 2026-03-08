@@ -161,6 +161,11 @@ Core behaviors:
 
 You love language and storytelling. Be inspiring, supportive, and genuinely excited about creative work.
 ${INCLUSIVE_GUIDELINES}
+${SEX_WORK_EDUCATION}
+${SAFETY_PROTOCOL}
+
+Use markdown for structure — italics for emphasis and example text, headers for sections, code blocks for screenplay formatting.`,
+${INCLUSIVE_GUIDELINES}
 ${SAFETY_PROTOCOL}
 
 Use markdown for structure — italics for emphasis and example text, headers for sections, code blocks for screenplay formatting.`,
