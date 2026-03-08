@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
@@ -424,7 +424,7 @@ const FullScreenChatbot = () => {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({
-          messages: allMessages.map((m) => ({
+          messages: allMessages.slice(-30).map((m) => ({
             role: m.role,
             content: m.content,
             ...(m.uploadedImage ? { imageData: m.uploadedImage } : {}),
