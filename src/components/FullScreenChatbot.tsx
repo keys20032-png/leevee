@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX, Mic, MicOff, GraduationCap, PartyPopper, MessageSquare } from "lucide-react";
+import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX, Mic, MicOff, GraduationCap, PartyPopper, MessageSquare, PenTool } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis } from "@/lib/crisis-detection";
 
 type Message = { role: "user" | "assistant"; content: string };
-type ChatMode = "default" | "academic" | "fun";
+type ChatMode = "default" | "academic" | "fun" | "creative";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
@@ -46,6 +46,19 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
       "Roast my taste in music (gently)",
       "Invent a new holiday",
       "Quiz me on random trivia",
+    ],
+  },
+  creative: {
+    label: "Creative",
+    icon: PenTool,
+    description: "Your literary muse. Poetry, stories, screenplays, songwriting, and craft coaching ✍️",
+    prompts: [
+      "Write a poem about the ocean",
+      "Help me outline a short story",
+      "Give me a creative writing prompt",
+      "Write a movie scene with dialogue",
+      "Help me develop a character",
+      "Critique my opening paragraph",
     ],
   },
 };
