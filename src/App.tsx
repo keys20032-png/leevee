@@ -10,6 +10,7 @@ import CrisisResources from "./pages/CrisisResources";
 import SexWorkEducation from "./pages/SexWorkEducation";
 import SafetyDocumentation from "./pages/SafetyDocumentation";
 import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -28,6 +29,7 @@ const AppContent = () => {
           <Route path="/sex-work-education" element={<SexWorkEducation />} />
           <Route path="/safety" element={<SafetyDocumentation />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/install" element={<Install />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
