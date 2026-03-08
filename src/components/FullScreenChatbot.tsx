@@ -1356,7 +1356,7 @@ const FullScreenChatbot = () => {
 
         {/* Input Area */}
         <div className="border-t border-border/50 glass flex-shrink-0">
-          <div className="max-w-2xl mx-auto px-3 sm:px-6 py-3 sm:py-3">
+          <div className="max-w-2xl mx-auto px-2 sm:px-6 py-2 sm:py-3">
             {pendingImage && (
               <div className="mb-2 relative inline-block">
                 <img src={pendingImage} alt="Upload preview" className="h-20 rounded-xl border border-border/50 shadow-sm" />
