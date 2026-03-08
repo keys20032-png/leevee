@@ -1242,19 +1242,18 @@ const FullScreenChatbot = () => {
 
                   {/* Assistant message actions: copy, reactions, speak, PDF */}
                   {msg.role === "assistant" && !msg.images?.length && (
-                    <div className="flex items-center gap-0.5 self-start ml-1">
+                    <div className="flex items-center gap-0.5 sm:gap-0.5 self-start ml-1 flex-wrap">
                       <button
                         onClick={() => copyMessage(msg.content, i)}
-                        className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                        className="p-2 sm:p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all active:scale-90"
                         aria-label="Copy message"
                         title="Copy to clipboard"
                       >
                         {copiedIndex === i ? <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-green-500" /> : <Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
                       </button>
-                      {/* Thumbs up */}
                       <button
                         onClick={() => toggleReaction(i, "thumbs_up")}
-                        className={`p-1.5 rounded-lg transition-all ${
+                        className={`p-2 sm:p-1.5 rounded-lg transition-all active:scale-90 ${
                           msg.reaction === "thumbs_up"
                             ? "text-green-500 bg-green-500/10"
                             : "text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50"
@@ -1264,10 +1263,9 @@ const FullScreenChatbot = () => {
                       >
                         <ThumbsUp className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                       </button>
-                      {/* Thumbs down */}
                       <button
                         onClick={() => toggleReaction(i, "thumbs_down")}
-                        className={`p-1.5 rounded-lg transition-all ${
+                        className={`p-2 sm:p-1.5 rounded-lg transition-all active:scale-90 ${
                           msg.reaction === "thumbs_down"
                             ? "text-destructive bg-destructive/10"
                             : "text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50"
@@ -1279,21 +1277,21 @@ const FullScreenChatbot = () => {
                       </button>
                       <button
                         onClick={() => speak(msg.content, i)}
-                        className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                        className="p-2 sm:p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all active:scale-90"
                         aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
                       >
                         {speakingIndex === i ? <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> : <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
                       </button>
                       <button
                         onClick={() => exportToPDF(msg.content)}
-                        className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                        className="hidden sm:flex p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
                         aria-label="Download as PDF"
                         title="Download as PDF"
                       >
-                        <FileText className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                        <FileText className="w-3.5 h-3.5" />
                       </button>
                       {msg.metrics && (
-                        <span className="ml-1 text-[10px] text-muted-foreground/40 font-mono tabular-nums" title={`TTFT: ${msg.metrics.ttft}ms · Total: ${msg.metrics.total}ms · Mode: ${msg.metrics.mode}`}>
+                        <span className="hidden sm:inline ml-1 text-[10px] text-muted-foreground/40 font-mono tabular-nums" title={`TTFT: ${msg.metrics.ttft}ms · Total: ${msg.metrics.total}ms · Mode: ${msg.metrics.mode}`}>
                           ⚡ {msg.metrics.ttft < 1000 ? `${msg.metrics.ttft}ms` : `${(msg.metrics.ttft / 1000).toFixed(1)}s`} · {msg.metrics.total < 1000 ? `${msg.metrics.total}ms` : `${(msg.metrics.total / 1000).toFixed(1)}s`}
                         </span>
                       )}
