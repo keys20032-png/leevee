@@ -401,10 +401,10 @@ const Features = () => {
           </AnimatedSection>
 
           {/* Closing note */}
-          <AnimatedSection delay={280}>
+          <AnimatedSection delay={360}>
             <div className="rounded-xl border border-border/50 bg-secondary/30 p-5">
               <p className="text-xs text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">A note on honesty:</strong> Leevee is an indie project. We don't have Grok's compute power, benchmark scores, or engineering team. What we do have is a deliberate design philosophy that prioritizes user safety, data ownership, and inclusivity without corporate censorship theater. We believe that's worth something — but we also believe you should make that judgment for yourself with accurate information, not AI-generated misinformation about what we can and can't do.
+                <strong className="text-foreground">A note on honesty:</strong> Leevee is an indie project. We don't have Grok's raw power, Claude's massive context windows, or either company's engineering army. What we do have is a deliberate design philosophy that prioritizes user safety, data ownership, and inclusivity without corporate censorship theater. Both Grok and Claude have generated comparisons describing Leevee as "text-only" or "limited" — this page exists because those descriptions were wrong, and we believe you deserve accurate information to choose for yourself.
               </p>
             </div>
           </AnimatedSection>
