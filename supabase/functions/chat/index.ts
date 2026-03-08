@@ -499,7 +499,7 @@ serve(async (req) => {
     }
 
     // Root-based crisis detection
-    if (CRISIS_ROOTS.some((root) => lower.includes(root))) {
+    if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
       return new Response(
         JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },

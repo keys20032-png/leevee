@@ -706,8 +706,8 @@ export const detectCrisis = (text: string): string | null => {
   // General crisis keywords → default 988
   if (CRISIS_KEYWORDS.some((kw) => lower.includes(kw))) return "https://988lifeline.org/";
 
-  // Root-word matching → default 988
-  if (CRISIS_ROOTS.some((root) => lower.includes(root))) return "https://988lifeline.org/";
+  // Root-word matching → default 988 (use word-boundary regex to avoid false positives like "Judaism", "diet", "harmony")
+  if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) return "https://988lifeline.org/";
 
   return null;
 };
