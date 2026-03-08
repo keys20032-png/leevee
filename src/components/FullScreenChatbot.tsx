@@ -6,6 +6,7 @@ import {
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
+  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
@@ -161,6 +162,7 @@ const FullScreenChatbot = () => {
 
   const {
     conversations,
+    trashedConversations,
     activeConversationId,
     setActiveConversationId,
     createConversation,
@@ -169,8 +171,27 @@ const FullScreenChatbot = () => {
     updateMessageContent,
     setReaction,
     deleteConversation,
+    permanentlyDelete,
+    restoreConversation,
     loadConversations,
+    loadTrash,
+    memories,
+    addMemory,
+    deleteMemory,
+    updateMemory,
+    exportAllData,
+    getSyncCode,
+    importSession,
+    sessionId,
   } = useConversations();
+
+  const [sidebarTab, setSidebarTab] = useState<"history" | "memory" | "trash">("history");
+  const [showSyncModal, setShowSyncModal] = useState(false);
+  const [syncInput, setSyncInput] = useState("");
+  const [newMemoryKey, setNewMemoryKey] = useState("");
+  const [newMemoryValue, setNewMemoryValue] = useState("");
+  const [editingMemoryId, setEditingMemoryId] = useState<string | null>(null);
+  const [editingMemoryValue, setEditingMemoryValue] = useState("");
 
   const currentMode = MODE_CONFIG[mode];
 
