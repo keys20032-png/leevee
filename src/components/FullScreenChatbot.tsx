@@ -666,15 +666,50 @@ const FullScreenChatbot = () => {
                 {msg.images && msg.images.length > 0 && (
                   <div className="flex flex-col gap-2 mt-1">
                     {msg.images.map((imgSrc, imgIdx) => (
-                      <div key={imgIdx} className="relative group rounded-2xl overflow-hidden border border-border/50 shadow-lg">
-                        <img src={imgSrc} alt={`Generated image ${imgIdx + 1}`} className="w-full max-w-md rounded-2xl" loading="lazy" />
-                        <button
-                          onClick={() => downloadImage(imgSrc, imgIdx)}
-                          className="absolute top-3 right-3 p-2 rounded-xl glass glass-border text-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-card"
-                          title="Download image"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
+                      <div key={imgIdx} className="rounded-2xl overflow-hidden border border-border/50 shadow-lg">
+                        <div className="relative group">
+                          <img src={imgSrc} alt={`Generated image ${imgIdx + 1}`} className="w-full max-w-md rounded-t-2xl" loading="lazy" />
+                          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                            <button
+                              onClick={() => setEditingImage(imgSrc)}
+                              className="p-2 rounded-xl glass glass-border text-foreground hover:bg-card"
+                              title="Edit image"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => downloadImage(imgSrc, imgIdx)}
+                              className="p-2 rounded-xl glass glass-border text-foreground hover:bg-card"
+                              title="Download image"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {/* Inline edit prompt for this image */}
+                        {editingImage === imgSrc && (
+                          <div className="p-3 bg-card border-t border-border/50 flex gap-2 items-center animate-message-in">
+                            <input
+                              type="text"
+                              placeholder="Describe your edit (e.g. make it sunset)..."
+                              className="flex-1 bg-secondary/50 border border-border/60 rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && (e.target as HTMLInputElement).value.trim()) {
+                                  editImage(imgSrc, (e.target as HTMLInputElement).value.trim());
+                                }
+                                if (e.key === "Escape") setEditingImage(null);
+                              }}
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => setEditingImage(null)}
+                              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all text-xs"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
