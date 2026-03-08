@@ -138,6 +138,10 @@ const FullScreenChatbot = () => {
   const [followUps, setFollowUps] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchHistory, setSearchHistory] = useState("");
+  const [chatSearch, setChatSearch] = useState("");
+  const [chatSearchOpen, setChatSearchOpen] = useState(false);
+  const [chatSearchIdx, setChatSearchIdx] = useState(0);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
