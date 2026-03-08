@@ -13,6 +13,11 @@ const getCrisisTime = (): number | null => {
 };
 
 const isInCooldown = (): boolean => {
+  // Admin override: add ?bypass=1 to URL to skip safety lockout
+  if (new URLSearchParams(window.location.search).get("bypass") === "1") {
+    localStorage.removeItem("crisis_redirect_time");
+    return false;
+  }
   const t = getCrisisTime();
   if (!t) return false;
   return Date.now() - t < COOLDOWN_MS;
