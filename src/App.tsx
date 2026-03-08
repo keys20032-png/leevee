@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import CrisisResources from "./pages/CrisisResources";
 import SexWorkEducation from "./pages/SexWorkEducation";
 import SafetyDocumentation from "./pages/SafetyDocumentation";
+import TermsOfService from "./pages/TermsOfService";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -26,6 +27,7 @@ const AppContent = () => {
           <Route path="/crisis-resources" element={<CrisisResources />} />
           <Route path="/sex-work-education" element={<SexWorkEducation />} />
           <Route path="/safety" element={<SafetyDocumentation />} />
+          <Route path="/terms" element={<TermsOfService />} />
           <Route path="/install" element={<Install />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
