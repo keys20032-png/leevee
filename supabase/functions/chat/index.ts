@@ -413,7 +413,26 @@ serve(async (req) => {
     const lower = lastUserMsg.toLowerCase().replace(/[^\w\s']/g, "");
 
     if (!skipCrisisCheck) {
-      // LETHALITY GATE
+      // Humor/casual context detection
+      const SAFE_PHRASES = [
+        "killing me", "kills me", "killing it", "im dead", "so dead",
+        "dying of", "dying from", "dying to", "im dying",
+        "kill me now", "just kill me", "shoot me now",
+        "dead tired", "dead serious", "dead wrong", "deadass",
+        "scared to death", "bored to death", "worried to death",
+        "homework is killing", "work is killing", "job is killing", "test is killing",
+      ];
+      const HUMOR_MARKS = [
+        "lol", "lmao", "lmfao", "rofl", "haha", "hehe",
+        "jk", "just kidding", "joking", "im kidding", "not literally",
+        "no cap", "fr fr", "bruh", "fam", "ngl", "tbh",
+        "mood", "big mood", "same", "relatable", "lowkey",
+      ];
+      const humorCount = HUMOR_MARKS.filter(h => lower.includes(h)).length;
+      const hasSafe = SAFE_PHRASES.some(p => lower.includes(p));
+      const isJoke = humorCount >= 1 && hasSafe;
+
+      // LETHALITY GATE (never skip for humor — these are specific means)
       if (containsAny(lower, LETHALITY_MEANS)) {
         return new Response(
           JSON.stringify({
@@ -424,22 +443,25 @@ serve(async (req) => {
         );
       }
 
-      // Category-specific crisis routing
-      for (const category of CRISIS_CATEGORIES) {
-        if (containsAny(lower, category.keywords)) {
+      if (!isJoke) {
+        // Category-specific crisis routing
+        for (const category of CRISIS_CATEGORIES) {
+          if (containsAny(lower, category.keywords)) {
+            if (humorCount >= 1) continue;
+            return new Response(
+              JSON.stringify({ crisis: true, redirect: category.url || "https://988lifeline.org/" }),
+              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+        }
+
+        // Root-based crisis detection
+        if (humorCount === 0 && CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
           return new Response(
-            JSON.stringify({ crisis: true, redirect: category.url || "https://988lifeline.org/" }),
+            JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
             { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
           );
         }
-      }
-
-      // Root-based crisis detection
-      if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
-        return new Response(
-          JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
       }
     }
 
