@@ -1390,7 +1390,7 @@ const FullScreenChatbot = () => {
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Plus className="w-4 h-4" /> New chat
+                      <Plus className="w-4 h-4" /> {t.home.newChat}
                     </button>
                     {messages.length > 0 && (
                       <>
@@ -1399,28 +1399,28 @@ const FullScreenChatbot = () => {
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <Search className="w-4 h-4" /> Search messages
+                          <Search className="w-4 h-4" /> {t.home.searchMessages}
                         </button>
                         <button
                           onClick={() => { copyConversation(); setMoreMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <Copy className="w-4 h-4" /> Copy conversation
+                          <Copy className="w-4 h-4" /> {t.home.copyConversation}
                         </button>
                         <button
                           onClick={() => { exportAsText(); setMoreMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <FileText className="w-4 h-4" /> Export as .txt
+                          <FileText className="w-4 h-4" /> {t.home.exportAsTxt}
                         </button>
                         <button
                           onClick={() => { exportConversationPDF(); setMoreMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <Download className="w-4 h-4" /> Export as PDF
+                          <Download className="w-4 h-4" /> {t.home.exportAsPdf}
                         </button>
                       </>
                     )}
@@ -1429,7 +1429,7 @@ const FullScreenChatbot = () => {
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Share2 className="w-4 h-4" /> Share chat log
+                      <Share2 className="w-4 h-4" /> {t.home.shareChatLog}
                     </button>
                     <div className="mx-2 my-1 h-px bg-border/50" />
                     <button
@@ -1437,25 +1437,25 @@ const FullScreenChatbot = () => {
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Brain className="w-4 h-4" /> Memory Bank
+                      <Brain className="w-4 h-4" /> {t.home.memoryBank}
                     </button>
                     <button
                       onClick={() => { exportAllData(); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <HardDrive className="w-4 h-4" /> Export All Data
+                      <HardDrive className="w-4 h-4" /> {t.home.exportAllData}
                     </button>
                     <button
                       onClick={() => { setShowSyncModal(true); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Smartphone className="w-4 h-4" /> Sync Devices
+                      <Smartphone className="w-4 h-4" /> {t.home.syncDevices}
                     </button>
                     <div className="mx-2 my-1 h-px bg-border/50" />
                     <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl">
-                      <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>
+                      <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.theme}</span>
                       <ThemeToggle />
                     </div>
                     <div className="mx-2 my-1 h-px bg-border/50" />
@@ -1465,7 +1465,7 @@ const FullScreenChatbot = () => {
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
                       {user ? <UserCircle className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                      {user ? (profile?.display_name || "Profile") : "Sign In"}
+                      {user ? (profile?.display_name || t.home.profile) : t.home.signIn}
                     </a>
                   </div>
                 </>
