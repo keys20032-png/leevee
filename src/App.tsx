@@ -13,6 +13,7 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Install from "./pages/Install";
 import AIWebDeveloperVision from "./pages/AIWebDeveloperVision";
+import FeatureRequests from "./pages/FeatureRequests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const AppContent = () => {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/install" element={<Install />} />
           <Route path="/vision/ai-web-developer" element={<AIWebDeveloperVision />} />
+          <Route path="/feature-requests" element={<FeatureRequests />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
