@@ -7,6 +7,15 @@ import {
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
   Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
+  LogIn, UserCircle,
+} from "lucide-react";
+  Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
+  Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
+  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
+  Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
+  ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
+  Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
+  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
