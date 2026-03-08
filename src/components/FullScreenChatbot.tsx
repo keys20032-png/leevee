@@ -5,7 +5,7 @@ import {
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
-  Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
+  Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
   Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
   LogIn, UserCircle,
 } from "lucide-react";
@@ -767,6 +767,31 @@ const FullScreenChatbot = () => {
     setChatSearchIdx(idx);
   };
 
+  // Generate branded shareable chat log
+  const shareBrandedLog = async () => {
+    const divider = "─".repeat(40);
+    const header = `✨ Leevee AI — Chat Log\n🗓 ${new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}\n🎯 Mode: ${MODE_CONFIG[mode].label}\n${divider}`;
+    const body = messages
+      .map((m) => `${m.role === "user" ? "🧑 You" : "🤖 Leevee"}\n${m.content}`)
+      .join(`\n${divider}\n`);
+    const footer = `${divider}\n💡 Powered by Leevee AI — ${window.location.origin}\n🧠 Your safe space to think, vent, learn & create.`;
+    const fullLog = `${header}\n\n${body}\n\n${footer}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Leevee AI Chat Log", text: fullLog });
+      } catch {
+        await navigator.clipboard.writeText(fullLog);
+        haptic("light");
+      }
+    } else {
+      await navigator.clipboard.writeText(fullLog);
+      haptic("light");
+    }
+    setShareMenuOpen(false);
+    setMoreMenuOpen(false);
+  };
+
   // Export full conversation as text
   const exportAsText = () => {
     const text = messages
@@ -1276,13 +1301,6 @@ const FullScreenChatbot = () => {
                 Leevee AI
               </h1>
             </div>
-            <button
-              onClick={() => { navigator.clipboard.writeText(window.location.origin); haptic("light"); }}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors active:scale-95"
-              title="Copy app link"
-            >
-              <Link2 className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Mode tabs */}
@@ -1373,8 +1391,8 @@ const FullScreenChatbot = () => {
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
                       <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
-                        <button onClick={() => { navigator.clipboard.writeText(window.location.origin); haptic("light"); setShareMenuOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Link2 className="w-3.5 h-3.5" /> Copy app link
+                        <button onClick={shareBrandedLog} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <Share2 className="w-3.5 h-3.5" /> Share chat log
                         </button>
                         <div className="mx-2 my-0.5 h-px bg-border/40" />
                         <button onClick={copyConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -1445,11 +1463,11 @@ const FullScreenChatbot = () => {
                       </>
                     )}
                     <button
-                      onClick={() => { navigator.clipboard.writeText(window.location.origin); haptic("light"); setMoreMenuOpen(false); }}
+                      onClick={() => { shareBrandedLog(); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Link2 className="w-4 h-4" /> Copy app link
+                      <Share2 className="w-4 h-4" /> Share chat log
                     </button>
                     <div className="mx-2 my-1 h-px bg-border/50" />
                     <button
