@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, Phone, Heart, CheckCircle2, Clock } from "lucide-react";
+import { Shield, Phone, Heart, CheckCircle2, Clock, MapPin, User as UserIcon, Gamepad2 } from "lucide-react";
 import logo from "@/assets/safehelphublogo.jpg";
 import { haptic } from "@/lib/haptics";
 
@@ -16,6 +16,12 @@ interface SafetyCheckScreenProps {
   cooldownMs?: number;
 }
 
+interface SafetyPlan {
+  person: string;
+  place: string;
+  distraction: string;
+}
+
 const formatTime = (ms: number) => {
   const totalSec = Math.max(0, Math.ceil(ms / 1000));
   const m = Math.floor(totalSec / 60);
@@ -23,13 +29,26 @@ const formatTime = (ms: number) => {
   return `${m}:${s.toString().padStart(2, "0")}`;
 };
 
-const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }: SafetyCheckScreenProps) => {
+const loadSafetyPlan = (): SafetyPlan => {
+  try {
+    const raw = localStorage.getItem("safety_plan");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { person: "", place: "", distraction: "" };
+};
+
+const saveSafetyPlan = (plan: SafetyPlan) => {
+  localStorage.setItem("safety_plan", JSON.stringify(plan));
+};
+
+const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }: SafetyCheckScreenProps) => {
   const [checked, setChecked] = useState<boolean[]>(CHECKLIST_ITEMS.map(() => false));
   const [safeAnswer, setSafeAnswer] = useState<null | boolean>(null);
   const [remaining, setRemaining] = useState(() => {
     if (!crisisTimestamp) return 0;
     return Math.max(0, cooldownMs - (Date.now() - crisisTimestamp));
   });
+  const [safetyPlan, setSafetyPlan] = useState<SafetyPlan>(loadSafetyPlan);
 
   const locked = remaining > 0;
 
@@ -49,11 +68,17 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
     setChecked((prev) => prev.map((v, i) => (i === index ? !v : v)));
   };
 
+  const updateSafetyPlan = (field: keyof SafetyPlan, value: string) => {
+    const updated = { ...safetyPlan, [field]: value };
+    setSafetyPlan(updated);
+    saveSafetyPlan(updated);
+  };
+
   const canProceed = !locked && safeAnswer === true;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg space-y-8">
+      <div className="w-full max-w-lg space-y-6">
         {/* Logo & Header */}
         <div className="text-center space-y-4">
           <div className="inline-flex p-[2px] rounded-2xl mx-auto" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
@@ -63,42 +88,36 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
             className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            Welcome Back
+            Leevee is holding this space for you.
           </h1>
-          <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-            Before you continue, let's take a moment to check in with yourself.
-          </p>
         </div>
 
-        {/* Countdown Timer with Breathing Exercise */}
+        {/* Intercept Message */}
         {locked && (
           <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 text-center space-y-5 animate-in fade-in duration-500">
-            <div className="flex items-center justify-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              <span className="text-sm font-semibold text-primary uppercase tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                Take a moment
-              </span>
-            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
+              I've noticed things have reached a critical point. My job is to keep you safe, so I'm pausing our chat.
+              While we wait, please use the <span className="font-semibold text-foreground">988</span> button below.
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
+              You aren't alone, and I'll be here to listen again once we've both had a moment to breathe.
+            </p>
 
             {/* Breathing circle */}
-            <div className="flex flex-col items-center gap-3">
+            <div className="flex flex-col items-center gap-3 pt-2">
               <div className="relative w-28 h-28 flex items-center justify-center">
-                {/* Outer breathing ring */}
                 <div
                   className="absolute inset-0 rounded-full border-2 border-primary/30"
                   style={{ animation: "breathe 8s ease-in-out infinite" }}
                 />
-                {/* Inner breathing ring */}
                 <div
                   className="absolute inset-3 rounded-full border border-primary/20"
                   style={{ animation: "breathe 8s ease-in-out infinite 0.3s" }}
                 />
-                {/* Center glow */}
                 <div
                   className="absolute inset-6 rounded-full bg-primary/5"
                   style={{ animation: "breathe 8s ease-in-out infinite 0.6s" }}
                 />
-                {/* Timer text */}
                 <span className="relative text-3xl font-bold text-foreground tracking-wider z-10" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                   {formatTime(remaining)}
                 </span>
@@ -110,10 +129,6 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
                 Breathe in… and out…
               </p>
             </div>
-
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
-              A real person is ready to talk. Please consider calling <span className="font-semibold text-foreground">988</span> before continuing.
-            </p>
           </div>
         )}
 
@@ -122,7 +137,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
           <div className="flex items-center justify-center gap-2">
             <Phone className="w-5 h-5 text-destructive" />
             <span className="text-sm font-semibold text-destructive" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              If you are in crisis, call or text
+              A real person is ready to talk
             </span>
           </div>
           <a
@@ -133,11 +148,71 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
             988
           </a>
           <p className="text-xs text-destructive/80">
-            Suicide &amp; Crisis Lifeline — Available 24/7
+            Suicide &amp; Crisis Lifeline — Call or text, available 24/7
+          </p>
+          <p className="text-xs text-destructive/70 mt-1">
+            Or text <span className="font-semibold">HOME</span> to <span className="font-semibold">741741</span> (Crisis Text Line)
           </p>
         </div>
 
-        {/* Wellness Checklist */}
+        {/* Digital Safety Plan — always available during cooldown */}
+        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              Your Safety Plan
+            </h2>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Build your personal safety map. This stays saved on your device so you always have it.
+          </p>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <UserIcon className="w-3.5 h-3.5 text-primary" />
+                One person I can call
+              </label>
+              <input
+                type="text"
+                value={safetyPlan.person}
+                onChange={(e) => updateSafetyPlan("person", e.target.value)}
+                placeholder="e.g., Mom, best friend Alex, therapist Dr. Lee"
+                className="w-full bg-background border border-border/60 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <MapPin className="w-3.5 h-3.5 text-primary" />
+                One place I feel safe
+              </label>
+              <input
+                type="text"
+                value={safetyPlan.place}
+                onChange={(e) => updateSafetyPlan("place", e.target.value)}
+                placeholder="e.g., My bedroom, the library, grandma's house"
+                className="w-full bg-background border border-border/60 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                <Gamepad2 className="w-3.5 h-3.5 text-primary" />
+                One distraction that works for me
+              </label>
+              <input
+                type="text"
+                value={safetyPlan.distraction}
+                onChange={(e) => updateSafetyPlan("distraction", e.target.value)}
+                placeholder="e.g., Drawing, walking the dog, listening to music"
+                className="w-full bg-background border border-border/60 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Wellness Checklist — locked during cooldown */}
         <div className={`rounded-xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Heart className="w-4 h-4 text-primary" />
@@ -171,7 +246,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
           </ul>
         </div>
 
-        {/* Safety Question */}
+        {/* Safety Question — locked during cooldown */}
         <div className={`rounded-xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" />
