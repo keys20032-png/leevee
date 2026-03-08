@@ -296,9 +296,9 @@ const CrisisResources = () => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [showChecklist, setShowChecklist] = useState(() => {
-    const fromCrisis = localStorage.getItem("crisis_redirect");
+    const fromCrisis = localStorage.getItem("crisis_redirect_time");
     if (fromCrisis) {
-      localStorage.removeItem("crisis_redirect");
+      localStorage.removeItem("crisis_redirect_time");
       return true;
     }
     return false;
