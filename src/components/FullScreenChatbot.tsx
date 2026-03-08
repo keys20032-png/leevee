@@ -89,14 +89,6 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
 };
 
 const FullScreenChatbot = () => {
-  const [showSafetyCheck, setShowSafetyCheck] = useState(() => {
-    const flag = localStorage.getItem("crisis_redirect");
-    if (flag === "true") {
-      localStorage.removeItem("crisis_redirect");
-      return true;
-    }
-    return false;
-  });
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -332,9 +324,8 @@ const FullScreenChatbot = () => {
     }
   };
 
-  if (showSafetyCheck) {
-    return <SafetyCheckScreen onContinue={() => setShowSafetyCheck(false)} />;
-  }
+
+
 
   return (
     <div className="flex flex-col h-full bg-background">
