@@ -1399,6 +1399,21 @@ const FullScreenChatbot = () => {
               </div>
             ))}
 
+            {/* Retry button after last assistant error/response */}
+            {!loading && messages.length > 1 && messages[messages.length - 1]?.role === "assistant" && (
+              <div className="flex items-center gap-2 py-1 pl-1 animate-message-in">
+                <button
+                  onClick={retryLastMessage}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] rounded-lg text-muted-foreground/60 hover:text-foreground hover:bg-secondary/50 transition-all active:scale-95"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  aria-label="Retry last message"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  Retry
+                </button>
+              </div>
+            )}
+
             {/* Follow-up suggestions */}
             {followUps.length > 0 && !loading && messages.length > 0 && messages[messages.length - 1]?.role === "assistant" && (
               <div className="flex flex-wrap gap-2 py-2 pl-1 animate-message-in">
