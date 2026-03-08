@@ -141,8 +141,8 @@ const Features = () => {
         {/* Comparison Table */}
         <section className="space-y-6">
           <AnimatedSection>
-            <h3 className="text-xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee vs Grok — Feature by Feature</h3>
-            <p className="text-sm text-muted-foreground mt-1">An honest, accurate comparison. No spin.</p>
+            <h3 className="text-xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee vs Grok vs Claude — Feature by Feature</h3>
+            <p className="text-sm text-muted-foreground mt-1">An honest, accurate three-way comparison. No spin.</p>
           </AnimatedSection>
           <AnimatedSection delay={100}>
             <div className="rounded-xl border border-border overflow-hidden">
@@ -150,35 +150,33 @@ const Features = () => {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border bg-card/80">
-                      <th className="text-left px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Feature</th>
-                      <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wider text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee</th>
-                      <th className="text-center px-4 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Grok</th>
+                      <th className="text-left px-3 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Feature</th>
+                      <th className="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Leevee</th>
+                      <th className="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Grok</th>
+                      <th className="text-center px-3 py-3 font-semibold text-xs uppercase tracking-wider text-muted-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Claude</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {COMPARISON.map((row, i) => (
-                      <tr key={row.feature} className={`border-b border-border/50 ${i % 2 === 0 ? "bg-background" : "bg-card/30"}`}>
-                        <td className="px-4 py-2.5 text-foreground text-xs">{row.feature}</td>
-                        <td className="px-4 py-2.5 text-center">
-                          {row.leevee === true ? (
-                            <Check className="w-4 h-4 text-green-500 mx-auto" />
-                          ) : row.leevee === false ? (
-                            <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
-                          ) : (
-                            <span className="text-xs text-primary font-medium">{row.leevee}</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-2.5 text-center">
-                          {row.grok === true ? (
-                            <Check className="w-4 h-4 text-green-500 mx-auto" />
-                          ) : row.grok === false ? (
-                            <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
-                          ) : (
-                            <span className="text-xs text-muted-foreground font-medium">{row.grok}</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {COMPARISON.map((row, i) => {
+                      const renderCell = (val: boolean | string) =>
+                        val === true ? (
+                          <Check className="w-4 h-4 text-green-500 mx-auto" />
+                        ) : val === false ? (
+                          <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
+                        ) : (
+                          <span className="text-xs text-muted-foreground font-medium">{val}</span>
+                        );
+                      return (
+                        <tr key={row.feature} className={`border-b border-border/50 ${i % 2 === 0 ? "bg-background" : "bg-card/30"}`}>
+                          <td className="px-3 py-2.5 text-foreground text-xs">{row.feature}</td>
+                          <td className="px-3 py-2.5 text-center">
+                            {row.leevee === true ? <Check className="w-4 h-4 text-green-500 mx-auto" /> : row.leevee === false ? <X className="w-4 h-4 text-muted-foreground/40 mx-auto" /> : <span className="text-xs text-primary font-medium">{row.leevee}</span>}
+                          </td>
+                          <td className="px-3 py-2.5 text-center">{renderCell(row.grok)}</td>
+                          <td className="px-3 py-2.5 text-center">{renderCell(row.claude)}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
