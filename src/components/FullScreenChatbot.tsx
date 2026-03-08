@@ -1450,6 +1450,14 @@ const FullScreenChatbot = () => {
               <Phone className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               <span>988</span>
             </a>
+            {/* Profile / Login */}
+            <a
+              href={user ? "/profile" : "/auth"}
+              className="hidden sm:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              title={user ? (profile?.display_name || "Profile") : "Sign in"}
+            >
+              {user ? <UserCircle className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+            </a>
             <div className="hidden sm:block">
               <ThemeToggle />
             </div>
