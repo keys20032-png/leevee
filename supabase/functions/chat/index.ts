@@ -119,7 +119,24 @@ Use markdown for structure — italics for emphasis and example text, headers fo
 
 const CRISIS_CATEGORIES = [
   {
-    url: "https://www.childhelp.org/",
+    url: "https://988lifeline.org/",
+    keywords: [
+      "want to die", "wanna die", "want to kill myself", "going to kill myself",
+      "planning to kill myself", "thinking about killing myself", "suicidal",
+      "suicidal thoughts", "suicidal ideation", "end my life", "end it all",
+      "no reason to live", "not worth living", "better off dead",
+      "everyone would be better off without me", "nobody would miss me",
+      "dont want to be alive", "wish i was dead", "wish i wasnt born",
+      "i cant do this anymore", "i cant go on", "no way out",
+      "unalive", "kms", "kys", "ctb", "self harm", "self-harm",
+      "cutting myself", "hurting myself", "overdose", "take all my pills",
+      "hang myself", "jump off", "slit my wrists", "gun to my head",
+      "suicide note", "goodbye letter", "how to die", "ways to die",
+      "im a burden", "whats the point", "hopeless", "worthless",
+      "attempted suicide", "tried to kill myself",
+    ],
+  },
+  {
     keywords: [
       "my parent hits me", "my dad hits me", "my mom hits me", "parent beats me",
       "touched by adult", "adult touched me", "uncle touched me", "cousin touched me",
