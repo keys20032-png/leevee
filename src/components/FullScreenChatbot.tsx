@@ -98,6 +98,8 @@ const FullScreenChatbot = () => {
   const [mode, setMode] = useState<ChatMode>("default");
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -180,6 +182,31 @@ const FullScreenChatbot = () => {
     haptic("light");
     setMode(newMode);
     setMessages([]);
+  };
+
+  const MODES = Object.keys(MODE_CONFIG) as ChatMode[];
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    touchStartX.current = null;
+    touchStartY.current = null;
+
+    // Only trigger if horizontal swipe is dominant and > 60px
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.7) return;
+
+    const currentIdx = MODES.indexOf(mode);
+    if (dx < 0 && currentIdx < MODES.length - 1) {
+      switchMode(MODES[currentIdx + 1]);
+    } else if (dx > 0 && currentIdx > 0) {
+      switchMode(MODES[currentIdx - 1]);
+    }
   };
 
   // Image generation
@@ -385,7 +412,7 @@ const FullScreenChatbot = () => {
       </header>
 
       {/* Chat Area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className="max-w-2xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-1">
 
           {/* Empty State */}
