@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX } from "lucide-react";
-import logo from "@/assets/safehelphublogo.jpg";
+import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis } from "@/lib/crisis-detection";
 
 type Message = { role: "user" | "assistant"; content: string };
