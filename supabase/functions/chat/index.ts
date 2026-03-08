@@ -370,7 +370,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, mode, imageData, sessionId } = await req.json();
+    const { messages, mode, imageData, sessionId, skipCrisisCheck } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
@@ -407,38 +407,40 @@ serve(async (req) => {
       }
     }
 
-    // ===== CRISIS DETECTION =====
+    // ===== CRISIS DETECTION (skip when triggered by suggested prompts/follow-ups) =====
     const lastUserMsgObj = messages?.filter((m: { role: string }) => m.role === "user").pop();
     const lastUserMsg = typeof lastUserMsgObj?.content === "string" ? lastUserMsgObj.content : "";
     const lower = lastUserMsg.toLowerCase().replace(/[^\w\s']/g, "");
 
-    // LETHALITY GATE
-    if (containsAny(lower, LETHALITY_MEANS)) {
-      return new Response(
-        JSON.stringify({
-          crisis: true, redirect: "https://988lifeline.org/", lethality: true,
-          message: "Leevee is holding this space for you. Please call or text 988 — you aren't alone.",
-        }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-
-    // Category-specific crisis routing
-    for (const category of CRISIS_CATEGORIES) {
-      if (containsAny(lower, category.keywords)) {
+    if (!skipCrisisCheck) {
+      // LETHALITY GATE
+      if (containsAny(lower, LETHALITY_MEANS)) {
         return new Response(
-          JSON.stringify({ crisis: true, redirect: category.url || "https://988lifeline.org/" }),
+          JSON.stringify({
+            crisis: true, redirect: "https://988lifeline.org/", lethality: true,
+            message: "Leevee is holding this space for you. Please call or text 988 — you aren't alone.",
+          }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
-    }
 
-    // Root-based crisis detection
-    if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
-      return new Response(
-        JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      // Category-specific crisis routing
+      for (const category of CRISIS_CATEGORIES) {
+        if (containsAny(lower, category.keywords)) {
+          return new Response(
+            JSON.stringify({ crisis: true, redirect: category.url || "https://988lifeline.org/" }),
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
+
+      // Root-based crisis detection
+      if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
+        return new Response(
+          JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
     }
 
     // Distress detection
