@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import CrisisBanner from "@/components/CrisisBanner";
+
 import QuickExitButton from "@/components/QuickExitButton";
 import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 import FullScreenChatbot from "@/components/FullScreenChatbot";
@@ -31,7 +31,6 @@ const Index = () => {
       >
         Skip to main content
       </a>
-      <CrisisBanner />
       <QuickExitButton />
       <main id="main-content" role="main" className="flex-1 overflow-hidden">
         <FullScreenChatbot />
