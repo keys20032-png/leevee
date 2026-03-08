@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
-  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame,
+  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
@@ -11,7 +11,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[] };
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "image";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
@@ -85,6 +85,20 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
       "Write a movie scene",
       "Help me develop a character",
       "Critique my opening paragraph",
+    ],
+  },
+  debate: {
+    label: "Debate",
+    icon: Swords,
+    description: "Sharpen your thinking — Leevee will respectfully challenge your ideas ⚔️",
+    gradient: "from-amber-500 to-red-500",
+    prompts: [
+      "Is social media good for society?",
+      "Should college be free?",
+      "Is AI a threat to humanity?",
+      "Are zoos ethical?",
+      "Should voting be mandatory?",
+      "Is capitalism the best system?",
     ],
   },
   image: {
