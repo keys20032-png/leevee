@@ -15,7 +15,7 @@ export const CRISIS_KEYWORDS = [
   "i give up", "no way out", "feel trapped", "no escape", "suffering too much",
   "kms", "kys", "ctb", "unalive", "un alive", "unaliving",
   "want out", "checking out", "clocking out forever", "final exit",
-  "the rope", "a rope", "my rope", "off a bridge", "on the ledge", "on a ledge", "on the train tracks", "on train tracks", "gun to my head",
+  "got the rope", "got a rope", "bought a rope", "tied the rope", "my rope", "off a bridge", "on the ledge", "on a ledge", "on the train tracks", "on train tracks", "gun to my head",
   "swallow pills", "slit my", "bleed out", "drown myself",
   "just want the pain to stop", "pain won't stop", "make it stop",
   "i can't breathe anymore", "suffocating", "drowning in pain",
