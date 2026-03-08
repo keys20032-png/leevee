@@ -504,8 +504,8 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
       "bathroom bill", "banned from bathroom", "discriminated against",
       "can't access hormones", "denied healthcare", "medical discrimination",
       "chosen family gone", "lost my queer community", "isolated from community",
-      "lgbtq", "lgbt", "gay", "lesbian", "bisexual", "transgender", "trans",
-      "nonbinary", "non-binary", "queer", "questioning sexuality", "questioning gender",
+      "questioning sexuality", "questioning gender",
+      "lgbtq crisis", "lgbt crisis", "queer crisis",
     ],
   },
   {
