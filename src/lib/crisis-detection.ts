@@ -694,21 +694,58 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
   },
 ];
 
+// Casual/colloquial phrases that should NEVER trigger crisis detection
+const SAFE_PHRASES = [
+  "killing me", "kills me", "killing it", "dead 💀", "i'm dead", "im dead", "so dead",
+  "dying of", "dying from", "dying to", "i'm dying", "im dying",
+  "kill me now", "just kill me", "shoot me now",
+  "this is torture", "torture myself", "pain in the",
+  "dead tired", "dead serious", "dead wrong", "deadass",
+  "drop dead gorgeous", "over my dead body", "dead on arrival",
+  "scared to death", "bored to death", "worried to death", "sick to death",
+  "homework is killing", "work is killing", "job is killing", "test is killing",
+  "traffic is killing", "heat is killing", "cold is killing",
+];
+
+// Humor markers that indicate casual/non-crisis context
+const CRISIS_HUMOR_MARKERS = [
+  "lol", "lmao", "lmfao", "rofl", "haha", "hehe", "😂", "🤣", "💀",
+  "jk", "just kidding", "joking", "i'm kidding", "not literally",
+  "figuratively", "no cap", "fr fr", "bruh", "fam", "ngl", "tbh",
+  "mood", "big mood", "same", "relatable", "anyway", "lowkey",
+  "story of my life", "don't worry", "i'm fine",
+];
+
 export const detectCrisis = (text: string): string | null => {
-  const lower = text.toLowerCase().replace(/[^\w\s']/g, "");
+  const lower = text.toLowerCase().replace(/[^\w\s'😂🤣💀]/g, "");
+
+  // Check if message has humor markers — if so, require stronger crisis signals
+  const humorCount = CRISIS_HUMOR_MARKERS.filter((h) => lower.includes(h)).length;
+  const hasSafePhrase = SAFE_PHRASES.some((p) => lower.includes(p));
+
+  // If humor markers present AND the message uses casual/colloquial phrasing, skip crisis
+  if (humorCount >= 1 && hasSafePhrase) return null;
 
   // Check specialized categories first
   for (const category of CRISIS_CATEGORIES) {
     if (category.keywords.some((kw) => lower.includes(kw))) {
+      // If humor markers are present, only redirect for genuinely dangerous categories
+      if (humorCount >= 1) continue;
       return category.url;
     }
   }
 
-  // General crisis keywords → default 988 (use word-boundary for short keywords to avoid false positives)
-  if (CRISIS_KEYWORDS.some((kw) => kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw))) return "https://988lifeline.org/";
+  // General crisis keywords → default 988
+  if (CRISIS_KEYWORDS.some((kw) => kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw))) {
+    if (humorCount >= 1) return null; // Humor context = skip
+    return "https://988lifeline.org/";
+  }
 
-  // Root-word matching → default 988 (use word-boundary regex to avoid false positives like "Judaism", "diet", "harmony")
-  if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) return "https://988lifeline.org/";
+  // Root-word matching → default 988
+  if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
+    if (humorCount >= 1) return null;
+    return "https://988lifeline.org/";
+  }
 
   return null;
 };
