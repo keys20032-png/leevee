@@ -326,7 +326,7 @@ const CRISIS_CATEGORIES = [
       "controls my money", "financial abuse", "took my money",
       "threatens my children", "killed my pet", "hurt my pet",
       "marital rape", "spousal abuse", "partner abuse", "intimate partner violence",
-      "honor killing", "forced marriage", "stalking me", "stalker", "being stalked",
+      "honor killing", "forced marriage", "stalking me", "being stalked",
       "restraining order", "scared of him", "scared of her",
     ]),
   },
