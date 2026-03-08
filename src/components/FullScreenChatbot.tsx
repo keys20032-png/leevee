@@ -5,7 +5,7 @@ import {
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
-  Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
+  Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
   Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
   LogIn, UserCircle,
 } from "lucide-react";
