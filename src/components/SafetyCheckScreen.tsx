@@ -182,7 +182,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
           <p className="text-sm text-muted-foreground">Are you in a safe place right now?</p>
           <div className="flex gap-3">
             <button
-              onClick={() => !locked && setSafeAnswer(true)}
+              onClick={() => { if (!locked) { haptic("medium"); setSafeAnswer(true); } }}
               disabled={locked}
               className={`flex-1 py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all ${
                 safeAnswer === true
@@ -194,7 +194,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
               Yes, I'm safe
             </button>
             <button
-              onClick={() => !locked && setSafeAnswer(false)}
+              onClick={() => { if (!locked) { haptic("heavy"); setSafeAnswer(false); } }}
               disabled={locked}
               className={`flex-1 py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all ${
                 safeAnswer === false
