@@ -1408,6 +1408,28 @@ const FullScreenChatbot = () => {
                       </>
                     )}
                     <div className="mx-2 my-1 h-px bg-border/50" />
+                    <button
+                      onClick={() => { setSidebarOpen(true); setSidebarTab("memory"); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <Brain className="w-4 h-4" /> Memory Bank
+                    </button>
+                    <button
+                      onClick={() => { exportAllData(); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <HardDrive className="w-4 h-4" /> Export All Data
+                    </button>
+                    <button
+                      onClick={() => { setShowSyncModal(true); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <Smartphone className="w-4 h-4" /> Sync Devices
+                    </button>
+                    <div className="mx-2 my-1 h-px bg-border/50" />
                     <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl">
                       <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>
                       <ThemeToggle />
