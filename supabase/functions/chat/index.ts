@@ -504,16 +504,16 @@ serve(async (req) => {
     // Distress detection
     const isVentMode = mode === "vent";
     const hasGenuineSignal = GENUINE_SIGNALS.some((s) => lower.includes(s));
-    const humorCount = countMatches(lower, HUMOR_INDICATORS);
+    const distressHumorCount = countMatches(lower, HUMOR_INDICATORS);
     const distressCount = countMatches(lower, DISTRESS_KEYWORDS);
 
     let isDistressed = false;
     if (hasGenuineSignal) {
       isDistressed = true;
     } else if (isVentMode) {
-      isDistressed = distressCount >= 3 && humorCount === 0;
+      isDistressed = distressCount >= 3 && distressHumorCount === 0;
     } else {
-      isDistressed = distressCount > 0 && !(humorCount >= distressCount && distressCount <= 2);
+      isDistressed = distressCount > 0 && !(distressHumorCount >= distressCount && distressCount <= 2);
     }
 
     // ===== MEMORY INJECTION =====
