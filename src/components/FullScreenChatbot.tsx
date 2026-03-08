@@ -1951,20 +1951,20 @@ const FullScreenChatbot = () => {
                 )}
               </div>
             )}
-            <p className="text-[10px] text-muted-foreground/25 text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-1.5 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              <span className="font-medium text-muted-foreground/35">Leevee AI</span>
-              <span>·</span>
-              <a href="/features" className="hover:text-muted-foreground/50 transition-colors">Features</a>
-              <span>·</span>
-              <a href="/safety" className="hover:text-muted-foreground/50 transition-colors">Safety</a>
-              <span>·</span>
-              <a href="/feature-requests" className="hover:text-muted-foreground/50 transition-colors">Ideas</a>
-              <span>·</span>
-              <a href="/pricing" className="hover:text-muted-foreground/50 transition-colors">Pricing</a>
-              <span>·</span>
-              <a href="/terms" className="hover:text-muted-foreground/50 transition-colors">Terms</a>
-              <span>·</span>
-              <a href="/privacy" className="hover:text-muted-foreground/50 transition-colors">Privacy</a>
+            <p className="text-[10px] text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-1.5 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <span className="font-semibold text-primary">Leevee AI</span>
+              <span className="text-muted-foreground/40">·</span>
+              <a href="/features" className="text-foreground/60 hover:text-primary transition-colors font-medium">Features</a>
+              <span className="text-muted-foreground/40">·</span>
+              <a href="/safety" className="text-foreground/60 hover:text-primary transition-colors font-medium">Safety</a>
+              <span className="text-muted-foreground/40">·</span>
+              <a href="/feature-requests" className="text-foreground/60 hover:text-primary transition-colors font-medium">Ideas</a>
+              <span className="text-muted-foreground/40">·</span>
+              <a href="/pricing" className="text-foreground/60 hover:text-primary transition-colors font-medium">Pricing</a>
+              <span className="text-muted-foreground/40">·</span>
+              <a href="/terms" className="text-foreground/60 hover:text-primary transition-colors font-medium">Terms</a>
+              <span className="text-muted-foreground/40">·</span>
+              <a href="/privacy" className="text-foreground/60 hover:text-primary transition-colors font-medium">Privacy</a>
             </p>
           </div>
         </div>
