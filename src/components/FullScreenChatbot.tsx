@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis } from "@/lib/crisis-detection";
+import { haptic } from "@/lib/haptics";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 
@@ -176,6 +177,7 @@ const FullScreenChatbot = () => {
 
   const switchMode = (newMode: ChatMode) => {
     if (newMode === mode) return;
+    haptic("light");
     setMode(newMode);
     setMessages([]);
   };
@@ -205,6 +207,7 @@ const FullScreenChatbot = () => {
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
     if (!text || loading) return;
+    haptic("medium");
 
     const crisisUrl = detectCrisis(text);
     if (crisisUrl) {
