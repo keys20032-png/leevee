@@ -2,6 +2,8 @@ import logo from "@/assets/safehelphublogo.jpg";
 import AnimatedSection from "@/components/AnimatedSection";
 import { ArrowDown, Shield, Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n/I18nContext";
+import { Link } from "react-router-dom";
+import { useI18n } from "@/i18n/I18nContext";
 
 const HeroSection = () => {
   const { t } = useI18n();
@@ -70,13 +72,13 @@ const HeroSection = () => {
               {t.hero.explore}
               <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
             </a>
-            <a
-              href="#about"
+            <Link
+              to="/features"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-border/60 text-foreground text-sm font-semibold tracking-wide uppercase transition-all hover:border-primary/40 hover:text-primary hover:bg-primary/5"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
               {t.hero.learnMore}
-            </a>
+            </Link>
           </div>
         </div>
       </AnimatedSection>
