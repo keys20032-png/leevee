@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis } from "@/lib/crisis-detection";
-import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 
