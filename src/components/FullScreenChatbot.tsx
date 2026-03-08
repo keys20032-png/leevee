@@ -1,20 +1,54 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
+import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX, Mic, MicOff, GraduationCap, PartyPopper, MessageSquare } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis } from "@/lib/crisis-detection";
 
 type Message = { role: "user" | "assistant"; content: string };
+type ChatMode = "default" | "academic" | "fun";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
-const QUICK_PROMPTS = [
-  "Explain quantum computing simply",
-  "Help me write a cover letter",
-  "Debug my JavaScript code",
-  "Give me a healthy meal plan",
-  "Brainstorm business ideas",
-  "Summarize a topic for me",
-];
+const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; prompts: string[] }> = {
+  default: {
+    label: "General",
+    icon: MessageSquare,
+    description: "Your all-purpose AI assistant. Ask me anything — writing, coding, research, brainstorming, and more.",
+    prompts: [
+      "Help me write a cover letter",
+      "Debug my JavaScript code",
+      "Give me a healthy meal plan",
+      "Brainstorm business ideas",
+      "Summarize a topic for me",
+      "Plan my weekend trip",
+    ],
+  },
+  academic: {
+    label: "Academic",
+    icon: GraduationCap,
+    description: "Scholarly tutor mode. Get step-by-step explanations, study strategies, and in-depth learning support.",
+    prompts: [
+      "Explain photosynthesis step by step",
+      "Help me understand calculus derivatives",
+      "What caused World War I?",
+      "Teach me about DNA replication",
+      "Explain supply and demand",
+      "Help me write a thesis statement",
+    ],
+  },
+  fun: {
+    label: "Fun",
+    icon: PartyPopper,
+    description: "Playful & entertaining mode! Jokes, trivia, creative challenges, and learning with flair 🎉",
+    prompts: [
+      "Tell me a mind-blowing fact",
+      "Write a funny short story",
+      "Give me a riddle to solve",
+      "Roast my taste in music (gently)",
+      "Invent a new holiday",
+      "Quiz me on random trivia",
+    ],
+  },
+};
 
 const FullScreenChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -22,10 +56,13 @@ const FullScreenChatbot = () => {
   const [loading, setLoading] = useState(false);
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [isListening, setIsListening] = useState(false);
+  const [mode, setMode] = useState<ChatMode>("default");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  const currentMode = MODE_CONFIG[mode];
 
   const startListening = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -62,7 +99,6 @@ const FullScreenChatbot = () => {
       return;
     }
     window.speechSynthesis.cancel();
-    // Strip markdown formatting for cleaner speech
     const clean = text
       .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
       .replace(/\*\*(.*?)\*\*/g, "$1")
@@ -89,11 +125,16 @@ const FullScreenChatbot = () => {
     inputRef.current?.focus();
   }, []);
 
+  const switchMode = (newMode: ChatMode) => {
+    if (newMode === mode) return;
+    setMode(newMode);
+    setMessages([]);
+  };
+
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
     if (!text || loading) return;
 
-    // Safety feature: crisis detection redirect
     const crisisUrl = detectCrisis(text);
     if (crisisUrl) {
       localStorage.setItem("safehub_crisis_redirect", "true");
@@ -116,7 +157,7 @@ const FullScreenChatbot = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: allMessages }),
+        body: JSON.stringify({ messages: allMessages, mode }),
       });
 
       if (!resp.ok || !resp.body) {
@@ -176,7 +217,6 @@ const FullScreenChatbot = () => {
   };
 
   const renderContent = (text: string) => {
-    // Handle code blocks
     const codeBlockParts = text.split(/(```[\s\S]*?```)/g);
     return codeBlockParts.map((segment, si) => {
       const codeMatch = segment.match(/```(\w*)\n?([\s\S]*?)```/);
@@ -188,7 +228,6 @@ const FullScreenChatbot = () => {
         );
       }
 
-      // Handle inline formatting
       const parts = segment.split(/(\[.*?\]\(.*?\))/g);
       return parts.map((part, i) => {
         const match = part.match(/\[(.*?)\]\((.*?)\)/);
@@ -200,14 +239,12 @@ const FullScreenChatbot = () => {
             </a>
           );
         }
-        // Inline code
         const inlineCodeParts = part.split(/(`[^`]+`)/g);
         return inlineCodeParts.map((icp, k) => {
           const inlineMatch = icp.match(/^`([^`]+)`$/);
           if (inlineMatch) {
             return <code key={`${si}-${i}-${k}`} className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-primary">{inlineMatch[1]}</code>;
           }
-          // Bold
           const boldParts = icp.split(/(\*\*.*?\*\*)/g);
           return boldParts.map((bp, j) => {
             const boldMatch = bp.match(/\*\*(.*?)\*\*/);
@@ -221,12 +258,40 @@ const FullScreenChatbot = () => {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Mode Selector Bar */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-2">
+          <span className="text-xs text-muted-foreground font-medium mr-1 hidden sm:inline" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Mode:</span>
+          {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
+            const cfg = MODE_CONFIG[key];
+            const Icon = cfg.icon;
+            const isActive = mode === key;
+            return (
+              <button
+                key={key}
+                onClick={() => switchMode(key)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  isActive
+                    ? "text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent hover:border-border"
+                }`}
+                style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
+                title={cfg.description}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {cfg.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Chat Messages Area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-4">
           {/* Empty State */}
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+            <div className="flex flex-col items-center justify-center min-h-[55vh] text-center space-y-6">
               <div
                 className="inline-flex p-[2px] rounded-2xl"
                 style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
@@ -239,15 +304,18 @@ const FullScreenChatbot = () => {
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
                   Polly AI
+                  <span className="ml-2 text-lg font-normal text-muted-foreground">
+                    · {currentMode.label}
+                  </span>
                 </h1>
                 <p className="text-muted-foreground text-sm max-w-md">
-                  Your all-purpose AI assistant. Ask me anything — writing, coding, research, brainstorming, and more.
+                  {currentMode.description}
                 </p>
               </div>
 
               {/* Quick Prompts */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-lg w-full">
-                {QUICK_PROMPTS.map((q) => (
+                {currentMode.prompts.map((q) => (
                   <button
                     key={q}
                     onClick={() => sendMessage(q)}
@@ -361,7 +429,7 @@ const FullScreenChatbot = () => {
             </button>
           </form>
           <p className="text-xs text-muted-foreground/50 text-center mt-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            SafeHubHelp AI · Powered by Gemini
+            Polly AI · Powered by Gemini
           </p>
         </div>
       </div>
