@@ -1,11 +1,13 @@
 import { Phone, ExternalLink } from "lucide-react";
 import type { CrisisResource } from "@/pages/CrisisResources";
+import { useI18n } from "@/i18n/I18nContext";
 
 interface CrisisResourceCardProps {
   resource: CrisisResource;
 }
 
 const CrisisResourceCard = ({ resource }: CrisisResourceCardProps) => {
+  const { t } = useI18n();
   const Icon = resource.icon;
   return (
     <div
@@ -44,7 +46,7 @@ const CrisisResourceCard = ({ resource }: CrisisResourceCardProps) => {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-background/60 border border-border text-sm font-medium text-foreground hover:bg-background transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              Visit Website
+              {t.crisisDirectory.visitWebsite}
             </a>
           </div>
         </div>
