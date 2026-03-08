@@ -417,6 +417,7 @@ const FullScreenChatbot = () => {
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput("");
+    setFollowUps([]);
     const currentImage = pendingImage;
     setPendingImage(null);
     setLoading(true);
