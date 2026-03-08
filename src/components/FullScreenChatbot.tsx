@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Shield, Phone, ExternalLink } from "lucide-react";
+import { Send, Bot, User, Shield, ExternalLink } from "lucide-react";
 import logo from "@/assets/safehelphublogo.jpg";
 import { CRISIS_KEYWORDS, CRISIS_ROOTS, CRISIS_CATEGORIES, detectCrisis } from "@/lib/crisis-detection";
 
@@ -161,19 +161,6 @@ const FullScreenChatbot = () => {
                 </h1>
                 <p className="text-muted-foreground text-sm max-w-md">
                   I can help you find the right resources — mental health, safety, financial wellness, education, and more.
-                </p>
-              </div>
-
-              {/* Crisis Notice */}
-              <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-5 py-3 max-w-sm">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <Phone className="w-4 h-4 text-destructive" />
-                  <span className="text-xs font-semibold text-destructive" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                    In crisis? Call or text 988 now
-                  </span>
-                </div>
-                <p className="text-xs text-destructive/70">
-                  Suicide &amp; Crisis Lifeline — Available 24/7
                 </p>
               </div>
 
