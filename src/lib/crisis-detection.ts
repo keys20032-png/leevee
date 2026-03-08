@@ -704,7 +704,9 @@ const SAFE_PHRASES = [
   "drop dead gorgeous", "over my dead body", "dead on arrival",
   "scared to death", "bored to death", "worried to death", "sick to death",
   "homework is killing", "work is killing", "job is killing", "test is killing",
-  "traffic is killing", "heat is killing", "cold is killing",
+  "traffic is killing", "heat is killing", "cold is killing", "suspense is killing",
+  "die laughing", "dying laughing", "died laughing", "to die for",
+  "want to die laughing", "could die laughing",
 ];
 
 // Humor markers that indicate casual/non-crisis context
@@ -723,8 +725,8 @@ export const detectCrisis = (text: string): string | null => {
   const humorCount = CRISIS_HUMOR_MARKERS.filter((h) => lower.includes(h)).length;
   const hasSafePhrase = SAFE_PHRASES.some((p) => lower.includes(p));
 
-  // If humor markers present AND the message uses casual/colloquial phrasing, skip crisis
-  if (humorCount >= 1 && hasSafePhrase) return null;
+  // If the message matches a known safe/idiomatic phrase, skip crisis detection
+  if (hasSafePhrase) return null;
 
   // Check specialized categories first
   for (const category of CRISIS_CATEGORIES) {
