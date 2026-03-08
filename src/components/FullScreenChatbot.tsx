@@ -561,16 +561,8 @@ const FullScreenChatbot = () => {
 
           {/* Messages */}
           {messages.map((msg, i) => (
-            <div key={i} className={`flex gap-3 py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              {msg.role === "assistant" && (
-                <div
-                  className="w-8 h-8 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"
-                  style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
-                >
-                  <Bot className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-primary-foreground" />
-                </div>
-              )}
-              <div className="max-w-[85%] sm:max-w-[78%] flex flex-col gap-1">
+            <div key={i} className={`flex py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[85%] sm:max-w-[78%] flex flex-col gap-1`}>
                 <div
                   className={`px-4 py-3.5 sm:py-3 text-[15px] sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
@@ -611,11 +603,6 @@ const FullScreenChatbot = () => {
                   </button>
                 )}
               </div>
-              {msg.role === "user" && (
-                <div className="w-8 h-8 sm:w-7 sm:h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 bg-secondary border border-border/50">
-                  <User className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-muted-foreground" />
-                </div>
-              )}
             </div>
           ))}
 
