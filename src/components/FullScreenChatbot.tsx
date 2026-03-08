@@ -3,8 +3,9 @@ import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
-  Paperclip, FileText, Pencil,
+  Paperclip, FileText, Pencil, Copy, Check,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
 import { haptic } from "@/lib/haptics";
@@ -130,6 +131,8 @@ const FullScreenChatbot = () => {
   const [mobileModesOpen, setMobileModesOpen] = useState(false);
   const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [editingImage, setEditingImage] = useState<string | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [followUps, setFollowUps] = useState<string[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -414,6 +417,7 @@ const FullScreenChatbot = () => {
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput("");
+    setFollowUps([]);
     const currentImage = pendingImage;
     setPendingImage(null);
     setLoading(true);
@@ -495,6 +499,11 @@ const FullScreenChatbot = () => {
       setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." }]);
     }
     setLoading(false);
+    // Generate follow-up suggestions (fire and forget)
+    if (assistantSoFar) {
+      setFollowUps([]);
+      generateFollowUps([...allMessages, { role: "assistant", content: assistantSoFar }]);
+    }
   };
 
   const downloadImage = (dataUrl: string, index: number) => {
@@ -506,42 +515,101 @@ const FullScreenChatbot = () => {
     document.body.removeChild(link);
   };
 
-  // Markdown-lite renderer
-  const renderContent = (text: string) => {
-    const codeBlockParts = text.split(/(```[\s\S]*?```)/g);
-    return codeBlockParts.map((segment, si) => {
-      const codeMatch = segment.match(/```(\w*)\n?([\s\S]*?)```/);
-      if (codeMatch) {
-        return (
-          <pre key={si} className="bg-secondary/80 border border-border rounded-lg p-3 my-2 overflow-x-auto text-xs font-mono">
-            <code>{codeMatch[2].trim()}</code>
-          </pre>
-        );
-      }
-      const parts = segment.split(/(\[.*?\]\(.*?\))/g);
-      return parts.map((part, i) => {
-        const match = part.match(/\[(.*?)\]\((.*?)\)/);
-        if (match) {
-          return (
-            <a key={`${si}-${i}`} href={match[2]} target="_blank" rel="noopener noreferrer" className="text-primary underline decoration-primary/30 hover:decoration-primary inline-flex items-center gap-1 transition-colors">
-              {match[1]}<ExternalLink className="w-3 h-3" />
-            </a>
-          );
-        }
-        const inlineCodeParts = part.split(/(`[^`]+`)/g);
-        return inlineCodeParts.map((icp, k) => {
-          const inlineMatch = icp.match(/^`([^`]+)`$/);
-          if (inlineMatch) return <code key={`${si}-${i}-${k}`} className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-primary">{inlineMatch[1]}</code>;
-          const boldParts = icp.split(/(\*\*.*?\*\*)/g);
-          return boldParts.map((bp, j) => {
-            const boldMatch = bp.match(/\*\*(.*?)\*\*/);
-            if (boldMatch) return <strong key={`${si}-${i}-${k}-${j}`} className="font-semibold text-foreground">{boldMatch[1]}</strong>;
-            return <span key={`${si}-${i}-${k}-${j}`}>{bp}</span>;
-          });
-        });
-      });
-    });
+  // Copy message to clipboard
+  const copyMessage = async (text: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      haptic("light");
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch {
+      // Fallback
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      setCopiedIndex(index);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    }
   };
+
+  // Generate follow-up suggestions after AI response
+  const generateFollowUps = async (conversationMessages: Message[]) => {
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({
+          messages: [
+            ...conversationMessages.slice(-6).map((m) => ({ role: m.role, content: m.content })),
+            { role: "user", content: "Based on our conversation, suggest exactly 3 short follow-up questions the user might ask next. Return ONLY a JSON array of 3 strings, nothing else. Example: [\"What are the benefits?\", \"Can you give an example?\", \"How does this compare to alternatives?\"]" },
+          ],
+          mode: "default",
+        }),
+      });
+      if (!resp.ok || !resp.body) return;
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let result = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        for (const line of chunk.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) result += content;
+          } catch {}
+        }
+      }
+      // Parse the JSON array from the response
+      const match = result.match(/\[[\s\S]*\]/);
+      if (match) {
+        const suggestions = JSON.parse(match[0]) as string[];
+        setFollowUps(suggestions.slice(0, 3));
+      }
+    } catch {
+      // Silently fail — follow-ups are optional
+    }
+  };
+
+  // Markdown components for react-markdown
+  const markdownComponents = useMemo(() => ({
+    a: ({ href, children, ...props }: any) => (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline decoration-primary/30 hover:decoration-primary inline-flex items-center gap-1 transition-colors" {...props}>
+        {children}<ExternalLink className="w-3 h-3" />
+      </a>
+    ),
+    code: ({ inline, className, children, ...props }: any) => {
+      if (inline) {
+        return <code className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-primary" {...props}>{children}</code>;
+      }
+      return (
+        <pre className="bg-secondary/80 border border-border rounded-lg p-3 my-2 overflow-x-auto text-xs font-mono">
+          <code {...props}>{children}</code>
+        </pre>
+      );
+    },
+    strong: ({ children, ...props }: any) => <strong className="font-semibold text-foreground" {...props}>{children}</strong>,
+    p: ({ children, ...props }: any) => <span {...props}>{children}</span>,
+    ul: ({ children, ...props }: any) => <ul className="list-disc pl-4 space-y-1 my-1" {...props}>{children}</ul>,
+    ol: ({ children, ...props }: any) => <ol className="list-decimal pl-4 space-y-1 my-1" {...props}>{children}</ol>,
+    li: ({ children, ...props }: any) => <li className="text-foreground" {...props}>{children}</li>,
+    h1: ({ children, ...props }: any) => <span className="text-lg font-bold text-foreground block mt-2 mb-1" {...props}>{children}</span>,
+    h2: ({ children, ...props }: any) => <span className="text-base font-bold text-foreground block mt-2 mb-1" {...props}>{children}</span>,
+    h3: ({ children, ...props }: any) => <span className="text-sm font-bold text-foreground block mt-1.5 mb-0.5" {...props}>{children}</span>,
+    blockquote: ({ children, ...props }: any) => <blockquote className="border-l-2 border-primary/40 pl-3 my-2 text-muted-foreground italic" {...props}>{children}</blockquote>,
+    hr: () => <hr className="border-border my-3" />,
+    table: ({ children, ...props }: any) => <div className="overflow-x-auto my-2"><table className="min-w-full text-xs border border-border rounded-lg" {...props}>{children}</table></div>,
+    th: ({ children, ...props }: any) => <th className="px-3 py-1.5 bg-secondary/50 text-left font-semibold border-b border-border" {...props}>{children}</th>,
+    td: ({ children, ...props }: any) => <td className="px-3 py-1.5 border-b border-border/50" {...props}>{children}</td>,
+  }), []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -726,7 +794,9 @@ const FullScreenChatbot = () => {
                   }`}
                   style={msg.role === "user" ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" } : undefined}
                 >
-                  {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
+                  {msg.role === "assistant" ? (
+                    <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
+                  ) : msg.content}
                 </div>
 
                 {/* Generated images */}
@@ -786,6 +856,14 @@ const FullScreenChatbot = () => {
                 {msg.role === "assistant" && !msg.images?.length && (
                   <div className="flex items-center gap-1 self-start ml-1">
                     <button
+                      onClick={() => copyMessage(msg.content, i)}
+                      className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                      aria-label="Copy message"
+                      title="Copy to clipboard"
+                    >
+                      {copiedIndex === i ? <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-green-500" /> : <Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
+                    </button>
+                    <button
                       onClick={() => speak(msg.content, i)}
                       className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
                       aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
@@ -811,7 +889,24 @@ const FullScreenChatbot = () => {
             </div>
           ))}
 
-          {/* Loading indicator */}
+          {/* Follow-up suggestions */}
+          {followUps.length > 0 && !loading && messages.length > 0 && messages[messages.length - 1]?.role === "assistant" && (
+            <div className="flex flex-wrap gap-2 py-2 pl-1 animate-message-in">
+              {followUps.map((q, qi) => (
+                <button
+                  key={qi}
+                  onClick={() => { setFollowUps([]); sendMessage(q); }}
+                  className="group inline-flex items-center gap-1.5 px-3.5 py-2 text-xs rounded-xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 hover:shadow-md hover:shadow-primary/5 active:scale-[0.97]"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                >
+                  <Sparkles className="w-3 h-3 text-primary/40 group-hover:text-primary flex-shrink-0 transition-colors" />
+                  <span className="leading-snug">{q}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Loading / typing indicator */}
           {loading && messages[messages.length - 1]?.role !== "assistant" && (
             <div className="flex gap-3 py-2 animate-message-in">
               <div
@@ -821,22 +916,16 @@ const FullScreenChatbot = () => {
                 <Bot className="w-3.5 h-3.5 text-primary-foreground" />
               </div>
               <div className="bg-card border border-border/50 px-5 py-3.5 rounded-2xl rounded-bl-md shadow-sm">
-                {mode === "image" ? (
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex gap-1.5">
-                      <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
-                      <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
-                      <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
-                    </div>
-                    <span className="text-xs text-muted-foreground">Generating image…</span>
-                  </div>
-                ) : (
+                <div className="flex items-center gap-2.5">
                   <div className="flex gap-1.5">
                     <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
                     <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
                     <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
                   </div>
-                )}
+                  <span className="text-xs text-muted-foreground">
+                    {mode === "image" ? "Generating image…" : "Leevee is thinking…"}
+                  </span>
+                </div>
               </div>
             </div>
           )}
