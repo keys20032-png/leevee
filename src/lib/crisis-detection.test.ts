@@ -241,16 +241,25 @@ describe("detectDistress", () => {
   });
 
   describe("genuine signals always override humor", () => {
-    it("genuine signal with humor still triggers", () => {
-      expect(detectDistress("I want to hurt myself lol")).toBe(true);
-    });
+    const genuineWithHumor: [string, boolean][] = [
+      ["I want to hurt myself lol", false],
+      ["I want to hurt myself lol", true],
+      ["I don't want to be here anymore haha", false],
+      ["I don't want to be here anymore bruh", true],
+      ["please help me lmao", false],
+      ["I'm not okay lol just kidding", false],
+      ["I'm scared of myself rn lol", false],
+      ["I can't do this anymore bruh fr", false],
+      ["I can't do this anymore ngl", true],
+      ["please help me I need help 💀", false],
+      ["I don't feel safe lmao", false],
+    ];
 
-    it("genuine signal in vent mode still triggers", () => {
-      expect(detectDistress("I don't want to be here anymore", true)).toBe(true);
-    });
-
-    it("'please help me' always triggers", () => {
-      expect(detectDistress("please help me")).toBe(true);
-    });
+    it.each(genuineWithHumor)(
+      '"%s" (ventMode=%s) still detects distress',
+      (input, ventMode) => {
+        expect(detectDistress(input, ventMode)).toBe(true);
+      }
+    );
   });
 });
