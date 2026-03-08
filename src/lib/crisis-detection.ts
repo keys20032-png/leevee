@@ -245,7 +245,7 @@ export const CRISIS_KEYWORDS = [
   // ===== SUBSTANCE CRISIS =====
   "overdosing", "took too many pills", "drank too much", "can't stop using",
   "withdrawal", "relapsing", "drug crisis", "alcohol poisoning",
-  "od", "oding", "took too much", "mixing drugs", "fentanyl",
+  "i od'd", "i oded", "oding", "took too much", "mixing drugs", "fentanyl",
   "can't stop drinking", "drinking myself to death", "drink to forget",
   "need a fix", "going through withdrawal", "withdrawals are killing me",
   "seizures from withdrawal", "dt's", "delirium tremens",
@@ -703,8 +703,8 @@ export const detectCrisis = (text: string): string | null => {
     }
   }
 
-  // General crisis keywords → default 988
-  if (CRISIS_KEYWORDS.some((kw) => lower.includes(kw))) return "https://988lifeline.org/";
+  // General crisis keywords → default 988 (use word-boundary for short keywords to avoid false positives)
+  if (CRISIS_KEYWORDS.some((kw) => kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw))) return "https://988lifeline.org/";
 
   // Root-word matching → default 988 (use word-boundary regex to avoid false positives like "Judaism", "diet", "harmony")
   if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) return "https://988lifeline.org/";
