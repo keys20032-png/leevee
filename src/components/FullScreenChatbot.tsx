@@ -6,6 +6,7 @@ import {
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
+  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
@@ -161,6 +162,7 @@ const FullScreenChatbot = () => {
 
   const {
     conversations,
+    trashedConversations,
     activeConversationId,
     setActiveConversationId,
     createConversation,
@@ -169,8 +171,27 @@ const FullScreenChatbot = () => {
     updateMessageContent,
     setReaction,
     deleteConversation,
+    permanentlyDelete,
+    restoreConversation,
     loadConversations,
+    loadTrash,
+    memories,
+    addMemory,
+    deleteMemory,
+    updateMemory,
+    exportAllData,
+    getSyncCode,
+    importSession,
+    sessionId,
   } = useConversations();
+
+  const [sidebarTab, setSidebarTab] = useState<"history" | "memory" | "trash">("history");
+  const [showSyncModal, setShowSyncModal] = useState(false);
+  const [syncInput, setSyncInput] = useState("");
+  const [newMemoryKey, setNewMemoryKey] = useState("");
+  const [newMemoryValue, setNewMemoryValue] = useState("");
+  const [editingMemoryId, setEditingMemoryId] = useState<string | null>(null);
+  const [editingMemoryValue, setEditingMemoryValue] = useState("");
 
   const currentMode = MODE_CONFIG[mode];
 
@@ -482,6 +503,7 @@ const FullScreenChatbot = () => {
             ...(m.uploadedImage ? { imageData: m.uploadedImage } : {}),
           })),
           mode,
+          sessionId,
           ...(currentImage ? { imageData: currentImage } : {}),
         }),
       });
@@ -553,9 +575,24 @@ const FullScreenChatbot = () => {
     }
     setLoading(false);
 
-    // Save final assistant message to DB
+    // Save final assistant message to DB + extract memories
     if (convoId && assistantDbId && assistantSoFar) {
-      updateMessageContent(assistantDbId, assistantSoFar);
+      // Extract and save any [MEMORY_SAVE] tags
+      const memoryPattern = /\[MEMORY_SAVE:\s*key="([^"]+)"\s*value="([^"]+)"\]/g;
+      let memMatch;
+      let cleanedContent = assistantSoFar;
+      while ((memMatch = memoryPattern.exec(assistantSoFar)) !== null) {
+        const [fullMatch, memKey, memValue] = memMatch;
+        addMemory(memKey, memValue, "auto");
+        cleanedContent = cleanedContent.replace(fullMatch, "").trim();
+      }
+      // Update with cleaned content (without memory tags)
+      updateMessageContent(assistantDbId, cleanedContent);
+      if (cleanedContent !== assistantSoFar) {
+        setMessages((prev) =>
+          prev.map((m, i) => i === prev.length - 1 && m.role === "assistant" ? { ...m, content: cleanedContent } : m)
+        );
+      }
     }
 
     // Generate follow-up suggestions
@@ -852,22 +889,40 @@ const FullScreenChatbot = () => {
 
   return (
     <div className="flex h-full bg-background" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
-      {/* Conversation History Sidebar */}
+      {/* Sidebar */}
       {sidebarOpen && (
         <>
           <div className="fixed inset-0 z-30 bg-background/60 backdrop-blur-sm sm:hidden" onClick={() => setSidebarOpen(false)} />
-          <aside className="fixed sm:relative z-40 h-full w-[80vw] max-w-72 sm:w-72 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
+          <aside className="fixed sm:relative z-40 h-full w-[80vw] max-w-80 sm:w-80 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
+            {/* Sidebar header */}
             <div className="flex items-center justify-between px-3 py-3.5 sm:py-3 border-b border-border/50">
-              <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>History</span>
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => { startNewChat(); setSidebarOpen(false); }}
-                  className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
-                  title="New chat (Ctrl+Shift+N)"
-                  aria-label="New chat"
-                >
-                  <Plus className="w-5 h-5 sm:w-4 sm:h-4" />
-                </button>
+              <div className="flex items-center gap-0.5">
+                {(["history", "memory", "trash"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => { setSidebarTab(tab); if (tab === "trash") loadTrash(); }}
+                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all ${
+                      sidebarTab === tab ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                    }`}
+                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  >
+                    {tab === "history" && <Clock className="w-3 h-3 inline mr-1" />}
+                    {tab === "memory" && <Brain className="w-3 h-3 inline mr-1" />}
+                    {tab === "trash" && <Archive className="w-3 h-3 inline mr-1" />}
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-1">
+                {sidebarTab === "history" && (
+                  <button
+                    onClick={() => { startNewChat(); setSidebarOpen(false); }}
+                    className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
+                    aria-label="New chat"
+                  >
+                    <Plus className="w-5 h-5 sm:w-4 sm:h-4" />
+                  </button>
+                )}
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
@@ -877,70 +932,290 @@ const FullScreenChatbot = () => {
                 </button>
               </div>
             </div>
-            {/* Search */}
-            <div className="px-3 py-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" />
-                <input
-                  type="text"
-                  placeholder="Search chats..."
-                  value={searchHistory}
-                  onChange={(e) => setSearchHistory(e.target.value)}
-                  className="w-full bg-secondary/50 border border-border/40 rounded-lg pl-8 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
-                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                  aria-label="Search conversation history"
-                />
-              </div>
-            </div>
-            {/* Conversation list */}
-            <div className="flex-1 overflow-y-auto px-1.5 pb-2 space-y-0.5 scrollbar-none">
-              {filteredConversations.length === 0 && (
-                <div className="text-center text-xs text-muted-foreground/50 py-8">
-                  {searchHistory ? "No matching chats" : "No conversations yet"}
+
+            {/* ── History Tab ── */}
+            {sidebarTab === "history" && (
+              <>
+                <div className="px-3 py-2">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" />
+                    <input
+                      type="text"
+                      placeholder="Search chats..."
+                      value={searchHistory}
+                      onChange={(e) => setSearchHistory(e.target.value)}
+                      className="w-full bg-secondary/50 border border-border/40 rounded-lg pl-8 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    />
+                  </div>
                 </div>
-              )}
-              {filteredConversations.map((c) => {
-                const modeEmoji = MODE_CONFIG[c.mode as ChatMode]?.emoji || "💭";
-                return (
-                  <div
-                    key={c.id}
-                    className={`group flex items-center gap-2.5 px-3 py-3.5 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-150 active:scale-[0.98] ${
-                      activeConversationId === c.id
-                        ? "bg-primary/10 text-foreground"
-                        : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                    }`}
-                    onClick={() => { setActiveConversationId(c.id); setMode(c.mode as ChatMode); setSidebarOpen(false); }}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Open conversation: ${c.title}`}
-                  >
-                    <span className="text-sm flex-shrink-0">{modeEmoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13px] sm:text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
-                      <p className="text-[11px] sm:text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
-                        <Clock className="w-2.5 h-2.5" />
-                        {formatDate(c.updated_at)}
-                      </p>
+                <div className="flex-1 overflow-y-auto px-1.5 pb-2 space-y-0.5 scrollbar-none">
+                  {filteredConversations.length === 0 && (
+                    <div className="text-center text-xs text-muted-foreground/50 py-8">
+                      {searchHistory ? "No matching chats" : "No conversations yet"}
                     </div>
+                  )}
+                  {filteredConversations.map((c) => {
+                    const modeEmoji = MODE_CONFIG[c.mode as ChatMode]?.emoji || "💭";
+                    return (
+                      <div
+                        key={c.id}
+                        className={`group flex items-center gap-2.5 px-3 py-3.5 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-150 active:scale-[0.98] ${
+                          activeConversationId === c.id
+                            ? "bg-primary/10 text-foreground"
+                            : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
+                        }`}
+                        onClick={() => { setActiveConversationId(c.id); setMode(c.mode as ChatMode); setSidebarOpen(false); }}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <span className="text-sm flex-shrink-0">{modeEmoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] sm:text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
+                          <p className="text-[11px] sm:text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
+                            <Clock className="w-2.5 h-2.5" />
+                            {formatDate(c.updated_at)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteConversation(c.id); }}
+                          className="p-2 sm:p-1 rounded-md sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
+                          title="Move to trash"
+                        >
+                          <Trash2 className="w-4 h-4 sm:w-3 sm:h-3" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {/* ── Memory Tab ── */}
+            {sidebarTab === "memory" && (
+              <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 scrollbar-none">
+                <p className="text-[11px] text-muted-foreground/60 leading-relaxed" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  Leevee remembers these facts about you across all conversations. Edit or remove anything.
+                </p>
+                {/* Add memory form */}
+                <div className="space-y-1.5">
+                  <input
+                    type="text"
+                    placeholder="Label (e.g. 'name')"
+                    value={newMemoryKey}
+                    onChange={(e) => setNewMemoryKey(e.target.value)}
+                    className="w-full bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  />
+                  <div className="flex gap-1.5">
+                    <input
+                      type="text"
+                      placeholder="Value (e.g. 'Alex')"
+                      value={newMemoryValue}
+                      onChange={(e) => setNewMemoryValue(e.target.value)}
+                      className="flex-1 bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && newMemoryKey.trim() && newMemoryValue.trim()) {
+                          addMemory(newMemoryKey.trim(), newMemoryValue.trim());
+                          setNewMemoryKey(""); setNewMemoryValue("");
+                        }
+                      }}
+                    />
                     <button
-                      onClick={(e) => { e.stopPropagation(); if (window.confirm("Delete this conversation?")) deleteConversation(c.id); }}
-                      className="p-2 sm:p-1 rounded-md sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
-                      title="Delete"
-                      aria-label="Delete conversation"
+                      onClick={() => { if (newMemoryKey.trim() && newMemoryValue.trim()) { addMemory(newMemoryKey.trim(), newMemoryValue.trim()); setNewMemoryKey(""); setNewMemoryValue(""); } }}
+                      disabled={!newMemoryKey.trim() || !newMemoryValue.trim()}
+                      className="px-3 py-2 rounded-lg text-xs font-medium text-primary-foreground disabled:opacity-30 transition-all active:scale-95"
+                      style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
                     >
-                      <Trash2 className="w-4 h-4 sm:w-3 sm:h-3" />
+                      <Plus className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                );
-              })}
-            </div>
-            {/* Sidebar footer with keyboard shortcuts hint (desktop only) */}
-            <div className="hidden sm:block border-t border-border/50 px-3 py-2">
-              <p className="text-[10px] text-muted-foreground/40 text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                </div>
+                {/* Memory list */}
+                {memories.length === 0 && (
+                  <div className="text-center text-xs text-muted-foreground/40 py-6">
+                    <Brain className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p>No memories yet</p>
+                    <p className="text-[10px] mt-1">Leevee will learn about you as you chat</p>
+                  </div>
+                )}
+                {memories.map((mem) => (
+                  <div key={mem.id} className="group bg-secondary/30 rounded-xl px-3 py-2.5 border border-border/30">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] font-semibold uppercase tracking-wider text-primary/60" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          {mem.key}
+                          {mem.source === "auto" && <span className="ml-1.5 text-muted-foreground/40 normal-case tracking-normal font-normal">· auto</span>}
+                        </p>
+                        {editingMemoryId === mem.id ? (
+                          <input
+                            type="text"
+                            value={editingMemoryValue}
+                            onChange={(e) => setEditingMemoryValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") { updateMemory(mem.id, editingMemoryValue); setEditingMemoryId(null); }
+                              if (e.key === "Escape") setEditingMemoryId(null);
+                            }}
+                            onBlur={() => { updateMemory(mem.id, editingMemoryValue); setEditingMemoryId(null); }}
+                            className="w-full bg-background border border-primary/30 rounded px-2 py-1 text-xs text-foreground mt-1 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                            autoFocus
+                          />
+                        ) : (
+                          <p className="text-xs text-foreground mt-0.5 leading-relaxed">{mem.value}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-0.5 flex-shrink-0">
+                        <button
+                          onClick={() => { setEditingMemoryId(mem.id); setEditingMemoryValue(mem.value); }}
+                          className="p-1 rounded text-muted-foreground/40 hover:text-foreground transition-colors"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => deleteMemory(mem.id)}
+                          className="p-1 rounded text-muted-foreground/40 hover:text-destructive transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ── Trash Tab ── */}
+            {sidebarTab === "trash" && (
+              <div className="flex-1 overflow-y-auto px-1.5 pb-2 pt-2 space-y-0.5 scrollbar-none">
+                {trashedConversations.length === 0 && (
+                  <div className="text-center text-xs text-muted-foreground/40 py-8">
+                    <Archive className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p>Trash is empty</p>
+                    <p className="text-[10px] mt-1">Deleted conversations appear here for recovery</p>
+                  </div>
+                )}
+                {trashedConversations.map((c) => {
+                  const modeEmoji = MODE_CONFIG[c.mode as ChatMode]?.emoji || "💭";
+                  return (
+                    <div key={c.id} className="group flex items-center gap-2.5 px-3 py-3 sm:py-2.5 rounded-xl text-muted-foreground hover:bg-secondary/60 transition-all">
+                      <span className="text-sm flex-shrink-0 opacity-50">{modeEmoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] sm:text-xs font-medium truncate opacity-60" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
+                        <p className="text-[10px] text-muted-foreground/40 mt-0.5">
+                          Deleted {c.deleted_at ? formatDate(c.deleted_at) : ""}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => restoreConversation(c.id)}
+                        className="p-1.5 rounded-md text-muted-foreground/50 hover:text-primary hover:bg-primary/10 transition-all"
+                        title="Restore"
+                      >
+                        <Undo2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => { if (window.confirm("Permanently delete? This cannot be undone.")) permanentlyDelete(c.id); }}
+                        className="p-1.5 rounded-md text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
+                        title="Delete permanently"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Sidebar footer */}
+            <div className="border-t border-border/50 px-3 py-2 space-y-1.5">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={exportAllData}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                >
+                  <HardDrive className="w-3 h-3" /> Export All
+                </button>
+                <button
+                  onClick={() => setShowSyncModal(true)}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                >
+                  <Smartphone className="w-3 h-3" /> Sync Devices
+                </button>
+              </div>
+              <p className="hidden sm:block text-[10px] text-muted-foreground/40 text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 ⌘B sidebar · ⌘K search · ⌘⇧N new
               </p>
             </div>
           </aside>
+        </>
+      )}
+
+      {/* Sync Modal */}
+      {showSyncModal && (
+        <>
+          <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setShowSyncModal(false)} />
+          <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] max-w-sm bg-card border border-border/60 rounded-2xl shadow-2xl p-6 animate-message-in">
+            <h3 className="text-base font-bold text-foreground mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <Smartphone className="w-4 h-4 inline mr-2" />Sync Across Devices
+            </h3>
+            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+              Your sync code links your conversations, memories, and history across devices. Enter it on another device to sync.
+            </p>
+            <div className="space-y-3">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Your Sync Code</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={getSyncCode()}
+                    readOnly
+                    className="flex-1 bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground font-mono select-all focus:outline-none"
+                    onClick={(e) => (e.target as HTMLInputElement).select()}
+                  />
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(getSyncCode()); haptic("light"); }}
+                    className="px-3 py-2 rounded-lg text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors active:scale-95"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Import From Another Device</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Paste sync code..."
+                    value={syncInput}
+                    onChange={(e) => setSyncInput(e.target.value)}
+                    className="flex-1 bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  />
+                  <button
+                    onClick={() => {
+                      if (syncInput.trim() && syncInput.trim() !== getSyncCode()) {
+                        if (window.confirm("This will switch to the synced session. Your current local session will be replaced. Continue?")) {
+                          importSession(syncInput.trim());
+                        }
+                      }
+                    }}
+                    disabled={!syncInput.trim() || syncInput.trim() === getSyncCode()}
+                    className="px-3 py-2 rounded-lg text-xs font-medium text-primary-foreground disabled:opacity-30 transition-all active:scale-95"
+                    style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
+                  >
+                    Sync
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowSyncModal(false)}
+              className="absolute top-4 right-4 p-1 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </>
       )}
 
@@ -1132,6 +1407,28 @@ const FullScreenChatbot = () => {
                         </button>
                       </>
                     )}
+                    <div className="mx-2 my-1 h-px bg-border/50" />
+                    <button
+                      onClick={() => { setSidebarOpen(true); setSidebarTab("memory"); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <Brain className="w-4 h-4" /> Memory Bank
+                    </button>
+                    <button
+                      onClick={() => { exportAllData(); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <HardDrive className="w-4 h-4" /> Export All Data
+                    </button>
+                    <button
+                      onClick={() => { setShowSyncModal(true); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <Smartphone className="w-4 h-4" /> Sync Devices
+                    </button>
                     <div className="mx-2 my-1 h-px bg-border/50" />
                     <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl">
                       <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>

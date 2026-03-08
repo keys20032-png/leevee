@@ -82,6 +82,7 @@ export type Database = {
       conversations: {
         Row: {
           created_at: string
+          deleted_at: string | null
           id: string
           mode: string
           session_id: string
@@ -90,6 +91,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           id?: string
           mode?: string
           session_id: string
@@ -98,11 +100,42 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           id?: string
           mode?: string
           session_id?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_memories: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          session_id: string
+          source: string | null
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          session_id: string
+          source?: string | null
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          session_id?: string
+          source?: string | null
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
