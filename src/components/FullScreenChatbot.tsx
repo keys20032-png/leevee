@@ -1123,7 +1123,7 @@ const FullScreenChatbot = () => {
 
             {/* Messages */}
             {messages.map((msg, i) => (
-              <div key={i} className={`flex py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div key={i} id={`msg-${i}`} className={`flex py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"} ${chatSearch && chatSearchMatches.includes(i) ? "ring-2 ring-primary/40 rounded-2xl" : ""}`}>
                 <div className={`max-w-[85%] sm:max-w-[78%] flex flex-col gap-1`}>
                   {msg.uploadedImage && (
                     <div className="rounded-2xl overflow-hidden border border-border/50 shadow-sm mb-1">
