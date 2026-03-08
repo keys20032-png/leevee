@@ -134,6 +134,7 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
 };
 
 const FullScreenChatbot = () => {
+  const { user, profile } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
