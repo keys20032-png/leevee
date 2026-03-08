@@ -18,6 +18,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import { jsPDF } from "jspdf";
 import { useConversations, type ChatMessage } from "@/hooks/use-conversations";
 import { useAuth } from "@/hooks/use-auth";
+import { useDailyLimit } from "@/hooks/use-daily-limit";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
