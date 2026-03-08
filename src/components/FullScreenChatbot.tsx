@@ -3,7 +3,7 @@ import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
-  Paperclip, FileText,
+  Paperclip, FileText, Pencil,
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
@@ -129,6 +129,7 @@ const FullScreenChatbot = () => {
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [mobileModesOpen, setMobileModesOpen] = useState(false);
   const [pendingImage, setPendingImage] = useState<string | null>(null);
+  const [editingImage, setEditingImage] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -263,7 +264,29 @@ const FullScreenChatbot = () => {
     setLoading(false);
   };
 
-  // Handle image upload
+  // Edit an existing image
+  const editImage = async (sourceImage: string, editPrompt: string) => {
+    const userMsg: Message = { role: "user", content: `✏️ Edit: ${editPrompt}` };
+    setMessages((prev) => [...prev, userMsg]);
+    setEditingImage(null);
+    setInput("");
+    setLoading(true);
+    try {
+      const resp = await fetch(IMAGE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ prompt: editPrompt, sourceImage }),
+      });
+      if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Image editing failed." })); throw new Error(err.error || "Image editing failed."); }
+      const data = await resp.json();
+      setMessages((prev) => [...prev, { role: "assistant", content: data.text || "Here's your edited image!", images: data.images || [] }]);
+    } catch (e) {
+      setMessages((prev) => [...prev, { role: "assistant", content: e instanceof Error ? e.message : "Sorry, image editing failed." }]);
+    }
+    setLoading(false);
+  };
+
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -643,15 +666,50 @@ const FullScreenChatbot = () => {
                 {msg.images && msg.images.length > 0 && (
                   <div className="flex flex-col gap-2 mt-1">
                     {msg.images.map((imgSrc, imgIdx) => (
-                      <div key={imgIdx} className="relative group rounded-2xl overflow-hidden border border-border/50 shadow-lg">
-                        <img src={imgSrc} alt={`Generated image ${imgIdx + 1}`} className="w-full max-w-md rounded-2xl" loading="lazy" />
-                        <button
-                          onClick={() => downloadImage(imgSrc, imgIdx)}
-                          className="absolute top-3 right-3 p-2 rounded-xl glass glass-border text-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-card"
-                          title="Download image"
-                        >
-                          <Download className="w-4 h-4" />
-                        </button>
+                      <div key={imgIdx} className="rounded-2xl overflow-hidden border border-border/50 shadow-lg">
+                        <div className="relative group">
+                          <img src={imgSrc} alt={`Generated image ${imgIdx + 1}`} className="w-full max-w-md rounded-t-2xl" loading="lazy" />
+                          <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                            <button
+                              onClick={() => setEditingImage(imgSrc)}
+                              className="p-2 rounded-xl glass glass-border text-foreground hover:bg-card"
+                              title="Edit image"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => downloadImage(imgSrc, imgIdx)}
+                              className="p-2 rounded-xl glass glass-border text-foreground hover:bg-card"
+                              title="Download image"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                        {/* Inline edit prompt for this image */}
+                        {editingImage === imgSrc && (
+                          <div className="p-3 bg-card border-t border-border/50 flex gap-2 items-center animate-message-in">
+                            <input
+                              type="text"
+                              placeholder="Describe your edit (e.g. make it sunset)..."
+                              className="flex-1 bg-secondary/50 border border-border/60 rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && (e.target as HTMLInputElement).value.trim()) {
+                                  editImage(imgSrc, (e.target as HTMLInputElement).value.trim());
+                                }
+                                if (e.key === "Escape") setEditingImage(null);
+                              }}
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => setEditingImage(null)}
+                              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all text-xs"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
