@@ -2,7 +2,7 @@
 
 export const CRISIS_KEYWORDS = [
   // ===== SUICIDAL IDEATION =====
-  "suicide", "suicidal", "kill myself", "end my life", "want to die", "don't want to live",
+  "suicide", "suicidal", "kill myself", "end my life", "ending my life", "want to die", "don't want to live",
   "self harm", "self-harm", "cutting myself", "hurt myself", "no reason to live",
   "better off dead", "can't go on", "end it all", "take my life", "not worth living",
   "give up on life", "wanna die", "wish i was dead", "rather be dead", "no point in living",
