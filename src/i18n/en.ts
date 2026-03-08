@@ -18,18 +18,18 @@ export const en = {
   },
   // Hero
   hero: {
-    badge: "Trusted Resource Hub",
+    badge: "AI Companion · 7 Modes · Image Gen · Memory",
     title: "Leevee AI",
-    subtitle: "Find Support Fast",
-    description: "Your comprehensive guide to support, education, and wellness resources. Connecting you with trusted tools for learning, mental health, safety, and financial wellbeing.",
-    explore: "Explore Resources",
-    learnMore: "Learn More",
+    subtitle: "Think · Vent · Create · Debate · Imagine",
+    description: "Your multimodal AI companion with 7 chat modes, image generation, persistent memory, real-time web search, crisis support, and voice — all in a safe, judgment-free space.",
+    explore: "Start Chatting",
+    learnMore: "See All Features",
   },
   // Stats
   stats: {
-    resources: "Resources Available",
-    categories: "Categories Covered",
-    free: "Free to Access",
+    resources: "Chat Modes",
+    categories: "AI Models Integrated",
+    free: "Uptime Guarantee",
     available: "Always Available",
   },
   // Resources
@@ -57,17 +57,17 @@ export const en = {
   },
   // About
   about: {
-    label: "About Us",
-    title: "Why Leevee AI?",
-    description: "We believe everyone deserves access to the support they need. Leevee AI is a free, community-driven platform connecting people with trusted resources.",
-    curatedTitle: "Curated Resources",
-    curatedDesc: "Every resource is carefully selected to provide genuine, accessible support for those who need it.",
-    communityTitle: "Community Driven",
-    communityDesc: "Built by people who care, for people who need help — connecting individuals with the right tools.",
-    freeTitle: "Always Free",
-    freeDesc: "Access to all resources remains free and open, because everyone deserves support regardless of circumstance.",
-    accessibleTitle: "Accessible to All",
-    accessibleDesc: "Multi-language support and accessibility-focused design ensures no one is left behind.",
+    label: "What Makes Leevee Different",
+    title: "Not Just Another Chatbot",
+    description: "Leevee is a multimodal AI companion with 7 dedicated modes, image generation, persistent memory, voice input, and built-in crisis safety — all indie-built with no corporate censorship theater.",
+    curatedTitle: "7 Chat Modes",
+    curatedDesc: "General, Vent, Learn, Play, Create, Debate, and Imagine — each with its own personality and AI model.",
+    communityTitle: "Persistent Memory",
+    communityDesc: "Leevee remembers you across sessions. Export, sync, and own your data — your AI memory is yours to keep.",
+    freeTitle: "Image Generation",
+    freeDesc: "Generate and edit images from text prompts directly in chat. Multimodal input and output, not text-only.",
+    accessibleTitle: "Crisis Safety Built-In",
+    accessibleDesc: "Real crisis detection, 988 Lifeline integration, safety plans, and quick exit — not an afterthought.",
   },
   // Contact Form
   contact: {
