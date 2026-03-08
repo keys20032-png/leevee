@@ -28,10 +28,10 @@ const FullScreenChatbot = () => {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const startListening = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
 
-    const recognition = new SpeechRecognition();
+    const recognition = new SR() as SpeechRecognition;
     recognition.lang = "en-US";
     recognition.interimResults = true;
     recognition.continuous = false;
