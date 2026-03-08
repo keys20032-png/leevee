@@ -354,7 +354,15 @@ const FullScreenChatbot = () => {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: allMessages, mode }),
+        body: JSON.stringify({
+          messages: allMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+            ...(m.uploadedImage ? { imageData: m.uploadedImage } : {}),
+          })),
+          mode,
+          ...(currentImage ? { imageData: currentImage } : {}),
+        }),
       });
       if (!resp.ok || !resp.body) throw new Error("Failed to connect");
 
