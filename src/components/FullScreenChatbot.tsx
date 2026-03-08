@@ -1557,18 +1557,18 @@ const FullScreenChatbot = () => {
                   <p className="text-sm text-muted-foreground/70 tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                     {(() => {
                       const h = new Date().getHours();
-                      if (h < 5) return "Still up? I'm here. 🌙";
-                      if (h < 12) return "Good morning ☀️";
-                      if (h < 17) return "Good afternoon 🌤️";
-                      if (h < 21) return "Good evening 🌅";
-                      return "Hey, night owl 🌙";
+                      if (h < 5) return t.home.greetLateNight;
+                      if (h < 12) return t.home.greetMorning;
+                      if (h < 17) return t.home.greetAfternoon;
+                      if (h < 21) return t.home.greetEvening;
+                      return t.home.greetNight;
                     })()}
                   </p>
                   <h2
                     className="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    {mode === "vent" ? "I'm listening." : mode === "academic" ? "Let's learn something." : mode === "creative" ? "Let's make something." : mode === "debate" ? "Challenge me." : mode === "image" ? "What do you see?" : mode === "fun" ? "Let's play." : "What's on your mind?"}
+                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : t.home.headingDefault}
                   </h2>
                   <p className="text-muted-foreground text-[13px] sm:text-sm max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}
@@ -1590,14 +1590,14 @@ const FullScreenChatbot = () => {
                 </div>
 
                 <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/50 px-4">
-                  <span>You're not alone</span>
+                  <span>{t.home.youreNotAlone}</span>
                   <span className="text-muted-foreground/20">·</span>
                   <a href="tel:988" className="text-destructive/70 hover:text-destructive font-medium transition-colors">
-                    988 Lifeline
+                    {t.home.lifeline988}
                   </a>
                   <span className="text-muted-foreground/20">·</span>
                   <a href="/crisis-resources" className="hover:text-foreground/70 transition-colors">
-                    Resources
+                    {t.home.resources}
                   </a>
                 </div>
 
@@ -1605,7 +1605,7 @@ const FullScreenChatbot = () => {
                 <div className="mt-4 sm:mt-6 w-full max-w-md px-2 sm:px-0">
                   <div className="rounded-2xl border border-border/40 bg-card/30 p-4 space-y-2.5">
                     <p className="text-[10px] uppercase tracking-widest text-primary/50 font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                      ✦ Fun Facts About Leevee
+                      {t.home.funFactsTitle}
                     </p>
                     <div className="space-y-2 text-[11px] sm:text-xs text-muted-foreground/60 leading-relaxed" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                       {(() => {
@@ -1786,7 +1786,7 @@ const FullScreenChatbot = () => {
                   aria-label="Retry last message"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  Retry
+                   {t.home.retry}
                 </button>
               </div>
             )}
@@ -1825,7 +1825,7 @@ const FullScreenChatbot = () => {
                       <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
                     </div>
                     <span className="text-xs text-muted-foreground">
-                      {mode === "image" ? "Generating image…" : "Leevee is thinking…"}
+                      {mode === "image" ? t.home.generatingImage : t.home.leeveeThinking}
                     </span>
                   </div>
                 </div>
