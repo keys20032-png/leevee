@@ -413,26 +413,49 @@ serve(async (req) => {
     const lower = lastUserMsg.toLowerCase().replace(/[^\w\s']/g, "");
 
     if (!skipCrisisCheck) {
-      // Humor/casual context detection
+      // Humor/casual context detection (synced with client-side crisis-detection.ts)
       const SAFE_PHRASES = [
-        "killing me", "kills me", "killing it", "im dead", "so dead",
-        "dying of", "dying from", "dying to", "im dying",
+        "killing me", "kills me", "killing it", "dead 💀", "i'm dead", "im dead", "so dead",
+        "dying of", "dying from", "dying to", "i'm dying", "im dying",
         "kill me now", "just kill me", "shoot me now",
+        "this is torture", "torture myself", "pain in the",
         "dead tired", "dead serious", "dead wrong", "deadass",
-        "scared to death", "bored to death", "worried to death",
+        "drop dead gorgeous", "over my dead body", "dead on arrival",
+        "scared to death", "bored to death", "worried to death", "sick to death",
         "homework is killing", "work is killing", "job is killing", "test is killing",
+        "traffic is killing", "heat is killing", "cold is killing", "suspense is killing",
+        "die laughing", "dying laughing", "died laughing", "to die for",
+        "want to die laughing", "could die laughing",
       ];
       const HUMOR_MARKS = [
-        "lol", "lmao", "lmfao", "rofl", "haha", "hehe",
-        "jk", "just kidding", "joking", "im kidding", "not literally",
-        "no cap", "fr fr", "bruh", "fam", "ngl", "tbh",
-        "mood", "big mood", "same", "relatable", "lowkey",
+        "lol", "lmao", "lmfao", "rofl", "haha", "hehe", "😂", "🤣", "💀",
+        "jk", "just kidding", "joking", "i'm kidding", "im kidding", "not literally",
+        "figuratively", "no cap", "fr fr", "bruh", "fam", "ngl", "tbh",
+        "mood", "big mood", "same", "relatable", "anyway", "lowkey",
+        "story of my life", "don't worry", "dont worry", "i'm fine", "im fine",
       ];
+      const OVERRIDE_KW = [
+        "end my life", "ending my life", "ends my life", "ended my life",
+        "kill myself", "hang myself", "shoot myself", "slit my wrist",
+        "jump off", "drown myself", "want to die", "suicide", "suicidal",
+        "take my life", "hurt myself", "overdose", "end it all",
+        "kms", "kys", "unalive", "better off dead", "no reason to live",
+        "planning to die", "ready to die", "got the rope", "gun to my head",
+        "bleed out", "pills to die", "drink bleach",
+      ];
+      const OVERRIDE_NEUTRALIZERS = [
+        "die laughing", "dying laughing", "to die for", "die of laughter",
+        "die from laughter", "want to die laughing",
+      ];
+
       const humorCount = HUMOR_MARKS.filter(h => lower.includes(h)).length;
       const hasSafe = SAFE_PHRASES.some(p => lower.includes(p));
-      const isJoke = humorCount >= 1 && hasSafe;
+      const hasNeutralizer = OVERRIDE_NEUTRALIZERS.some(n => lower.includes(n));
+      const hasOverride = !hasNeutralizer && OVERRIDE_KW.some(kw =>
+        kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw)
+      );
 
-      // LETHALITY GATE (never skip for humor — these are specific means)
+      // LETHALITY GATE (never skip — these are specific means)
       if (containsAny(lower, LETHALITY_MEANS)) {
         return new Response(
           JSON.stringify({
@@ -443,13 +466,26 @@ serve(async (req) => {
         );
       }
 
-      if (!isJoke) {
+      // Safe phrase present but no genuine override → skip crisis
+      const skipForSafe = hasSafe && !hasOverride;
+
+      if (!skipForSafe) {
         // Category-specific crisis routing
         for (const category of CRISIS_CATEGORIES) {
           if (containsAny(lower, category.keywords)) {
             if (humorCount >= 1) continue;
             return new Response(
               JSON.stringify({ crisis: true, redirect: category.url || "https://988lifeline.org/" }),
+              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+        }
+
+        // General crisis keywords
+        if (ALL_CRISIS_KEYWORDS.has(lower) || [...ALL_CRISIS_KEYWORDS].some(kw => lower.includes(kw))) {
+          if (humorCount === 0) {
+            return new Response(
+              JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
               { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
             );
           }
