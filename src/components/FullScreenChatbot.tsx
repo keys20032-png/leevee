@@ -836,27 +836,27 @@ const FullScreenChatbot = () => {
               {filteredConversations.map((c) => (
                 <div
                   key={c.id}
-                  className={`group flex items-center gap-2 px-2.5 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${
+                  className={`group flex items-center gap-2.5 px-3 py-3.5 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-150 active:scale-[0.98] ${
                     activeConversationId === c.id
                       ? "bg-primary/10 text-foreground"
                       : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
                   }`}
                   onClick={() => { setActiveConversationId(c.id); setMode(c.mode as ChatMode); setSidebarOpen(false); }}
                 >
-                  <MessageSquare className="w-3.5 h-3.5 flex-shrink-0" />
+                  <MessageSquare className="w-4 h-4 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
-                    <p className="text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
+                    <p className="text-[13px] sm:text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
+                    <p className="text-[11px] sm:text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
                       <Clock className="w-2.5 h-2.5" />
                       {formatDate(c.updated_at)}
                     </p>
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteConversation(c.id); }}
-                    className="p-1 rounded-md opacity-0 group-hover:opacity-100 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-all"
+                    className="p-2 sm:p-1 rounded-md sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
                     title="Delete"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-4 h-4 sm:w-3 sm:h-3" />
                   </button>
                 </div>
               ))}
