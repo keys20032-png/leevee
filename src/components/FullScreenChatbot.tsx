@@ -427,7 +427,7 @@ const FullScreenChatbot = () => {
   };
 
   // Send message
-  const sendMessage = async (overrideText?: string) => {
+  const sendMessage = async (overrideText?: string, { skipCrisisCheck = false }: { skipCrisisCheck?: boolean } = {}) => {
     const text = (overrideText || input).trim();
     if ((!text && !pendingImage) || loading) return;
 
