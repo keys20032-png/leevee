@@ -1638,6 +1638,44 @@ const FullScreenChatbot = () => {
                     Resources
                   </a>
                 </div>
+
+                {/* Fun Facts */}
+                <div className="mt-4 sm:mt-6 w-full max-w-md px-2 sm:px-0">
+                  <div className="rounded-2xl border border-border/40 bg-card/30 p-4 space-y-2.5">
+                    <p className="text-[10px] uppercase tracking-widest text-primary/50 font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                      ✦ Fun Facts About Leevee
+                    </p>
+                    <div className="space-y-2 text-[11px] sm:text-xs text-muted-foreground/60 leading-relaxed" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                      {(() => {
+                        const allFacts = [
+                          "🧠 Leevee has 7 dedicated chat modes — each with its own personality and AI model. No other major AI does this.",
+                          "🎨 Leevee can generate AND edit images from text — not just text-only like most chatbots.",
+                          "💾 Your memory bank persists across sessions. Export it, sync it, own it. Your data is yours.",
+                          "⚡ Leevee is powered by 10+ frontier AI models including GPT-5 and Gemini 2.5 Pro — auto-selected per mode.",
+                          "🫂 Vent Mode matches your energy without moralizing. No silver-lining, no unsolicited advice.",
+                          "⚔️ Debate Mode steelmans the opposition — it argues the BEST version of the counterargument.",
+                          "🆘 Crisis detection is always on. 988 Lifeline, safety plans, quick exit — built in, not bolted on.",
+                          "📱 Leevee is a PWA — install it on your phone like a native app. No app store needed.",
+                          "🌍 Available in 5 languages: English, Spanish, French, Arabic, and Chinese.",
+                          "🔒 No account required for basic usage. Sync across devices with just a code.",
+                          "🏗️ Leevee is indie-built — one developer, no corporate board, no censorship theater.",
+                          "🗣️ Leevee is fluent in AAVE and LGBTQ+ vernacular as legitimate linguistic systems, not as novelty.",
+                          "📄 Export any conversation as a clean PDF with one tap.",
+                          "🔍 Real-time web search keeps responses grounded in current info, not just training cutoffs.",
+                          "🎓 Academic Mode thinks like Socrates, explains like Feynman, and cites its intellectual lineage.",
+                        ];
+                        // Show 3 random facts, seeded by day so they change daily
+                        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+                        const shuffled = allFacts.map((f, i) => ({ f, sort: Math.sin(dayOfYear * 100 + i * 37) })).sort((a, b) => a.sort - b.sort).map(x => x.f);
+                        return shuffled.slice(0, 3).map((fact, i) => (
+                          <p key={i} className="flex items-start gap-1.5">
+                            <span className="leading-relaxed">{fact}</span>
+                          </p>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
