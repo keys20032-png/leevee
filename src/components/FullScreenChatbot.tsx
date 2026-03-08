@@ -125,6 +125,7 @@ const FullScreenChatbot = () => {
   const [isListening, setIsListening] = useState(false);
   const [mode, setMode] = useState<ChatMode>("default");
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [mobileModesOpen, setMobileModesOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
