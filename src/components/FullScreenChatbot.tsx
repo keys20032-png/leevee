@@ -68,35 +68,35 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
   fun: {
     label: "Fun",
     icon: PartyPopper,
-    description: "Jokes, trivia, creative challenges, and learning with flair 🎉",
+    description: "Jokes, trivia, wild challenges — let's have some fun with it. 🎉",
     gradient: "from-yellow-500 to-orange-500",
     prompts: [
       "Tell me a mind-blowing fact",
-      "Write a funny short story",
-      "Give me a riddle to solve",
+      "Write me something hilarious",
+      "Give me an impossible riddle",
       "Roast my taste in music",
-      "Invent a new holiday",
+      "Invent a new holiday for me",
       "Quiz me on random trivia",
     ],
   },
   creative: {
     label: "Creative",
     icon: PenTool,
-    description: "Poetry, stories, screenplays, songwriting, and craft coaching ✍️",
+    description: "Poetry, stories, screenplays, songwriting — let's make something beautiful. ✍️",
     gradient: "from-purple-500 to-pink-500",
     prompts: [
       "Write a poem about the ocean",
       "Help me outline a short story",
-      "Give me a writing prompt",
-      "Write a movie scene",
-      "Help me develop a character",
+      "Hit me with a writing prompt",
+      "Write a cinematic movie scene",
+      "Help me build a character",
       "Critique my opening paragraph",
     ],
   },
   debate: {
     label: "Debate",
     icon: Swords,
-    description: "Sharpen your thinking — Leevee will respectfully challenge your ideas ⚔️",
+    description: "Sharpen your thinking — I'll respectfully challenge every idea. ⚔️",
     gradient: "from-amber-500 to-red-500",
     prompts: [
       "Is social media good for society?",
@@ -110,12 +110,12 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
   image: {
     label: "Image",
     icon: ImageIcon,
-    description: "Describe what you want to see and Leevee will create it 🎨",
+    description: "Describe it, and I'll create it — art, photos, anything visual. 🎨",
     gradient: "from-emerald-500 to-teal-500",
     prompts: [
       "A cozy cabin in a snowy forest",
       "Futuristic city at sunset",
-      "A cat wearing a tiny hat",
+      "A cat wearing a tiny top hat",
       "Abstract art with vibrant colors",
       "A dragon reading a book",
       "Underwater coral reef scene",
@@ -1132,7 +1132,7 @@ const FullScreenChatbot = () => {
                     className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
                     style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    Hey, I'm Leevee
+                    What's on your mind?
                   </h2>
                   <p className="text-muted-foreground text-sm sm:text-sm max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}
