@@ -3,7 +3,6 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { ArrowDown, Shield, Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n/I18nContext";
 import { Link } from "react-router-dom";
-import { useI18n } from "@/i18n/I18nContext";
 
 const HeroSection = () => {
   const { t } = useI18n();
