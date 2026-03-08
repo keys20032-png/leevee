@@ -728,6 +728,12 @@ const OVERRIDE_CRISIS_KEYWORDS = [
   "bleed out", "pills to die", "drink bleach",
 ];
 
+// Phrases that neutralize an override keyword (e.g. "want to die laughing" is idiomatic)
+const OVERRIDE_NEUTRALIZERS = [
+  "die laughing", "dying laughing", "to die for", "die of laughter",
+  "die from laughter", "want to die laughing",
+];
+
 export const detectCrisis = (text: string): string | null => {
   const lower = text.toLowerCase().replace(/[^\w\s'😂🤣💀]/g, "");
 
