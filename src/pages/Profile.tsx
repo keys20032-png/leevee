@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 
 const Profile = () => {
-  const { user, profile, signOut, refreshProfile } = useAuth();
+  const { user, profile, signOut, refreshProfile, tier, subscribed, subscriptionEnd, checkingSubscription, refreshSubscription } = useAuth();
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [saving, setSaving] = useState(false);
 
