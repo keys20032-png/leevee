@@ -125,6 +125,7 @@ const FullScreenChatbot = () => {
   const [isListening, setIsListening] = useState(false);
   const [mode, setMode] = useState<ChatMode>("default");
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [mobileModesOpen, setMobileModesOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -418,8 +419,54 @@ const FullScreenChatbot = () => {
           </div>
         </div>
 
-        {/* Mode tabs — center */}
-        <nav className="flex items-center gap-0.5 overflow-x-auto scrollbar-none -mx-1 px-1">
+        {/* Mode tabs — vertical sheet on mobile, horizontal on desktop */}
+        {/* Mobile: current mode button that opens vertical picker */}
+        <div className="sm:hidden relative">
+          <button
+            onClick={() => setMobileModesOpen(!mobileModesOpen)}
+            className="relative inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-medium text-primary-foreground shadow-md min-h-[40px]"
+            style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            {(() => { const Icon = currentMode.icon; return <Icon className="w-4 h-4" />; })()}
+            <span>{currentMode.label}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileModesOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Vertical dropdown */}
+          {mobileModesOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setMobileModesOpen(false)} />
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-56 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-1.5 animate-message-in">
+                {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
+                  const cfg = MODE_CONFIG[key];
+                  const Icon = cfg.icon;
+                  const isActive = mode === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => { switchMode(key); setMobileModesOpen(false); }}
+                      className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] font-medium transition-all duration-200 ${
+                        isActive
+                          ? "text-primary-foreground shadow-md"
+                          : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                      }`}
+                      style={isActive ? { background: `linear-gradient(135deg, ${cfg.gradient.split(', ').slice(1).join(', ').replace(')', '')})`, fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <Icon className="w-4.5 h-4.5 flex-shrink-0" />
+                      <div className="text-left">
+                        <span className="block leading-tight">{cfg.label}</span>
+                        <span className={`block text-[11px] leading-tight mt-0.5 ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground/60'}`}>{cfg.description.slice(0, 40)}…</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Desktop: horizontal tabs */}
+        <nav className="hidden sm:flex items-center gap-0.5 overflow-x-auto scrollbar-none -mx-1 px-1">
           {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
             const cfg = MODE_CONFIG[key];
             const Icon = cfg.icon;
@@ -428,15 +475,15 @@ const FullScreenChatbot = () => {
               <button
                 key={key}
                 onClick={() => switchMode(key)}
-                className={`relative inline-flex items-center gap-1.5 px-3 sm:px-3 py-2 sm:py-1.5 rounded-lg text-[13px] sm:text-xs font-medium transition-all duration-200 flex-shrink-0 min-h-[40px] sm:min-h-[36px] ${
+                className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex-shrink-0 min-h-[36px] ${
                   isActive
                     ? "text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
                 }`}
                 style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
               >
-                <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                <span className="hidden sm:inline">{cfg.label}</span>
+                <Icon className="w-3.5 h-3.5" />
+                <span>{cfg.label}</span>
               </button>
             );
           })}
