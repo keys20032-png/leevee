@@ -439,7 +439,7 @@ const CRISIS_CATEGORIES = [
     keywords: new Set([
       "lost everything in fire", "house burned down", "lost everything in flood",
       "hurricane destroyed", "tornado destroyed", "earthquake destroyed",
-      "wildfire", "evacuated", "refugee", "war zone", "conflict zone",
+      "war zone", "conflict zone",
       "asylum seeker", "separated from children", "facing deportation",
     ]),
   },
