@@ -87,6 +87,7 @@ const Index = () => {
       <main id="main-content" role="main" className="flex-1 overflow-hidden">
         <FullScreenChatbot />
       </main>
+      <PushNotificationPrompt />
     </div>
   );
 };
