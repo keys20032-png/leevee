@@ -70,6 +70,15 @@ describe("detectCrisis", () => {
       "the suspense is killing me ngl",
       "that joke killed me I died laughing",
       "this food is to die for",
+      "I could kill for some pizza",
+      "this movie is a total trainwreck",
+      "you're killing the vibe",
+      "that outfit is killer",
+      "she slayed that performance",
+      "I'm dead set on finishing this project",
+      "he murdered that guitar solo",
+      "I bombed the interview",
+      "traffic was murder today",
     ];
 
     it.each(humorCases.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
