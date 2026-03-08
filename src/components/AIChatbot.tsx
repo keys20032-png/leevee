@@ -710,8 +710,8 @@ const AIChatbot = () => {
     // Immediate crisis detection — redirect to specialized resource
     const crisisUrl = detectCrisis(text);
     if (crisisUrl) {
-      localStorage.setItem("safehub_crisis_redirect", "true");
-      window.location.href = crisisUrl;
+      localStorage.setItem("crisis_redirect", "true");
+      window.location.href = "/crisis-resources";
       return;
     }
 
