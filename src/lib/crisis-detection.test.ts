@@ -5,7 +5,7 @@ import { detectCrisis, detectLethality, detectDistress } from "./crisis-detectio
 describe("detectCrisis", () => {
   // --- Should TRIGGER (genuine emergencies) ---
   describe("genuine crisis phrases → should redirect", () => {
-    const cases = [
+    const cases: [string, string][] = [
       ["I want to kill myself", "kill myself"],
       ["I'm going to end my life tonight", "end my life"],
       ["suicide is the only option", "suicide"],
@@ -14,21 +14,23 @@ describe("detectCrisis", () => {
       ["I'm going to hang myself", "hang myself"],
       ["kms", "kms"],
       ["I want to unalive myself", "unalive"],
-      ["nobody would miss me if I disappeared", "no one would miss me / disappear forever"],
+      ["nobody would miss me if I disappeared", "nobody would miss me"],
       ["I'm writing my suicide note", "suicide note"],
       ["I feel trapped and there's no escape", "feel trapped + no escape"],
       ["I'm going to jump off a bridge", "off a bridge"],
+      ["I can't do this anymore", "can't do this anymore"],
+      ["I'm better off dead", "better off dead"],
+      ["no one would miss me", "no one would miss me"],
     ];
 
     it.each(cases)('"%s" triggers crisis (%s)', (input) => {
-      expect(detectCrisis(input as string)).not.toBeNull();
+      expect(detectCrisis(input)).not.toBeNull();
     });
   });
 
   // --- Should NOT trigger (false positives) ---
   describe("safe phrases → should NOT redirect", () => {
     const safeCases = [
-      "I feel trapped in my job",  // "feel trapped" IS a crisis keyword — this WILL match
       "this bridge is beautiful",
       "I studied Orthodox Judaism",
       "the method of cooking is important",
@@ -48,18 +50,18 @@ describe("detectCrisis", () => {
       "I need to hang this picture",
       "let's bridge the gap between teams",
       "she burned the dinner",
+      "the methodology was sound",
+      "we used a different method for testing",
     ];
 
-    // Note: "I feel trapped in my job" contains "feel trapped" which IS a crisis keyword.
-    // We test all the others that should be safe.
-    const trueSafeCases = safeCases.filter(c => c !== "I feel trapped in my job");
-
-    it.each(trueSafeCases.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
+    it.each(safeCases.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
       expect(detectCrisis(input as string)).toBeNull();
     });
+  });
 
-    it('"I feel trapped in my job" triggers because "feel trapped" is a crisis keyword (expected behavior)', () => {
-      // This is intentional — "feel trapped" is kept as a crisis signal
+  // --- "feel trapped" is intentionally a crisis keyword ---
+  describe("intentional crisis keywords in ambiguous contexts", () => {
+    it('"I feel trapped in my job" triggers because "feel trapped" is a crisis keyword', () => {
       expect(detectCrisis("I feel trapped in my job")).not.toBeNull();
     });
   });
@@ -67,16 +69,26 @@ describe("detectCrisis", () => {
   // --- Category-specific routing ---
   describe("category routing", () => {
     it("routes domestic violence keywords to thehotline.org", () => {
-      const result = detectCrisis("my partner is abusing me");
-      expect(result).toContain("thehotline.org");
+      const result = detectCrisis("he hits me and I'm scared");
+      expect(result).not.toBeNull();
+      expect(result!).toContain("thehotline.org");
     });
 
     it("routes LGBTQ crisis to thetrevorproject.org", () => {
-      const result = detectCrisis("I'm scared to come out as gay");
-      // May route to trevor project if keyword matches
-      if (result) {
-        expect(result).toBeTruthy();
-      }
+      const result = detectCrisis("I was kicked out for being gay");
+      expect(result).not.toBeNull();
+      expect(result!).toContain("thetrevorproject.org");
+    });
+
+    it("routes substance abuse to samhsa", () => {
+      const result = detectCrisis("I'm using meth and can't stop");
+      expect(result).not.toBeNull();
+    });
+
+    it("routes child abuse to childhelp", () => {
+      const result = detectCrisis("my parent hits me");
+      expect(result).not.toBeNull();
+      expect(result!).toContain("childhelp.org");
     });
   });
 });
@@ -95,6 +107,7 @@ describe("detectLethality", () => {
       "drink bleach",
       "step in front of a train",
       "gun to my head",
+      "I bought rope to hang myself with rope",
     ];
 
     it.each(lethalCases.map(c => [c]))('"%s" triggers lethality', (input) => {
@@ -109,17 +122,13 @@ describe("detectLethality", () => {
       "I need to buy some rope for camping",
       "I'm taking my pills as prescribed",
       "the train station is nearby",
-      "I went to the gun range with friends",  // contains "gun" — will match
       "I'm learning to tie knots",
       "the bathtub needs cleaning",
+      "the highway was busy today",
+      "the train tracks were covered in snow",
     ];
 
-    // Filter out cases that legitimately contain lethality keywords
-    const trueSafeCases = safeCases.filter(c => 
-      c !== "I went to the gun range with friends" // "gun" is in LETHALITY_MEANS
-    );
-
-    it.each(trueSafeCases.map(c => [c]))('"%s" does NOT trigger lethality', (input) => {
+    it.each(safeCases.map(c => [c]))('"%s" does NOT trigger lethality', (input) => {
       expect(detectLethality(input as string)).toBe(false);
     });
   });
@@ -150,6 +159,10 @@ describe("detectDistress", () => {
     it("sarcastic venting does not trigger", () => {
       expect(detectDistress("I'm exhausted lmao just kidding")).toBe(false);
     });
+
+    it("casual usage of distress word does not over-trigger", () => {
+      expect(detectDistress("I'm scared of spiders lol")).toBe(false);
+    });
   });
 
   describe("vent mode raises threshold", () => {
@@ -173,6 +186,10 @@ describe("detectDistress", () => {
 
     it("genuine signal in vent mode still triggers", () => {
       expect(detectDistress("I don't want to be here anymore", true)).toBe(true);
+    });
+
+    it("'please help me' always triggers", () => {
+      expect(detectDistress("please help me")).toBe(true);
     });
   });
 });
