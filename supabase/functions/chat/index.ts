@@ -645,6 +645,8 @@ async function fetchNewsHeadlines(query: string, mode: string): Promise<string> 
 function shouldSearchKnowledge(text: string, mode: string): boolean {
   // Always search in academic mode for factual grounding
   if (mode === "academic") return true;
+  // Drama mode: always search for context + news
+  if (mode === "drama") return true;
   // Fun mode: search for trivia/pop culture references
   if (mode === "fun" && (text.includes("trivia") || text.includes("fact") || text.includes("quiz"))) return true;
   // Check for knowledge triggers
