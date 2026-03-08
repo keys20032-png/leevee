@@ -16,7 +16,7 @@ export const zh = {
   },
   hero: {
     badge: "值得信赖的资源中心",
-    title: "Ally",
+    title: "Polly AI",
     subtitle: "快速找到支持",
     description: "您的全面支持、教育和健康资源指南。为您连接可信赖的学习、心理健康、安全和财务健康工具。",
     explore: "探索资源",
@@ -51,8 +51,8 @@ export const zh = {
   },
   about: {
     label: "关于我们",
-    title: "为什么选择 Ally？",
-    description: "我们相信每个人都应该获得所需的支持。Ally 是一个免费的、社区驱动的平台，将人们与可信赖的资源联系起来。",
+    title: "为什么选择 Polly AI？",
+    description: "我们相信每个人都应该获得所需的支持。Polly AI 是一个免费的、社区驱动的平台，将人们与可信赖的资源联系起来。",
     curatedTitle: "精选资源",
     curatedDesc: "每一个资源都经过精心挑选，为需要帮助的人提供真正的、可获得的支持。",
     communityTitle: "社区驱动",
@@ -95,14 +95,14 @@ export const zh = {
     crisisResources: "危机资源",
     getInTouch: "联系我们",
     suggestResource: "有资源要推荐？想合作？我们很乐意听到您的声音。",
-    copyright: "Ally © {year} — 版权所有",
+    copyright: "Polly AI © {year} — 版权所有",
     madeWith: "用",
     forThose: "为需要的人而做",
   },
   quickExit: "快速退出 - 立即离开此网站",
   chatbot: {
     toggle: "与AI助手聊天",
-    title: "Ally 助手",
+    title: "Polly AI 助手",
     placeholder: "输入您的消息...",
   },
 };

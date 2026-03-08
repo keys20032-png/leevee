@@ -16,7 +16,7 @@ export const es = {
   },
   hero: {
     badge: "Centro de Recursos Confiables",
-    title: "Ally",
+    title: "Polly AI",
     subtitle: "Encuentra Apoyo Rápido",
     description: "Tu guía completa de apoyo, educación y recursos de bienestar. Conectándote con herramientas confiables para aprendizaje, salud mental, seguridad y bienestar financiero.",
     explore: "Explorar Recursos",
@@ -51,8 +51,8 @@ export const es = {
   },
   about: {
     label: "Sobre Nosotros",
-    title: "¿Por qué Ally?",
-    description: "Creemos que todos merecen acceso al apoyo que necesitan. Ally es una plataforma gratuita impulsada por la comunidad que conecta a las personas con recursos confiables.",
+    title: "¿Por qué Polly AI?",
+    description: "Creemos que todos merecen acceso al apoyo que necesitan. Polly AI es una plataforma gratuita impulsada por la comunidad que conecta a las personas con recursos confiables.",
     curatedTitle: "Recursos Curados",
     curatedDesc: "Cada recurso es cuidadosamente seleccionado para brindar apoyo genuino y accesible a quienes lo necesitan.",
     communityTitle: "Impulsado por la Comunidad",
@@ -95,14 +95,14 @@ export const es = {
     crisisResources: "Recursos de Crisis",
     getInTouch: "Contáctanos",
     suggestResource: "¿Tienes un recurso para sugerir? ¿Quieres colaborar? Nos encantaría saber de ti.",
-    copyright: "Ally © {year} — Todos los derechos reservados",
+    copyright: "Polly AI © {year} — Todos los derechos reservados",
     madeWith: "Hecho con",
     forThose: "para quienes lo necesitan",
   },
   quickExit: "Salida rápida - abandonar este sitio inmediatamente",
   chatbot: {
     toggle: "Chatear con asistente IA",
-    title: "Asistente Ally",
+    title: "Asistente Polly AI",
     placeholder: "Escribe tu mensaje...",
   },
 };

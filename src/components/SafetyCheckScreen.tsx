@@ -29,7 +29,7 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
         {/* Logo & Header */}
         <div className="text-center space-y-4">
           <div className="inline-flex p-[2px] rounded-2xl mx-auto" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-            <img src={logo} alt="Ally logo" className="w-16 h-16 rounded-[14px] object-cover" />
+            <img src={logo} alt="Polly AI logo" className="w-16 h-16 rounded-[14px] object-cover" />
           </div>
           <h1
             className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground"
@@ -150,7 +150,7 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-primary-foreground text-sm font-semibold tracking-wide uppercase transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Continue to Ally
+              Continue to Polly AI
             </button>
           </div>
         )}

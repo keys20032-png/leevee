@@ -45,7 +45,7 @@ const Install = () => {
       <div className="w-full max-w-md space-y-8 text-center">
         {/* Logo */}
         <div className="inline-flex p-[2px] rounded-2xl mx-auto" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-          <img src={logo} alt="Ally logo" className="w-20 h-20 rounded-[14px] object-cover" />
+          <img src={logo} alt="Polly AI logo" className="w-20 h-20 rounded-[14px] object-cover" />
         </div>
 
         <div className="space-y-3">
@@ -53,10 +53,10 @@ const Install = () => {
             className="text-3xl font-bold tracking-tight text-foreground"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            Install Ally
+            Install Polly AI
           </h1>
           <p className="text-muted-foreground text-sm leading-relaxed max-w-sm mx-auto">
-            Add Ally to your home screen for quick access to resources anytime you need them.
+            Add Polly AI to your home screen for quick access to resources anytime you need them.
           </p>
         </div>
 
@@ -67,7 +67,7 @@ const Install = () => {
               Already Installed!
             </p>
             <p className="text-xs text-muted-foreground">
-              Ally is on your home screen. Open it anytime.
+              Polly AI is on your home screen. Open it anytime.
             </p>
           </div>
         ) : deferredPrompt ? (
@@ -153,7 +153,7 @@ const Install = () => {
           href="/"
           className="inline-block text-xs text-muted-foreground hover:text-primary transition-colors underline"
         >
-          Back to Ally
+          Back to Polly AI
         </a>
       </div>
     </div>
