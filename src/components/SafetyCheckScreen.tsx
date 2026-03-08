@@ -68,18 +68,47 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }:
           </p>
         </div>
 
-        {/* Countdown Timer */}
+        {/* Countdown Timer with Breathing Exercise */}
         {locked && (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 text-center space-y-3 animate-in fade-in duration-500">
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 text-center space-y-5 animate-in fade-in duration-500">
             <div className="flex items-center justify-center gap-2">
               <Clock className="w-5 h-5 text-primary" />
               <span className="text-sm font-semibold text-primary uppercase tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Take a moment
               </span>
             </div>
-            <p className="text-3xl font-bold text-foreground tracking-wider" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              {formatTime(remaining)}
-            </p>
+
+            {/* Breathing circle */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="relative w-28 h-28 flex items-center justify-center">
+                {/* Outer breathing ring */}
+                <div
+                  className="absolute inset-0 rounded-full border-2 border-primary/30"
+                  style={{ animation: "breathe 8s ease-in-out infinite" }}
+                />
+                {/* Inner breathing ring */}
+                <div
+                  className="absolute inset-3 rounded-full border border-primary/20"
+                  style={{ animation: "breathe 8s ease-in-out infinite 0.3s" }}
+                />
+                {/* Center glow */}
+                <div
+                  className="absolute inset-6 rounded-full bg-primary/5"
+                  style={{ animation: "breathe 8s ease-in-out infinite 0.6s" }}
+                />
+                {/* Timer text */}
+                <span className="relative text-3xl font-bold text-foreground tracking-wider z-10" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  {formatTime(remaining)}
+                </span>
+              </div>
+              <p
+                className="text-xs font-medium text-primary/70 uppercase tracking-widest"
+                style={{ fontFamily: "'Space Grotesk', sans-serif", animation: "breathe-text 8s ease-in-out infinite" }}
+              >
+                Breathe in… and out…
+              </p>
+            </div>
+
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
               A real person is ready to talk. Please consider calling <span className="font-semibold text-foreground">988</span> before continuing.
             </p>
