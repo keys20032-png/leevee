@@ -7,6 +7,7 @@ import {
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
   Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
+  LogIn, UserCircle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
@@ -16,6 +17,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import { jsPDF } from "jspdf";
 import { useConversations, type ChatMessage } from "@/hooks/use-conversations";
+import { useAuth } from "@/hooks/use-auth";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
@@ -132,6 +134,7 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
 };
 
 const FullScreenChatbot = () => {
+  const { user, profile } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -1434,6 +1437,15 @@ const FullScreenChatbot = () => {
                       <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>
                       <ThemeToggle />
                     </div>
+                    <div className="mx-2 my-1 h-px bg-border/50" />
+                    <a
+                      href={user ? "/profile" : "/auth"}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      {user ? <UserCircle className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+                      {user ? (profile?.display_name || "Profile") : "Sign In"}
+                    </a>
                   </div>
                 </>
               )}
@@ -1446,6 +1458,14 @@ const FullScreenChatbot = () => {
             >
               <Phone className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               <span>988</span>
+            </a>
+            {/* Profile / Login */}
+            <a
+              href={user ? "/profile" : "/auth"}
+              className="hidden sm:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              title={user ? (profile?.display_name || "Profile") : "Sign in"}
+            >
+              {user ? <UserCircle className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
             </a>
             <div className="hidden sm:block">
               <ThemeToggle />
