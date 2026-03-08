@@ -318,6 +318,43 @@ const Features = () => {
             </div>
           </AnimatedSection>
 
+          {/* Topic 5: Benchmark Gaming */}
+          <AnimatedSection delay={280}>
+            <div className="rounded-xl border border-border bg-card/60 p-5 space-y-4">
+              <h4 className="font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                📊 Do AI Benchmarks Actually Matter?
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Grok frequently ranks #1–3 on public AI leaderboards (MMLU, HumanEval, MATH, ARC). Leevee doesn't appear on any benchmarks. Does that make Grok objectively "better"? The answer is more complicated than either side admits.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">Benchmarks Are Meaningful</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Standardized benchmarks provide <em>some</em> signal. A model that scores 90% on MATH genuinely solves harder problems than one scoring 60%. Grok's performance on reasoning-heavy tasks (GSM8K, GPQA) reflects real engineering investment that translates to better outputs on complex queries.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Evidence:</strong> A 2025 meta-analysis by Epoch AI found moderate correlation (r=0.61) between benchmark performance and user satisfaction ratings on reasoning tasks.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Benchmarks Are Gameable & Misleading</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    The AI industry has a well-documented benchmark gaming problem. Models can be specifically tuned to perform well on known test sets without generalizing. Researchers call this "teaching to the test." Many benchmarks also fail to measure what users actually care about: empathy, contextual judgment, cultural fluency, and emotional safety.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Evidence:</strong> A 2025 paper from UC Berkeley ("Benchmark Contamination in LLMs") found that 23% of top-ranked models showed statistically significant signs of training on benchmark data. Separately, a Nature Machine Intelligence study found near-zero correlation between benchmark scores and user preference in open-ended conversation tasks.
+                  </p>
+                </div>
+              </div>
+              <div className="border-t border-border/50 pt-3">
+                <p className="text-xs text-muted-foreground leading-relaxed italic">
+                  <strong>Leevee's honest position:</strong> We don't compete on benchmarks — we literally can't, as an indie project using API-accessed models rather than training our own. What we optimize for is the <em>experience</em>: Does the AI understand your emotional state? Does it respect your identity? Does it remember you? Does it keep you safe? These things don't have leaderboards, but they're why people stay.
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+
           {/* Closing note */}
           <AnimatedSection delay={280}>
             <div className="rounded-xl border border-border/50 bg-secondary/30 p-5">
