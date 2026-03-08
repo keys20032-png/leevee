@@ -1128,6 +1128,14 @@ const FullScreenChatbot = () => {
                   </div>
                 </div>
                 <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground/70 tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    {(() => {
+                      const h = new Date().getHours();
+                      if (h < 12) return "Good morning ☀️";
+                      if (h < 17) return "Good afternoon 🌤️";
+                      return "Good evening 🌙";
+                    })()}
+                  </p>
                   <h2
                     className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
                     style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
