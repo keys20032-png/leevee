@@ -1,7 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX, Mic, MicOff, GraduationCap, PartyPopper, MessageSquare, PenTool, ImageIcon, Download } from "lucide-react";
+import {
+  Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
+  Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
+  PenTool, ImageIcon, Download, Phone, ChevronDown,
+} from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis } from "@/lib/crisis-detection";
+import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSelector from "@/components/LanguageSelector";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[] };
 type ChatMode = "default" | "academic" | "fun" | "creative" | "image";
@@ -9,11 +15,12 @@ type ChatMode = "default" | "academic" | "fun" | "creative" | "image";
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
 
-const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; prompts: string[] }> = {
+const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; gradient: string; prompts: string[] }> = {
   default: {
     label: "General",
     icon: MessageSquare,
-    description: "Your all-purpose AI assistant. Ask me anything — writing, coding, research, brainstorming, and more.",
+    description: "Ask me anything — writing, coding, research, brainstorming, and more.",
+    gradient: "from-primary to-accent",
     prompts: [
       "Help me write a cover letter",
       "Debug my JavaScript code",
@@ -26,10 +33,11 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
   academic: {
     label: "Academic",
     icon: GraduationCap,
-    description: "Scholarly tutor mode. Get step-by-step explanations, study strategies, and in-depth learning support.",
+    description: "Step-by-step explanations, study strategies, and in-depth learning support.",
+    gradient: "from-blue-500 to-cyan-500",
     prompts: [
       "Explain photosynthesis step by step",
-      "Help me understand calculus derivatives",
+      "Help me understand calculus",
       "What caused World War I?",
       "Teach me about DNA replication",
       "Explain supply and demand",
@@ -39,12 +47,13 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
   fun: {
     label: "Fun",
     icon: PartyPopper,
-    description: "Playful & entertaining mode! Jokes, trivia, creative challenges, and learning with flair 🎉",
+    description: "Jokes, trivia, creative challenges, and learning with flair 🎉",
+    gradient: "from-yellow-500 to-orange-500",
     prompts: [
       "Tell me a mind-blowing fact",
       "Write a funny short story",
       "Give me a riddle to solve",
-      "Roast my taste in music (gently)",
+      "Roast my taste in music",
       "Invent a new holiday",
       "Quiz me on random trivia",
     ],
@@ -52,12 +61,13 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
   creative: {
     label: "Creative",
     icon: PenTool,
-    description: "Your literary muse. Poetry, stories, screenplays, songwriting, and craft coaching ✍️",
+    description: "Poetry, stories, screenplays, songwriting, and craft coaching ✍️",
+    gradient: "from-purple-500 to-pink-500",
     prompts: [
       "Write a poem about the ocean",
       "Help me outline a short story",
-      "Give me a creative writing prompt",
-      "Write a movie scene with dialogue",
+      "Give me a writing prompt",
+      "Write a movie scene",
       "Help me develop a character",
       "Critique my opening paragraph",
     ],
@@ -65,7 +75,8 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
   image: {
     label: "Image",
     icon: ImageIcon,
-    description: "AI image generator. Describe what you want to see and Polly will create it 🎨",
+    description: "Describe what you want to see and Leevee will create it 🎨",
+    gradient: "from-emerald-500 to-teal-500",
     prompts: [
       "A cozy cabin in a snowy forest",
       "Futuristic city at sunset",
@@ -84,31 +95,58 @@ const FullScreenChatbot = () => {
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [isListening, setIsListening] = useState(false);
   const [mode, setMode] = useState<ChatMode>("default");
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const currentMode = MODE_CONFIG[mode];
 
+  // Auto-resize textarea
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = Math.min(inputRef.current.scrollHeight, 120) + "px";
+    }
+  }, [input]);
+
+  // Scroll detection
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+      setShowScrollBtn(!atBottom);
+    };
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (!showScrollBtn) scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => { inputRef.current?.focus(); }, []);
+
+  // Speech recognition
   const startListening = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR) return;
-
     const recognition = new SR() as SpeechRecognition;
     recognition.lang = "en-US";
     recognition.interimResults = true;
     recognition.continuous = false;
-
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = Array.from(event.results)
-        .map((r) => r[0].transcript)
-        .join("");
+      const transcript = Array.from(event.results).map((r) => r[0].transcript).join("");
       setInput(transcript);
     };
     recognition.onend = () => setIsListening(false);
     recognition.onerror = () => setIsListening(false);
-
     recognitionRef.current = recognition;
     recognition.start();
     setIsListening(true);
@@ -119,24 +157,16 @@ const FullScreenChatbot = () => {
     setIsListening(false);
   };
 
+  // Text-to-speech
   const speak = (text: string, index: number) => {
-    if (speakingIndex === index) {
-      window.speechSynthesis.cancel();
-      setSpeakingIndex(null);
-      return;
-    }
+    if (speakingIndex === index) { window.speechSynthesis.cancel(); setSpeakingIndex(null); return; }
     window.speechSynthesis.cancel();
-    const clean = text
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/\*\*(.*?)\*\*/g, "$1")
-      .replace(/`([^`]+)`/g, "$1")
-      .replace(/```[\s\S]*?```/g, "");
+    const clean = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/\*\*(.*?)\*\*/g, "$1").replace(/`([^`]+)`/g, "$1").replace(/```[\s\S]*?```/g, "");
     const utter = new SpeechSynthesisUtterance(clean);
     const voices = window.speechSynthesis.getVoices();
     const preferred = voices.find(v => v.lang.startsWith("en") && v.name.includes("Google")) || voices.find(v => v.lang.startsWith("en")) || voices[0];
     if (preferred) utter.voice = preferred;
-    utter.rate = 1;
-    utter.pitch = 1;
+    utter.rate = 1; utter.pitch = 1;
     utter.onend = () => setSpeakingIndex(null);
     utter.onerror = () => setSpeakingIndex(null);
     utteranceRef.current = utter;
@@ -144,55 +174,34 @@ const FullScreenChatbot = () => {
     window.speechSynthesis.speak(utter);
   };
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
   const switchMode = (newMode: ChatMode) => {
     if (newMode === mode) return;
     setMode(newMode);
     setMessages([]);
   };
 
+  // Image generation
   const generateImage = async (prompt: string) => {
     const userMsg: Message = { role: "user", content: prompt };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
-
     try {
       const resp = await fetch(IMAGE_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ prompt }),
       });
-
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({ error: "Image generation failed." }));
-        throw new Error(err.error || "Image generation failed.");
-      }
-
+      if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Image generation failed." })); throw new Error(err.error || "Image generation failed."); }
       const data = await resp.json();
-      const assistantMsg: Message = {
-        role: "assistant",
-        content: data.text || "Here's your generated image!",
-        images: data.images || [],
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
+      setMessages((prev) => [...prev, { role: "assistant", content: data.text || "Here's your generated image!", images: data.images || [] }]);
     } catch (e) {
-      setMessages((prev) => [...prev, { role: "assistant", content: e instanceof Error ? e.message : "Sorry, image generation failed. Please try again." }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: e instanceof Error ? e.message : "Sorry, image generation failed." }]);
     }
-
     setLoading(false);
   };
 
+  // Send message
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
     if (!text || loading) return;
@@ -204,10 +213,7 @@ const FullScreenChatbot = () => {
       return;
     }
 
-    // Image mode uses a separate flow
-    if (mode === "image") {
-      return generateImage(text);
-    }
+    if (mode === "image") return generateImage(text);
 
     const userMsg: Message = { role: "user", content: text };
     const allMessages = [...messages, userMsg];
@@ -216,39 +222,27 @@ const FullScreenChatbot = () => {
     setLoading(true);
 
     let assistantSoFar = "";
-
     try {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ messages: allMessages, mode }),
       });
-
-      if (!resp.ok || !resp.body) {
-        throw new Error("Failed to connect");
-      }
+      if (!resp.ok || !resp.body) throw new Error("Failed to connect");
 
       const contentType = resp.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
         const json = await resp.json();
-        if (json.crisis && json.redirect) {
-          window.location.href = json.redirect;
-          return;
-        }
+        if (json.crisis && json.redirect) { window.location.href = json.redirect; return; }
       }
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
-
         let newlineIndex: number;
         while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
           let line = buffer.slice(0, newlineIndex);
@@ -264,67 +258,58 @@ const FullScreenChatbot = () => {
               assistantSoFar += content;
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
-                if (last?.role === "assistant") {
-                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
-                }
+                if (last?.role === "assistant") return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
                 return [...prev, { role: "assistant", content: assistantSoFar }];
               });
             }
-          } catch {
-            buffer = line + "\n" + buffer;
-            break;
-          }
+          } catch { buffer = line + "\n" + buffer; break; }
         }
       }
     } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." }]);
     }
-
     setLoading(false);
   };
 
   const downloadImage = (dataUrl: string, index: number) => {
     const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = `polly-ai-image-${index + 1}.png`;
+    link.download = `leevee-ai-image-${index + 1}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  // Markdown-lite renderer
   const renderContent = (text: string) => {
     const codeBlockParts = text.split(/(```[\s\S]*?```)/g);
     return codeBlockParts.map((segment, si) => {
       const codeMatch = segment.match(/```(\w*)\n?([\s\S]*?)```/);
       if (codeMatch) {
         return (
-          <pre key={si} className="bg-secondary/80 border border-border rounded-lg p-3 my-2 overflow-x-auto text-xs">
+          <pre key={si} className="bg-secondary/80 border border-border rounded-lg p-3 my-2 overflow-x-auto text-xs font-mono">
             <code>{codeMatch[2].trim()}</code>
           </pre>
         );
       }
-
       const parts = segment.split(/(\[.*?\]\(.*?\))/g);
       return parts.map((part, i) => {
         const match = part.match(/\[(.*?)\]\((.*?)\)/);
         if (match) {
           return (
-            <a key={`${si}-${i}`} href={match[2]} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80 inline-flex items-center gap-1">
-              {match[1]}
-              <ExternalLink className="w-3 h-3" />
+            <a key={`${si}-${i}`} href={match[2]} target="_blank" rel="noopener noreferrer" className="text-primary underline decoration-primary/30 hover:decoration-primary inline-flex items-center gap-1 transition-colors">
+              {match[1]}<ExternalLink className="w-3 h-3" />
             </a>
           );
         }
         const inlineCodeParts = part.split(/(`[^`]+`)/g);
         return inlineCodeParts.map((icp, k) => {
           const inlineMatch = icp.match(/^`([^`]+)`$/);
-          if (inlineMatch) {
-            return <code key={`${si}-${i}-${k}`} className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-primary">{inlineMatch[1]}</code>;
-          }
+          if (inlineMatch) return <code key={`${si}-${i}-${k}`} className="bg-secondary px-1.5 py-0.5 rounded text-xs font-mono text-primary">{inlineMatch[1]}</code>;
           const boldParts = icp.split(/(\*\*.*?\*\*)/g);
           return boldParts.map((bp, j) => {
             const boldMatch = bp.match(/\*\*(.*?)\*\*/);
-            if (boldMatch) return <strong key={`${si}-${i}-${k}-${j}`}>{boldMatch[1]}</strong>;
+            if (boldMatch) return <strong key={`${si}-${i}-${k}-${j}`} className="font-semibold text-foreground">{boldMatch[1]}</strong>;
             return <span key={`${si}-${i}-${k}-${j}`}>{bp}</span>;
           });
         });
@@ -332,12 +317,30 @@ const FullScreenChatbot = () => {
     });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full">
-      {/* Mode Selector Bar */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-          <span className="text-xs text-muted-foreground font-medium mr-1 hidden sm:inline flex-shrink-0" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Mode:</span>
+    <div className="flex flex-col h-full bg-background">
+      {/* Top Bar */}
+      <header className="flex items-center justify-between px-4 sm:px-6 h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10">
+        <div className="flex items-center gap-3">
+          <div className="p-[1.5px] rounded-xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
+            <img src={logo} alt="Leevee AI" className="w-8 h-8 rounded-[10px] object-cover" />
+          </div>
+          <div className="hidden sm:block">
+            <h1 className="text-sm font-bold tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              Leevee AI
+            </h1>
+          </div>
+        </div>
+
+        {/* Mode tabs — center */}
+        <nav className="flex items-center gap-0.5 overflow-x-auto scrollbar-none">
           {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
             const cfg = MODE_CONFIG[key];
             const Icon = cfg.icon;
@@ -346,102 +349,122 @@ const FullScreenChatbot = () => {
               <button
                 key={key}
                 onClick={() => switchMode(key)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0 ${
+                className={`relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 flex-shrink-0 ${
                   isActive
-                    ? "text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent hover:border-border"
+                    ? "text-primary-foreground shadow-md"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
                 }`}
                 style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
-                title={cfg.description}
               >
                 <Icon className="w-3.5 h-3.5" />
-                {cfg.label}
+                <span className="hidden sm:inline">{cfg.label}</span>
               </button>
             );
           })}
-        </div>
-      </div>
+        </nav>
 
-      {/* Chat Messages Area */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 space-y-4">
+        {/* Right controls */}
+        <div className="flex items-center gap-1.5">
+          <a
+            href="tel:988"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors"
+            title="Crisis Line: 988"
+          >
+            <Phone className="w-3 h-3" />
+            <span className="hidden sm:inline">988</span>
+          </a>
+          <LanguageSelector />
+          <ThemeToggle />
+        </div>
+      </header>
+
+      {/* Chat Area */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-1">
+
           {/* Empty State */}
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center min-h-[55vh] text-center space-y-6">
-              <div
-                className="inline-flex p-[2px] rounded-2xl"
-                style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
-              >
-                <img src={logo} alt="Leevee AI logo" className="w-16 h-16 rounded-[14px] object-cover" />
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-message-in">
+              <div className="animate-float">
+                <div className="p-[2px] rounded-3xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
+                  <div className="bg-background rounded-[22px] p-3">
+                    <img src={logo} alt="Leevee AI" className="w-14 h-14 rounded-2xl object-cover" />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <h1
-                  className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight"
-                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              <div className="space-y-3">
+                <h2
+                  className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
+                  style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  Leevee AI
-                  <span className="ml-2 text-lg font-normal text-muted-foreground">
-                    · {currentMode.label}
-                  </span>
-                </h1>
-                <p className="text-muted-foreground text-sm max-w-md">
+                  Hey, I'm Leevee
+                </h2>
+                <p className="text-muted-foreground text-sm max-w-sm mx-auto leading-relaxed">
                   {currentMode.description}
                 </p>
               </div>
 
               {/* Quick Prompts */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-lg w-full">
-                {currentMode.prompts.map((q) => (
+              <div className="grid grid-cols-2 gap-2 max-w-md w-full">
+                {currentMode.prompts.slice(0, 4).map((q) => (
                   <button
                     key={q}
                     onClick={() => sendMessage(q)}
-                    className="group px-4 py-3 text-xs rounded-xl border border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground hover:bg-secondary transition-all text-left flex items-start gap-2"
+                    className="group px-4 py-3.5 text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2.5 hover:shadow-lg hover:shadow-primary/5"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-primary/50 group-hover:text-primary flex-shrink-0 mt-0.5" />
-                    {q}
+                    <Sparkles className="w-3.5 h-3.5 text-primary/40 group-hover:text-primary flex-shrink-0 mt-0.5 transition-colors" />
+                    <span className="leading-snug">{q}</span>
                   </button>
                 ))}
+              </div>
+
+              {/* Crisis info subtle */}
+              <div className="flex items-center gap-2 text-[11px] text-muted-foreground/60">
+                <span>In crisis?</span>
+                <a href="tel:988" className="text-destructive/70 hover:text-destructive font-medium transition-colors">
+                  Call or text 988
+                </a>
+                <span>·</span>
+                <a href="/crisis-resources" className="hover:text-foreground transition-colors">
+                  View all resources
+                </a>
               </div>
             </div>
           )}
 
           {/* Messages */}
           {messages.map((msg, i) => (
-            <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div key={i} className={`flex gap-3 py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role === "assistant" && (
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
+                  className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm"
                   style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
                 >
-                  <Bot className="w-4 h-4 text-primary-foreground" />
+                  <Bot className="w-3.5 h-3.5 text-primary-foreground" />
                 </div>
               )}
-              <div className="max-w-[75%] flex flex-col gap-1">
+              <div className="max-w-[78%] flex flex-col gap-1">
                 <div
-                  className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+                  className={`px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-br-md"
-                      : "bg-card border border-border text-foreground rounded-bl-md"
+                      ? "rounded-2xl rounded-br-md text-primary-foreground shadow-md"
+                      : "rounded-2xl rounded-bl-md bg-card border border-border/50 text-foreground shadow-sm"
                   }`}
+                  style={msg.role === "user" ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" } : undefined}
                 >
                   {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
                 </div>
 
-                {/* Render generated images */}
+                {/* Generated images */}
                 {msg.images && msg.images.length > 0 && (
                   <div className="flex flex-col gap-2 mt-1">
                     {msg.images.map((imgSrc, imgIdx) => (
-                      <div key={imgIdx} className="relative group rounded-xl overflow-hidden border border-border shadow-sm">
-                        <img
-                          src={imgSrc}
-                          alt={`Generated image ${imgIdx + 1}`}
-                          className="w-full max-w-md rounded-xl"
-                          loading="lazy"
-                        />
+                      <div key={imgIdx} className="relative group rounded-2xl overflow-hidden border border-border/50 shadow-lg">
+                        <img src={imgSrc} alt={`Generated image ${imgIdx + 1}`} className="w-full max-w-md rounded-2xl" loading="lazy" />
                         <button
                           onClick={() => downloadImage(imgSrc, imgIdx)}
-                          className="absolute top-2 right-2 p-2 rounded-lg bg-background/80 backdrop-blur-sm border border-border text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                          className="absolute top-3 right-3 p-2 rounded-xl glass glass-border text-foreground opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-card"
                           title="Download image"
                         >
                           <Download className="w-4 h-4" />
@@ -451,101 +474,113 @@ const FullScreenChatbot = () => {
                   </div>
                 )}
 
+                {/* Read aloud */}
                 {msg.role === "assistant" && !msg.images?.length && (
                   <button
                     onClick={() => speak(msg.content, i)}
-                    className="self-start ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+                    className="self-start ml-1 p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
                     aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
-                    title={speakingIndex === i ? "Stop" : "Read aloud"}
                   >
                     {speakingIndex === i ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                   </button>
                 )}
               </div>
               {msg.role === "user" && (
-                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 bg-primary/20">
-                  <User className="w-4 h-4 text-primary" />
+                <div className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 mt-1 bg-secondary border border-border/50">
+                  <User className="w-3.5 h-3.5 text-muted-foreground" />
                 </div>
               )}
             </div>
           ))}
 
-          {/* Loading */}
+          {/* Loading indicator */}
           {loading && messages[messages.length - 1]?.role !== "assistant" && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 py-2 animate-message-in">
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
                 style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
               >
-                <Bot className="w-4 h-4 text-primary-foreground" />
+                <Bot className="w-3.5 h-3.5 text-primary-foreground" />
               </div>
-              <div className="bg-card border border-border px-4 py-3 rounded-2xl rounded-bl-md">
+              <div className="bg-card border border-border/50 px-5 py-3.5 rounded-2xl rounded-bl-md shadow-sm">
                 {mode === "image" ? (
-                  <div className="flex items-center gap-2">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex gap-1.5">
+                      <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
+                      <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
+                      <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
                     </div>
-                    <span className="text-xs text-muted-foreground ml-1">Generating image…</span>
+                    <span className="text-xs text-muted-foreground">Generating image…</span>
                   </div>
                 ) : (
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <div className="flex gap-1.5">
+                    <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
+                    <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
+                    <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
                   </div>
                 )}
               </div>
             </div>
           )}
         </div>
+
+        {/* Scroll to bottom */}
+        {showScrollBtn && (
+          <button
+            onClick={scrollToBottom}
+            className="fixed bottom-28 left-1/2 -translate-x-1/2 p-2 rounded-full glass glass-border shadow-lg hover:bg-card transition-all z-20 animate-message-in"
+          >
+            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+          </button>
+        )}
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-border bg-background/80 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-4">
+      <div className="border-t border-border/50 glass flex-shrink-0">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3">
           <form
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-            className="flex gap-3"
+            className="flex items-end gap-2"
           >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={
-                isListening
-                  ? "Listening..."
-                  : mode === "image"
-                  ? "Describe what you want to see..."
-                  : "Ask me anything..."
-              }
-              className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-            />
-            <button
-              type="button"
-              onClick={isListening ? stopListening : startListening}
-              className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 flex-shrink-0 ${
-                isListening
-                  ? "bg-destructive text-destructive-foreground animate-pulse"
-                  : "bg-secondary border border-border text-muted-foreground hover:text-foreground"
-              }`}
-              aria-label={isListening ? "Stop listening" : "Voice input"}
-              title={isListening ? "Stop listening" : "Voice input"}
-            >
-              {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-            </button>
+            <div className="flex-1 relative">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  isListening ? "Listening..."
+                    : mode === "image" ? "Describe what you want to see..."
+                    : "Message Leevee..."
+                }
+                rows={1}
+                className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3 pr-12 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none scrollbar-none"
+                style={{ fontFamily: "'Space Grotesk', sans-serif", maxHeight: "120px" }}
+              />
+              {/* Voice button inside input */}
+              <button
+                type="button"
+                onClick={isListening ? stopListening : startListening}
+                className={`absolute right-3 bottom-2.5 p-1.5 rounded-lg transition-all ${
+                  isListening
+                    ? "text-destructive animate-pulse"
+                    : "text-muted-foreground/40 hover:text-muted-foreground"
+                }`}
+                aria-label={isListening ? "Stop listening" : "Voice input"}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
+            </div>
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="w-11 h-11 rounded-xl flex items-center justify-center disabled:opacity-40 transition-all hover:scale-105 active:scale-95 flex-shrink-0"
+              className="w-10 h-10 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex-shrink-0 glow-primary"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
             >
               {mode === "image" ? <ImageIcon className="w-4 h-4 text-primary-foreground" /> : <Send className="w-4 h-4 text-primary-foreground" />}
             </button>
           </form>
-          <p className="text-xs text-muted-foreground/50 text-center mt-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          <p className="text-[10px] text-muted-foreground/30 text-center mt-2 tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             Leevee AI · Powered by Gemini
           </p>
         </div>
