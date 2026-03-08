@@ -962,66 +962,110 @@ const FullScreenChatbot = () => {
             })}
           </nav>
 
-          <div className="flex items-center gap-1">
-            {/* Chat search toggle */}
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            {/* Desktop: show all controls */}
             {messages.length > 0 && (
-              <button
-                onClick={() => { setChatSearchOpen(!chatSearchOpen); setChatSearch(""); setChatSearchIdx(0); }}
-                className={`p-2 rounded-lg transition-colors ${chatSearchOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
-                title="Search in chat"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-            )}
-            {/* Share / export */}
-            {messages.length > 0 && (
-              <div className="relative">
+              <>
                 <button
-                  onClick={() => setShareMenuOpen(!shareMenuOpen)}
-                  className={`p-2 rounded-lg transition-colors ${shareMenuOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
-                  title="Share conversation"
+                  onClick={() => { setChatSearchOpen(!chatSearchOpen); setChatSearch(""); setChatSearchIdx(0); }}
+                  className={`hidden sm:flex p-2 rounded-lg transition-colors ${chatSearchOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
+                  title="Search in chat"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Search className="w-4 h-4" />
                 </button>
-                {shareMenuOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
-                    <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
-                      <button
-                        onClick={copyConversation}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                      >
-                        <Copy className="w-3.5 h-3.5" /> Copy to clipboard
-                      </button>
-                      <button
-                        onClick={exportAsText}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                      >
-                        <FileText className="w-3.5 h-3.5" /> Export as .txt
-                      </button>
-                      <button
-                        onClick={exportConversationPDF}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                      >
-                        <Download className="w-3.5 h-3.5" /> Export as PDF
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
+                <div className="hidden sm:block relative">
+                  <button
+                    onClick={() => setShareMenuOpen(!shareMenuOpen)}
+                    className={`p-2 rounded-lg transition-colors ${shareMenuOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
+                    title="Share conversation"
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </button>
+                  {shareMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
+                      <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
+                        <button onClick={copyConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <Copy className="w-3.5 h-3.5" /> Copy to clipboard
+                        </button>
+                        <button onClick={exportAsText} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <FileText className="w-3.5 h-3.5" /> Export as .txt
+                        </button>
+                        <button onClick={exportConversationPDF} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <Download className="w-3.5 h-3.5" /> Export as PDF
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
             )}
+
+            {/* Mobile: more menu consolidates search, share, new chat, theme */}
+            <div className="sm:hidden relative">
+              <button
+                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                className={`p-2.5 rounded-lg transition-colors active:scale-95 ${moreMenuOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
+              {moreMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 z-50 w-52 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 animate-message-in">
+                    <button
+                      onClick={() => { startNewChat(); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <Plus className="w-4 h-4" /> New chat
+                    </button>
+                    {messages.length > 0 && (
+                      <>
+                        <button
+                          onClick={() => { setChatSearchOpen(true); setChatSearch(""); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                        >
+                          <Search className="w-4 h-4" /> Search messages
+                        </button>
+                        <button
+                          onClick={() => { copyConversation(); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                        >
+                          <Copy className="w-4 h-4" /> Copy conversation
+                        </button>
+                        <button
+                          onClick={() => { exportConversationPDF(); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                        >
+                          <Download className="w-4 h-4" /> Export as PDF
+                        </button>
+                      </>
+                    )}
+                    <div className="mx-2 my-1 h-px bg-border/50" />
+                    <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl">
+                      <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
             <a
               href="tel:988"
-              className="inline-flex items-center gap-1 px-3 sm:px-2.5 py-1.5 rounded-lg text-[11px] sm:text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors min-h-[36px]"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] sm:text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors min-h-[36px] sm:min-h-[36px]"
               title="Crisis Line: 988"
             >
               <Phone className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               <span className="hidden sm:inline">988</span>
             </a>
-            <ThemeToggle />
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
           </div>
         </header>
 
