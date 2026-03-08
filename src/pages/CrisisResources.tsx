@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CrisisResourceCard from "@/components/CrisisResourceCard";
 import SafetyCheckScreen from "@/components/SafetyCheckScreen";
+import LanguageSelector from "@/components/LanguageSelector";
 import { useI18n } from "@/i18n/I18nContext";
 
 export interface CrisisResource {
@@ -366,6 +367,10 @@ const CrisisResources = () => {
               {" / "}
               <a href="tel:988" className="underline font-bold">988</a>
             </span>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <LanguageSelector />
           </div>
         </div>
       </section>

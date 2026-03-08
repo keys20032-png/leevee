@@ -379,7 +379,7 @@ const FullScreenChatbot = () => {
             <Phone className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
             <span className="hidden sm:inline">988</span>
           </a>
-          <LanguageSelector />
+          
           <ThemeToggle />
         </div>
       </header>
