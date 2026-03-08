@@ -910,17 +910,16 @@ const FullScreenChatbot = () => {
               className="relative inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-medium text-primary-foreground shadow-md min-h-[40px]"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              {(() => { const Icon = currentMode.icon; return <Icon className="w-4 h-4" />; })()}
+              <span>{currentMode.emoji}</span>
               <span>{currentMode.label}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileModesOpen ? 'rotate-180' : ''}`} />
             </button>
             {mobileModesOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setMobileModesOpen(false)} />
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-60 max-h-[70vh] overflow-y-auto scrollbar-none rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-1.5 animate-message-in">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-64 max-h-[70vh] overflow-y-auto scrollbar-none rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-1.5 animate-message-in">
                   {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
                     const cfg = MODE_CONFIG[key];
-                    const Icon = cfg.icon;
                     const isActive = mode === key;
                     return (
                       <button
@@ -933,8 +932,11 @@ const FullScreenChatbot = () => {
                         }`}
                         style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
                       >
-                        <Icon className="w-4 h-4 flex-shrink-0" />
-                        <span className="text-left leading-tight">{cfg.label}</span>
+                        <span className="text-base">{cfg.emoji}</span>
+                        <div className="text-left min-w-0">
+                          <span className="block leading-tight">{cfg.label}</span>
+                          <span className={`block text-[11px] leading-tight mt-0.5 truncate ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground/50'}`}>{cfg.description}</span>
+                        </div>
                       </button>
                     );
                   })}
@@ -1138,48 +1140,51 @@ const FullScreenChatbot = () => {
                     </div>
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <p className="text-sm text-muted-foreground/70 tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                     {(() => {
                       const h = new Date().getHours();
+                      if (h < 5) return "Still up? I'm here. 🌙";
                       if (h < 12) return "Good morning ☀️";
                       if (h < 17) return "Good afternoon 🌤️";
-                      return "Good evening 🌙";
+                      if (h < 21) return "Good evening 🌅";
+                      return "Hey, night owl 🌙";
                     })()}
                   </p>
                   <h2
                     className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
-                    style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
+                    style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--warm-glow)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    What's on your mind?
+                    {mode === "vent" ? "I'm listening." : mode === "academic" ? "Let's learn something." : mode === "creative" ? "Let's make something." : mode === "debate" ? "Challenge me." : mode === "image" ? "What do you see?" : mode === "fun" ? "Let's play." : "What's on your mind?"}
                   </h2>
-                  <p className="text-muted-foreground text-sm sm:text-sm max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
+                  <p className="text-muted-foreground text-[13px] sm:text-sm max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-2 max-w-md w-full px-2 sm:px-0">
+                <div className="grid grid-cols-2 gap-2 max-w-md w-full px-2 sm:px-0">
                   {currentMode.prompts.slice(0, 4).map((q) => (
                     <button
                       key={q}
                       onClick={() => sendMessage(q)}
-                      className="group px-4 py-3.5 sm:py-3.5 text-[13px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2.5 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98]"
+                      className="group px-3.5 py-3 text-[12px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.97]"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Sparkles className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-primary/40 group-hover:text-primary flex-shrink-0 mt-0.5 transition-colors" />
+                      <span className="text-primary/40 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5">→</span>
                       <span className="leading-snug">{q}</span>
                     </button>
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/60">
-                  <span>In crisis?</span>
+                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/60 px-4">
+                  <span>You're not alone</span>
+                  <span>·</span>
                   <a href="tel:988" className="text-destructive/70 hover:text-destructive font-medium transition-colors">
-                    Call or text 988
+                    988 Lifeline
                   </a>
                   <span>·</span>
                   <a href="/crisis-resources" className="hover:text-foreground transition-colors">
-                    View all resources
+                    Resources
                   </a>
                 </div>
               </div>
