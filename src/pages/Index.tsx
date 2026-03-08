@@ -1,28 +1,6 @@
-import { useState, useEffect } from "react";
-
-import QuickExitButton from "@/components/QuickExitButton";
-import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 import FullScreenChatbot from "@/components/FullScreenChatbot";
 
 const Index = () => {
-  const [showSafetyCheck, setShowSafetyCheck] = useState(false);
-
-  useEffect(() => {
-    const wasRedirected = localStorage.getItem("safehub_crisis_redirect");
-    if (wasRedirected === "true") {
-      setShowSafetyCheck(true);
-    }
-  }, []);
-
-  const handleSafetyCheckComplete = () => {
-    localStorage.removeItem("safehub_crisis_redirect");
-    setShowSafetyCheck(false);
-  };
-
-  if (showSafetyCheck) {
-    return <SafetyCheckScreen onContinue={handleSafetyCheckComplete} />;
-  }
-
   return (
     <div className="h-screen flex flex-col bg-background">
       <a
@@ -31,7 +9,6 @@ const Index = () => {
       >
         Skip to main content
       </a>
-      <QuickExitButton />
       <main id="main-content" role="main" className="flex-1 overflow-hidden">
         <FullScreenChatbot />
       </main>
