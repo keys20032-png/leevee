@@ -182,7 +182,7 @@ describe("detectLethality", () => {
       "drink bleach",
       "step in front of a train",
       "gun to my head",
-      "I bought rope to hang myself with rope",
+      "I got the rope ready",
     ];
 
     it.each(lethalCases.map(c => [c]))('"%s" triggers lethality', (input) => {
@@ -201,9 +201,30 @@ describe("detectLethality", () => {
       "the bathtub needs cleaning",
       "the highway was busy today",
       "the train tracks were covered in snow",
+      "tell me about gun control laws",
+      "what's the latest on gun violence legislation",
+      "the noose was used in the magic trick",
+      "top gun was a great movie",
+      "she plays a heroine in the story",
+      "this razor blade is for shaving",
     ];
 
     it.each(safeCases.map(c => [c]))('"%s" does NOT trigger lethality', (input) => {
+      expect(detectLethality(input as string)).toBe(false);
+    });
+  });
+
+  // --- False positive prevention: common queries that should NEVER trigger ---
+  describe("educational/news queries → should NOT trigger lethality", () => {
+    const educationalCases = [
+      "what are the gun laws in Texas",
+      "history of the noose in American justice",
+      "buy me a box cutter from the store",
+      "the sleeping pills help me rest",
+      "antifreeze keeps the car running in winter",
+    ];
+
+    it.each(educationalCases.map(c => [c]))('"%s" does NOT trigger lethality', (input) => {
       expect(detectLethality(input as string)).toBe(false);
     });
   });
