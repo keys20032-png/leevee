@@ -503,6 +503,7 @@ const FullScreenChatbot = () => {
             ...(m.uploadedImage ? { imageData: m.uploadedImage } : {}),
           })),
           mode,
+          sessionId,
           ...(currentImage ? { imageData: currentImage } : {}),
         }),
       });
