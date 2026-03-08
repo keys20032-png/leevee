@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Shield, Phone, Heart, CheckCircle2, Clock } from "lucide-react";
 import logo from "@/assets/safehelphublogo.jpg";
+import { haptic } from "@/lib/haptics";
 
 const CHECKLIST_ITEMS = [
   "I have taken a few deep breaths",
