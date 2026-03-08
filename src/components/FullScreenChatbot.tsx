@@ -1583,14 +1583,15 @@ const FullScreenChatbot = () => {
             {/* Empty State */}
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[60vh] text-center space-y-6 sm:space-y-8 animate-message-in">
-                <div className="animate-float">
-                  <div className="p-[2px] rounded-3xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
+                <div className="animate-float relative">
+                  <div className="absolute inset-0 rounded-3xl blur-2xl opacity-30 animate-pulse-ring" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }} />
+                  <div className="p-[2px] rounded-3xl relative" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)))" }}>
                     <div className="bg-background rounded-[22px] p-3">
                       <img src={logo} alt="Leevee AI" className="w-16 h-16 sm:w-14 sm:h-14 rounded-2xl object-cover" />
                     </div>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <p className="text-sm text-muted-foreground/70 tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                     {(() => {
                       const h = new Date().getHours();
@@ -1602,8 +1603,8 @@ const FullScreenChatbot = () => {
                     })()}
                   </p>
                   <h2
-                    className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
-                    style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--warm-glow)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
+                    className="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text"
+                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
                     {mode === "vent" ? "I'm listening." : mode === "academic" ? "Let's learn something." : mode === "creative" ? "Let's make something." : mode === "debate" ? "Challenge me." : mode === "image" ? "What do you see?" : mode === "fun" ? "Let's play." : "What's on your mind?"}
                   </h2>
@@ -1612,28 +1613,28 @@ const FullScreenChatbot = () => {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 max-w-md w-full px-2 sm:px-0">
+                <div className="grid grid-cols-2 gap-2.5 max-w-md w-full px-2 sm:px-0">
                   {currentMode.prompts.slice(0, 4).map((q) => (
                     <button
                       key={q}
                       onClick={() => sendMessage(q, { skipCrisisCheck: true })}
-                      className="group px-3.5 py-3 text-[12px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.97]"
+                      className="group px-3.5 py-3.5 text-[12px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/40 hover:text-foreground hover:bg-card/80 transition-all duration-300 text-left flex items-start gap-2 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.97] hover:-translate-y-0.5"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <span className="text-primary/40 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5">→</span>
+                      <span className="text-primary/30 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5">→</span>
                       <span className="leading-snug">{q}</span>
                     </button>
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/60 px-4">
+                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/50 px-4">
                   <span>You're not alone</span>
-                  <span>·</span>
+                  <span className="text-muted-foreground/20">·</span>
                   <a href="tel:988" className="text-destructive/70 hover:text-destructive font-medium transition-colors">
                     988 Lifeline
                   </a>
-                  <span>·</span>
-                  <a href="/crisis-resources" className="hover:text-foreground transition-colors">
+                  <span className="text-muted-foreground/20">·</span>
+                  <a href="/crisis-resources" className="hover:text-foreground/70 transition-colors">
                     Resources
                   </a>
                 </div>
@@ -1862,7 +1863,7 @@ const FullScreenChatbot = () => {
               onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
               className="flex items-end gap-2.5"
             >
-              <div className="flex-1 relative">
+              <div className="flex-1 relative group">
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -1875,16 +1876,16 @@ const FullScreenChatbot = () => {
                       : "Message Leevee..."
                   }
                   rows={1}
-                  className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3.5 pr-12 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none scrollbar-none text-[16px] sm:text-sm"
+                  className="w-full bg-card/80 border border-border/60 rounded-2xl px-4 py-3.5 pr-12 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all duration-300 resize-none scrollbar-none text-[16px] sm:text-sm group-hover:border-border"
                   style={{ fontFamily: "'Space Grotesk', sans-serif", maxHeight: "140px" }}
                 />
                 <button
                   type="button"
                   onClick={isListening ? stopListening : startListening}
-                  className={`absolute right-3 bottom-3 p-2 rounded-lg transition-all ${
+                  className={`absolute right-3 bottom-3 p-2 rounded-lg transition-all duration-200 ${
                     isListening
                       ? "text-destructive animate-pulse"
-                      : "text-muted-foreground/40 hover:text-muted-foreground"
+                      : "text-muted-foreground/30 hover:text-muted-foreground/70"
                   }`}
                   aria-label={isListening ? "Stop listening" : "Voice input"}
                 >
@@ -1894,15 +1895,15 @@ const FullScreenChatbot = () => {
               <button
                 type="submit"
                 disabled={(!input.trim() && !pendingImage) || loading}
-                className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex-shrink-0 glow-primary"
+                className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center disabled:opacity-20 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-95 flex-shrink-0 glow-primary"
                 style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
               >
                 {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
               </button>
             </form>
             {tier !== "premium" && (
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <span className={`text-[10px] tracking-wider uppercase ${remaining <= 3 ? "text-destructive" : "text-muted-foreground/40"}`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <div className="flex items-center justify-center gap-2 mt-1.5">
+                <span className={`text-[10px] tracking-wider uppercase ${remaining <= 3 ? "text-destructive" : "text-muted-foreground/30"}`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                   {remaining}/{limit === Infinity ? "∞" : limit} messages left today
                 </span>
                 {remaining <= 5 && (
@@ -1912,22 +1913,20 @@ const FullScreenChatbot = () => {
                 )}
               </div>
             )}
-            <p className="text-[10px] text-muted-foreground/30 text-center mt-1.5 sm:mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              <span>Leevee AI</span>
-              <span className="text-muted-foreground/20">·</span>
-              <span>Powered by Gemini</span>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/safety" className="hover:text-muted-foreground/60 transition-colors">Safety</a>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/vision/ai-web-developer" className="hover:text-muted-foreground/60 transition-colors">Vision</a>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/feature-requests" className="hover:text-muted-foreground/60 transition-colors">Ideas</a>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/pricing" className="hover:text-muted-foreground/60 transition-colors">Pricing</a>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/terms" className="hover:text-muted-foreground/60 transition-colors">Terms</a>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/privacy" className="hover:text-muted-foreground/60 transition-colors">Privacy</a>
+            <p className="text-[10px] text-muted-foreground/25 text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-1.5 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <span className="font-medium text-muted-foreground/35">Leevee AI</span>
+              <span>·</span>
+              <a href="/features" className="hover:text-muted-foreground/50 transition-colors">Features</a>
+              <span>·</span>
+              <a href="/safety" className="hover:text-muted-foreground/50 transition-colors">Safety</a>
+              <span>·</span>
+              <a href="/feature-requests" className="hover:text-muted-foreground/50 transition-colors">Ideas</a>
+              <span>·</span>
+              <a href="/pricing" className="hover:text-muted-foreground/50 transition-colors">Pricing</a>
+              <span>·</span>
+              <a href="/terms" className="hover:text-muted-foreground/50 transition-colors">Terms</a>
+              <span>·</span>
+              <a href="/privacy" className="hover:text-muted-foreground/50 transition-colors">Privacy</a>
             </p>
           </div>
         </div>
