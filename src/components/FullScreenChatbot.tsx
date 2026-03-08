@@ -500,6 +500,7 @@ const FullScreenChatbot = () => {
     const currentImage = pendingImage;
     setPendingImage(null);
     setLoading(true);
+    increment();
 
     // Save user message to DB
     if (convoId) {
