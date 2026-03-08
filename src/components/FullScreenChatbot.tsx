@@ -793,22 +793,22 @@ const FullScreenChatbot = () => {
       {sidebarOpen && (
         <>
           <div className="fixed inset-0 z-30 bg-background/60 backdrop-blur-sm sm:hidden" onClick={() => setSidebarOpen(false)} />
-          <aside className="fixed sm:relative z-40 h-full w-72 sm:w-64 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
-            <div className="flex items-center justify-between px-3 py-3 border-b border-border/50">
+           <aside className="fixed sm:relative z-40 h-full w-[80vw] max-w-72 sm:w-64 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
+            <div className="flex items-center justify-between px-3 py-3.5 sm:py-3 border-b border-border/50">
               <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>History</span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => { startNewChat(); setSidebarOpen(false); }}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                  className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
                   title="New chat"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-5 h-5 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                  className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
                 >
-                  <PanelLeftClose className="w-4 h-4" />
+                  <PanelLeftClose className="w-5 h-5 sm:w-4 sm:h-4" />
                 </button>
               </div>
             </div>
