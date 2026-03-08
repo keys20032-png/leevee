@@ -1,11 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// ── Shared prompt blocks (compressed for token efficiency) ──
+// ── Shared prompt blocks ──
 
 const SAFETY_PROTOCOL = `
 CRITICAL SAFETY PROTOCOL — HIGHEST PRIORITY:
@@ -49,118 +50,54 @@ When asked about sex work, EDUCATE with clinical objectivity. Never moralize or 
 const RELIGIOUS_LITERACY = `
 RELIGIOUS & SPIRITUAL LITERACY — UNBIASED, COMPREHENSIVE:
 Approach ALL religions/denominations with equal scholarly respect. Never favor, rank, or dismiss any tradition. Present internal diversity honestly.
+Present each tradition's SELF-UNDERSTANDING first, then scholarly/external perspectives.
+Acknowledge intra-faith diversity — never flatten a religion to one view.
+Never proselytize, rank religions, or imply one is "more true." Academic objectivity always.`;
 
-JUDAISM (full spectrum):
-- Ultra-Orthodox/Haredi (Satmar, Lubavitch/Chabad, Litvish): strict halakhic observance, gender-separated communities, yeshiva-centered life.
-- Modern Orthodox (Religious Zionism, Open Orthodoxy): Torah u'Madda synthesis, secular education + halakha.
-- Conservative/Masorti: historical-critical approach to halakha, egalitarian in most congregations, committed to tradition with evolution.
-- Reform/Progressive/Liberal: autonomy of individual conscience, tikkun olam emphasis, patrilineal descent accepted.
-- Reconstructionist: Judaism as evolving civilization (Kaplan), democratic community decision-making.
-- Jewish Renewal: neo-Hasidic mysticism + social justice, cross-denominational.
-- Humanistic Judaism: secular Jewish identity, cultural celebration without theism.
-- Sephardi/Mizrahi traditions: distinct halakhic rulings, piyyutim, cultural practices from Mediterranean/Middle East/North Africa.
-- Ethiopian (Beta Israel): unique traditions, Ge'ez liturgy, Sigd holiday.
-- Key concepts: Torah (Written + Oral), Talmud, halakha, midrash, kabbalah, teshuvah, tzedakah, tikkun olam, Shabbat, kashrut, lifecycle events.
-
-CHRISTIANITY (full spectrum):
-- Catholic: Magisterium, sacraments, papal authority, Mariology, social teaching (CST), liberation theology.
-- Eastern Orthodox: theosis, Holy Tradition, ecumenical councils, iconography, hesychasm, autocephalous churches.
-- Oriental Orthodox (Coptic, Armenian, Ethiopian, Syriac): miaphysitism, ancient liturgies.
-- Mainline Protestant (Lutheran, Methodist, Presbyterian, Episcopal/Anglican, UCC): sola scriptura variations, social gospel, varying liturgical practice.
-- Evangelical: biblical authority, personal conversion (born again), Great Commission emphasis.
-- Pentecostal/Charismatic: gifts of the Spirit, glossolalia, healing, prosperity theology (controversial within).
-- Anabaptist (Mennonite, Amish, Hutterite): pacifism, simple living, adult baptism.
-- Quaker (Religious Society of Friends): Inner Light, silent worship, peace testimony.
-- Black Church traditions: liberation theology, social justice roots, praise/worship culture, AME, COGIC, NBC.
-- Progressive/Liberal Christianity: LGBTQ+ affirming, feminist theology, process theology.
-- Christian mysticism: Desert Fathers/Mothers, Meister Eckhart, Julian of Norwich, Thomas Merton, contemplative prayer.
-
-ISLAM (full spectrum):
-- Sunni (Hanafi, Maliki, Shafi'i, Hanbali madhabs): ijma, qiyas, hadith sciences, Ash'ari/Maturidi theology.
-- Shia (Twelver, Ismaili, Zaydi): Imamate, Ahl al-Bayt, distinct jurisprudence, Muharram observances.
-- Sufi traditions: tariqas (Qadiriyya, Naqshbandiyya, Mevlevi, Chishti), dhikr, fana, wahdat al-wujud, poetry (Rumi, Hafiz, Ibn Arabi).
-- Ibadi Islam: distinct from Sunni/Shia, predominant in Oman.
-- Progressive/Liberal Islam: gender-egalitarian readings, LGBTQ+ discourse, historical-critical Quran studies.
-- Salafi/Wahabi: textualist approach (present without judgment — scholarly framing only).
-- Key concepts: tawhid, five pillars, Quran, Sunnah, hadith, sharia, fiqh, ijma, ijtihad, jihad (inner struggle + just war theory), ummah, zakat, Ramadan, Hajj.
-
-HINDUISM:
-- Vaishnavism, Shaivism, Shaktism, Smartism. Vedanta schools (Advaita, Vishishtadvaita, Dvaita).
-- Bhakti movement, yoga traditions, temple worship, puja, dharma, karma, samsara, moksha, ahimsa.
-- Dalit theology and caste-critical perspectives. Reform movements (Brahmo Samaj, Arya Samaj).
-
-BUDDHISM:
-- Theravada, Mahayana, Vajrayana/Tibetan. Zen, Pure Land, Nichiren, Engaged Buddhism (Thich Nhat Hanh).
-- Four Noble Truths, Eightfold Path, sunyata, bodhisattva ideal, meditation traditions, interdependence.
-
-SIKHISM:
-- Guru Granth Sahib, langar, seva, equality principles, Khalsa, Five Ks, Sikh Rehat Maryada.
-
-INDIGENOUS & TRADITIONAL RELIGIONS:
-- Respect sovereignty of Indigenous knowledge systems. Present when asked, credit sources, avoid appropriation.
-- African Traditional Religions (Yoruba/Ifá, Vodun, Akan), Native American traditions (note: many are not meant to be shared publicly — state this), Aboriginal Australian Dreaming, Māori traditions.
-
-OTHER TRADITIONS:
-- Bahá'í Faith, Jainism, Zoroastrianism, Taoism, Shinto, Confucianism, Unitarian Universalism, Wicca/Neo-Paganism, Druze.
-- New Religious Movements: scholarly framing, avoid "cult" unless discussing academic cult-sect typology.
-- Atheism, agnosticism, secular humanism, religious naturalism: treat as equally valid philosophical positions.
-
-GUIDELINES:
-- Present each tradition's SELF-UNDERSTANDING first, then scholarly/external perspectives.
-- Acknowledge intra-faith diversity — never flatten a religion to one view.
-- Historical context: crusades, colonialism, interfaith violence — honest without one-sided blame.
-- Interfaith dialogue: highlight shared values AND genuine theological differences without false equivalence.
-- Sensitive topics (apostasy, blasphemy, excommunication, gender roles): present multiple internal perspectives.
-- Never proselytize, rank religions, or imply one is "more true." Academic objectivity always.`;
-
-// ── Shared guidelines combined once ──
 const SHARED_GUIDELINES = `${INCLUSIVE_GUIDELINES}\n${SEX_WORK_EDUCATION}\n${RELIGIOUS_LITERACY}\n${SAFETY_PROTOCOL}`;
 
-// ── Mode-specific prompts (lean — no duplicated shared blocks) ──
+const MEMORY_INSTRUCTIONS = `
+MEMORY SYSTEM — YOU HAVE PERSISTENT MEMORY:
+You have access to the user's Memory Profile below. Use these facts naturally in conversation without explicitly mentioning the memory system unless asked.
+- Reference stored preferences, names, interests when relevant.
+- When you learn something NEW and important about the user (their name, job, preferences, goals, important people in their life), note it by including a line at the VERY END of your response in this exact format:
+[MEMORY_SAVE: key="short_key" value="fact about user"]
+- Only save genuinely important persistent facts, not conversation-specific details.
+- Maximum 1-2 memory saves per response. Don't save trivially.
+- Examples of good saves: name, occupation, interests, goals, preferred name, timezone, important dates.
+`;
+
 const MODE_PROMPTS: Record<string, string> = {
   default: `You are Leevee AI, a friendly, knowledgeable general-purpose assistant. Help with writing, coding, research, brainstorming, math, science, creative projects, and more. Be warm, clear, concise. Use markdown when helpful.`,
-
   academic: `You are Leevee AI in Academic Mode — rigorous, scholarly, approachable like a patient tutor.
 - Thorough explanations with clear reasoning. Cite sources/frameworks.
 - Break complex topics into steps with examples. Socratic method when appropriate.
 - Show work step-by-step for math/science. Distinguish facts vs theories vs debate.
-- Teach structure for essays. Use academic vocabulary but explain jargon.
 Use markdown: headers, bold terms, code blocks, bullet points.`,
-
   fun: `You are Leevee AI in Fun Mode — energetic, witty, playful. Coolest friend who knows everything.
 - Enthusiastic with natural emojis. Jokes, puns, fun facts, pop culture references.
 - Gamify when possible. Make boring questions exciting. Tell stories, vivid descriptions.
-- Edutainment: equal parts education and entertainment. Still accurate.
 Use markdown creatively — emojis as bullets, bold for emphasis, headers for drama!`,
-
   creative: `You are Leevee AI in Creative Writing Mode — literary muse, editor, co-author, writing coach.
 - Poetry, stories, novels, screenplays, lyrics, essays, monologues.
 - Match user's desired tone/genre/style. Prioritize vivid imagery, strong voice, originality.
-- Teach craft: show don't tell, character arcs, dialogue, meter, structure.
-- Constructive feedback on submitted work. Build on user's ideas.
 Use markdown: italics for examples, headers for sections, code blocks for screenplay.`,
-
   vent: `You are Leevee AI in Vent Mode — raw, real, no-judgment listening space.
 - LISTEN FIRST. Don't fix, advise, or silver-lining. Let them feel heard.
 - Mirror energy. Validate emotions. Casual language like a real friend. No therapist voice.
 - OK to swear mildly if they do. Roll with dark humor/sarcasm.
 - Never say "I understand" — say "That sounds really rough." Never minimize with "at least..."
 - Don't offer unsolicited advice. After venting: "Feel any lighter?"
-Safety boundaries remain active. Distinguish "I want to scream" (venting) from "I want to hurt myself" (crisis).
-Keep it conversational. Don't over-format.`,
-
+Safety boundaries remain active. Distinguish "I want to scream" (venting) from "I want to hurt myself" (crisis).`,
   debate: `You are Leevee AI in Healthy Debate Mode — sharp, fair, intellectually rigorous.
 - ALWAYS take opposing side. Steelman the opposition, not strawman.
 - Structured argumentation: claim, evidence, reasoning, counterpoint.
 - Call out fallacies respectfully (ad hominem, strawman, false dichotomy, etc.).
 - Socratic questions. Encourage nuance. Acknowledge strong points.
-- Respectful always. De-escalate if heated. Offer to summarize both sides.
-- Never state opinion as truth — frame as "the argument for X is..."
-- Techniques: steelmanning, reductio ad absurdum, analogical reasoning, thought experiments.
+- Respectful always. De-escalate if heated. Never state opinion as truth.
 Use markdown: bold claims, numbered arguments, quote blocks.`,
 };
 
-// ── Model routing by mode (cost/speed optimization) ──
 const MODE_MODELS: Record<string, string> = {
   default: "google/gemini-3-flash-preview",
   academic: "google/gemini-3-flash-preview",
@@ -170,7 +107,7 @@ const MODE_MODELS: Record<string, string> = {
   debate: "google/gemini-3-flash-preview",
 };
 
-// ── Crisis detection data (using Sets for O(1) lookup) ──
+// ── Crisis detection data ──
 
 const CRISIS_CATEGORIES = [
   {
@@ -348,7 +285,6 @@ const CRISIS_CATEGORIES = [
   },
 ];
 
-// Pre-compute flat keyword set for fast "contains any" check
 const ALL_CRISIS_KEYWORDS = new Set<string>();
 for (const cat of CRISIS_CATEGORIES) {
   for (const kw of cat.keywords) ALL_CRISIS_KEYWORDS.add(kw);
@@ -413,7 +349,6 @@ const GENUINE_SIGNALS = [
 
 const MACHINE_REMINDER = `\n\n---\n\n💙 *I'm an AI — please also connect with a real person. Call/text **988** anytime.*`;
 
-// ── Helper: check if text contains any keyword from a Set ──
 function containsAny(text: string, keywords: Set<string>): boolean {
   for (const kw of keywords) {
     if (text.includes(kw)) return true;
@@ -435,12 +370,12 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, mode, imageData } = await req.json();
+    const { messages, mode, imageData, sessionId } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    // Image moderation (if image attached)
+    // Image moderation
     if (imageData) {
       try {
         const moderationResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -477,7 +412,7 @@ serve(async (req) => {
     const lastUserMsg = typeof lastUserMsgObj?.content === "string" ? lastUserMsgObj.content : "";
     const lower = lastUserMsg.toLowerCase().replace(/[^\w\s']/g, "");
 
-    // LETHALITY GATE — hard block
+    // LETHALITY GATE
     if (containsAny(lower, LETHALITY_MEANS)) {
       return new Response(
         JSON.stringify({
@@ -521,18 +456,37 @@ serve(async (req) => {
       isDistressed = distressCount > 0 && !(humorCount >= distressCount && distressCount <= 2);
     }
 
-    // Build system prompt: mode-specific + shared (assembled once, not duplicated)
+    // ===== MEMORY INJECTION =====
+    let memoryBlock = "";
+    if (sessionId) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const { data: memories } = await supabase
+          .from("user_memories")
+          .select("key, value")
+          .eq("session_id", sessionId)
+          .limit(50);
+        if (memories && memories.length > 0) {
+          memoryBlock = "\n\nUSER MEMORY PROFILE:\n" +
+            memories.map((m: any) => `- ${m.key}: ${m.value}`).join("\n");
+        }
+      } catch (e) {
+        console.error("Memory fetch failed:", e);
+      }
+    }
+
+    // Build system prompt
     const validMode = (mode && mode in MODE_PROMPTS) ? mode : "default";
-    let systemPrompt = MODE_PROMPTS[validMode] + "\n" + SHARED_GUIDELINES;
+    let systemPrompt = MODE_PROMPTS[validMode] + "\n" + SHARED_GUIDELINES + "\n" + MEMORY_INSTRUCTIONS + memoryBlock;
 
     if (isDistressed) {
       systemPrompt += "\n\nIMPORTANT: User appears in emotional distress. After your response, append a compassionate AI reminder and suggest the 5-4-3-2-1 grounding exercise. Be warm, not clinical.";
     }
 
-    // Select model: use multimodal-capable model for images, otherwise route by mode
     const model = imageData ? "google/gemini-2.5-flash" : (MODE_MODELS[validMode] || "google/gemini-3-flash-preview");
 
-    // Trim conversation history to last 30 messages for token efficiency
     const trimmedMessages = messages.slice(-30).map((m: any) => {
       if (m.imageData) {
         return {
@@ -574,7 +528,7 @@ serve(async (req) => {
       });
     }
 
-    // Stream response, optionally append machine reminder for distressed users
+    // Stream response
     if (isDistressed) {
       const { readable, writable } = new TransformStream();
       const writer = writable.getWriter();

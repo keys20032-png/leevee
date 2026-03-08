@@ -8,6 +8,7 @@ export type Conversation = {
   mode: string;
   created_at: string;
   updated_at: string;
+  deleted_at: string | null;
 };
 
 export type ChatMessage = {
@@ -19,6 +20,16 @@ export type ChatMessage = {
   uploaded_image: string | null;
   reaction: "thumbs_up" | "thumbs_down" | null;
   created_at: string;
+};
+
+export type UserMemory = {
+  id: string;
+  session_id: string;
+  key: string;
+  value: string;
+  source: string;
+  created_at: string;
+  updated_at: string;
 };
 
 const SESSION_KEY = "leevee_session_id";
@@ -34,25 +45,51 @@ function getSessionId(): string {
 
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [trashedConversations, setTrashedConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [loadingConversations, setLoadingConversations] = useState(true);
+  const [memories, setMemories] = useState<UserMemory[]>([]);
   const sessionId = getSessionId();
 
-  // Load conversations list
+  // Load conversations list (exclude soft-deleted)
   const loadConversations = useCallback(async () => {
     const { data } = await supabase
       .from("conversations")
       .select("*")
       .eq("session_id", sessionId)
+      .is("deleted_at", null)
       .order("updated_at", { ascending: false })
       .limit(50);
     if (data) setConversations(data as Conversation[]);
     setLoadingConversations(false);
   }, [sessionId]);
 
+  // Load trashed conversations
+  const loadTrash = useCallback(async () => {
+    const { data } = await supabase
+      .from("conversations")
+      .select("*")
+      .eq("session_id", sessionId)
+      .not("deleted_at", "is", null)
+      .order("deleted_at", { ascending: false })
+      .limit(50);
+    if (data) setTrashedConversations(data as Conversation[]);
+  }, [sessionId]);
+
+  // Load memories
+  const loadMemories = useCallback(async () => {
+    const { data } = await supabase
+      .from("user_memories")
+      .select("*")
+      .eq("session_id", sessionId)
+      .order("updated_at", { ascending: false });
+    if (data) setMemories(data as UserMemory[]);
+  }, [sessionId]);
+
   useEffect(() => {
     loadConversations();
-  }, [loadConversations]);
+    loadMemories();
+  }, [loadConversations, loadMemories]);
 
   // Create new conversation
   const createConversation = useCallback(async (mode: string, firstMessage?: string): Promise<string> => {
@@ -101,7 +138,6 @@ export function useConversations() {
       .select("id")
       .single();
     if (error || !data) throw new Error("Failed to save message");
-    // Update conversation timestamp
     await supabase
       .from("conversations")
       .update({ updated_at: new Date().toISOString() })
@@ -125,12 +161,32 @@ export function useConversations() {
       .eq("id", messageId);
   }, []);
 
-  // Delete a conversation
+  // Soft-delete a conversation (move to trash)
   const deleteConversation = useCallback(async (conversationId: string) => {
-    await supabase.from("conversations").delete().eq("id", conversationId);
+    await supabase
+      .from("conversations")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", conversationId);
     if (activeConversationId === conversationId) setActiveConversationId(null);
     loadConversations();
   }, [activeConversationId, loadConversations]);
+
+  // Permanently delete a conversation
+  const permanentlyDelete = useCallback(async (conversationId: string) => {
+    await supabase.from("chat_messages").delete().eq("conversation_id", conversationId);
+    await supabase.from("conversations").delete().eq("id", conversationId);
+    loadTrash();
+  }, [loadTrash]);
+
+  // Restore a trashed conversation
+  const restoreConversation = useCallback(async (conversationId: string) => {
+    await supabase
+      .from("conversations")
+      .update({ deleted_at: null })
+      .eq("id", conversationId);
+    loadConversations();
+    loadTrash();
+  }, [loadConversations, loadTrash]);
 
   // Update conversation title
   const updateTitle = useCallback(async (conversationId: string, title: string) => {
@@ -138,8 +194,72 @@ export function useConversations() {
     loadConversations();
   }, [loadConversations]);
 
+  // ── Memory CRUD ──
+  const addMemory = useCallback(async (key: string, value: string, source = "manual") => {
+    await supabase
+      .from("user_memories")
+      .upsert({ session_id: sessionId, key, value, source, updated_at: new Date().toISOString() }, { onConflict: "session_id,key" });
+    loadMemories();
+  }, [sessionId, loadMemories]);
+
+  const deleteMemory = useCallback(async (id: string) => {
+    await supabase.from("user_memories").delete().eq("id", id);
+    loadMemories();
+  }, [loadMemories]);
+
+  const updateMemory = useCallback(async (id: string, value: string) => {
+    await supabase.from("user_memories").update({ value, updated_at: new Date().toISOString() }).eq("id", id);
+    loadMemories();
+  }, [loadMemories]);
+
+  // Export all data as JSON
+  const exportAllData = useCallback(async () => {
+    const { data: convos } = await supabase
+      .from("conversations")
+      .select("*")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: true });
+
+    const { data: msgs } = await supabase
+      .from("chat_messages")
+      .select("*")
+      .in("conversation_id", (convos || []).map((c: any) => c.id))
+      .order("created_at", { ascending: true });
+
+    const { data: mems } = await supabase
+      .from("user_memories")
+      .select("*")
+      .eq("session_id", sessionId);
+
+    const exportData = {
+      version: "1.0",
+      exported_at: new Date().toISOString(),
+      session_id: sessionId,
+      conversations: convos || [],
+      messages: msgs || [],
+      memories: mems || [],
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `leevee-data-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }, [sessionId]);
+
+  // Generate a sync link (share session ID)
+  const getSyncCode = useCallback(() => sessionId, [sessionId]);
+
+  // Import session from sync code
+  const importSession = useCallback((newSessionId: string) => {
+    localStorage.setItem(SESSION_KEY, newSessionId);
+    window.location.reload();
+  }, []);
+
   return {
     conversations,
+    trashedConversations,
     activeConversationId,
     setActiveConversationId,
     loadingConversations,
@@ -150,7 +270,18 @@ export function useConversations() {
     updateMessageContent,
     setReaction,
     deleteConversation,
+    permanentlyDelete,
+    restoreConversation,
     updateTitle,
     loadConversations,
+    loadTrash,
+    memories,
+    addMemory,
+    deleteMemory,
+    updateMemory,
+    loadMemories,
+    exportAllData,
+    getSyncCode,
+    importSession,
   };
 }
