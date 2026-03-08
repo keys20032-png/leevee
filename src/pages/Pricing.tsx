@@ -23,7 +23,7 @@ const PLANS: {
     priceNote: "forever",
     icon: Sparkles,
     features: [
-      "20 AI chats per day",
+      "15 AI chats per day",
       "General & Learn modes",
       "10 memory slots",
       "3 image generations/day",
@@ -39,7 +39,7 @@ const PLANS: {
     icon: Zap,
     highlight: true,
     features: [
-      "Unlimited AI chats",
+      "100 AI chats per day",
       "All 7 modes",
       "100 memory slots",
       "20 image generations/day",
