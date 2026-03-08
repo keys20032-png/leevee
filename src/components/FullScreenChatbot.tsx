@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Sparkles, ExternalLink } from "lucide-react";
+import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX } from "lucide-react";
 import logo from "@/assets/safehelphublogo.jpg";
 import { detectCrisis } from "@/lib/crisis-detection";
 
@@ -20,8 +20,36 @@ const FullScreenChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  const speak = (text: string, index: number) => {
+    if (speakingIndex === index) {
+      window.speechSynthesis.cancel();
+      setSpeakingIndex(null);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    // Strip markdown formatting for cleaner speech
+    const clean = text
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/```[\s\S]*?```/g, "");
+    const utter = new SpeechSynthesisUtterance(clean);
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith("en") && v.name.includes("Google")) || voices.find(v => v.lang.startsWith("en")) || voices[0];
+    if (preferred) utter.voice = preferred;
+    utter.rate = 1;
+    utter.pitch = 1;
+    utter.onend = () => setSpeakingIndex(null);
+    utter.onerror = () => setSpeakingIndex(null);
+    utteranceRef.current = utter;
+    setSpeakingIndex(index);
+    window.speechSynthesis.speak(utter);
+  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -215,14 +243,26 @@ const FullScreenChatbot = () => {
                   <Bot className="w-4 h-4 text-primary-foreground" />
                 </div>
               )}
-              <div
-                className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-                  msg.role === "user"
-                    ? "bg-primary text-primary-foreground rounded-br-md"
-                    : "bg-card border border-border text-foreground rounded-bl-md"
-                }`}
-              >
-                {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
+              <div className="max-w-[75%] flex flex-col gap-1">
+                <div
+                  className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+                    msg.role === "user"
+                      ? "bg-primary text-primary-foreground rounded-br-md"
+                      : "bg-card border border-border text-foreground rounded-bl-md"
+                  }`}
+                >
+                  {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
+                </div>
+                {msg.role === "assistant" && (
+                  <button
+                    onClick={() => speak(msg.content, i)}
+                    className="self-start ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
+                    aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
+                    title={speakingIndex === i ? "Stop" : "Read aloud"}
+                  >
+                    {speakingIndex === i ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  </button>
+                )}
               </div>
               {msg.role === "user" && (
                 <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-1 bg-primary/20">
