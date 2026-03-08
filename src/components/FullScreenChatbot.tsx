@@ -12,7 +12,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import { jsPDF } from "jspdf";
 
-type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string };
+type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string } };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
@@ -419,6 +419,8 @@ const FullScreenChatbot = () => {
     setLoading(true);
 
     let assistantSoFar = "";
+    const startTime = performance.now();
+    let ttft: number | null = null;
     try {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
@@ -477,11 +479,13 @@ const FullScreenChatbot = () => {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content;
             if (content) {
+              if (ttft === null) ttft = performance.now() - startTime;
               assistantSoFar += content;
               setMessages((prev) => {
                 const last = prev[prev.length - 1];
-                if (last?.role === "assistant") return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
-                return [...prev, { role: "assistant", content: assistantSoFar }];
+                const metrics = { ttft: Math.round(ttft!), total: Math.round(performance.now() - startTime), mode };
+                if (last?.role === "assistant") return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantSoFar, metrics } : m);
+                return [...prev, { role: "assistant", content: assistantSoFar, metrics }];
               });
             }
           } catch { buffer = line + "\n" + buffer; break; }
@@ -796,6 +800,11 @@ const FullScreenChatbot = () => {
                     >
                       <FileText className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                     </button>
+                    {msg.metrics && (
+                      <span className="ml-1 text-[10px] text-muted-foreground/40 font-mono tabular-nums" title={`TTFT: ${msg.metrics.ttft}ms · Total: ${msg.metrics.total}ms · Mode: ${msg.metrics.mode}`}>
+                        ⚡ {msg.metrics.ttft < 1000 ? `${msg.metrics.ttft}ms` : `${(msg.metrics.ttft / 1000).toFixed(1)}s`} · {msg.metrics.total < 1000 ? `${msg.metrics.total}ms` : `${(msg.metrics.total / 1000).toFixed(1)}s`}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
