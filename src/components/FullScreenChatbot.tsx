@@ -1860,6 +1860,18 @@ const FullScreenChatbot = () => {
                 {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
               </button>
             </form>
+            {tier !== "premium" && (
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <span className={`text-[10px] tracking-wider uppercase ${remaining <= 3 ? "text-destructive" : "text-muted-foreground/40"}`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  {remaining}/{limit === Infinity ? "∞" : limit} messages left today
+                </span>
+                {remaining <= 5 && (
+                  <a href="/pricing" className="text-[10px] text-primary hover:underline tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    Upgrade
+                  </a>
+                )}
+              </div>
+            )}
             <p className="text-[10px] text-muted-foreground/30 text-center mt-1.5 sm:mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               <span>Leevee AI</span>
               <span className="text-muted-foreground/20">·</span>
