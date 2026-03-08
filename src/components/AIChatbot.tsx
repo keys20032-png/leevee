@@ -742,6 +742,7 @@ const AIChatbot = () => {
       if (contentType.includes("application/json")) {
         const json = await resp.json();
         if (json.crisis && json.redirect) {
+          localStorage.setItem("crisis_redirect", "true");
           window.location.href = json.redirect;
           return;
         }
