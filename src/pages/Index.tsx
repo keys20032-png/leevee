@@ -3,16 +3,27 @@ import FullScreenChatbot from "@/components/FullScreenChatbot";
 import InstallBanner from "@/components/InstallBanner";
 import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 
-const Index = () => {
-  const [showSafetyCheck, setShowSafetyCheck] = useState(() => {
-    const flag = localStorage.getItem("crisis_redirect");
-    return flag === "true";
-  });
+const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
-  // Also listen for storage changes (e.g., flag set in same tab before redirect)
+const getCrisisTime = (): number | null => {
+  const raw = localStorage.getItem("crisis_redirect_time");
+  if (!raw) return null;
+  const t = parseInt(raw, 10);
+  return isNaN(t) ? null : t;
+};
+
+const isInCooldown = (): boolean => {
+  const t = getCrisisTime();
+  if (!t) return false;
+  return Date.now() - t < COOLDOWN_MS;
+};
+
+const Index = () => {
+  const [showSafetyCheck, setShowSafetyCheck] = useState(() => isInCooldown());
+
   useEffect(() => {
     const check = () => {
-      if (localStorage.getItem("crisis_redirect") === "true") {
+      if (isInCooldown()) {
         setShowSafetyCheck(true);
       }
     };
@@ -25,12 +36,19 @@ const Index = () => {
   }, []);
 
   const handleSafetyComplete = () => {
-    localStorage.removeItem("crisis_redirect");
+    localStorage.removeItem("crisis_redirect_time");
     setShowSafetyCheck(false);
   };
 
   if (showSafetyCheck) {
-    return <SafetyCheckScreen onContinue={handleSafetyComplete} />;
+    const crisisTime = getCrisisTime();
+    return (
+      <SafetyCheckScreen
+        onContinue={handleSafetyComplete}
+        crisisTimestamp={crisisTime}
+        cooldownMs={COOLDOWN_MS}
+      />
+    );
   }
 
   return (
