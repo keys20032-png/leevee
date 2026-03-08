@@ -61,6 +61,19 @@ const Index = () => {
     );
   }
 
+  if (showOnboarding) {
+    return (
+      <OnboardingFlow
+        onComplete={({ displayName, preferredMode }) => {
+          localStorage.setItem("leevee_onboarding_complete", "1");
+          if (displayName) localStorage.setItem("leevee_display_name", displayName);
+          if (preferredMode) localStorage.setItem("leevee_preferred_mode", preferredMode);
+          setShowOnboarding(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="h-dvh flex flex-col bg-background overflow-hidden">
       <InstallBanner />
