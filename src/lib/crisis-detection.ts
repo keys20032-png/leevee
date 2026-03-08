@@ -584,7 +584,7 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
       "can't stop drinking", "drinking myself to death", "drink to forget",
       "need a fix", "going through withdrawal", "withdrawals are killing me",
       "seizures from withdrawal", "dt's", "delirium tremens",
-      "shooting up", "mainlining", "injecting", "track marks",
+      "shooting up", "mainlining", "injecting",
       "using heroin", "on heroin", "heroin addiction",
       "using meth", "on meth", "smoking meth", "meth addiction", "meth pipe",
       "smoking crack", "crack cocaine", "cocaine binge", "on a bender",
