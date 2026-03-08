@@ -657,15 +657,25 @@ const FullScreenChatbot = () => {
                   </div>
                 )}
 
-                {/* Read aloud */}
+                {/* Read aloud + PDF download */}
                 {msg.role === "assistant" && !msg.images?.length && (
-                  <button
-                    onClick={() => speak(msg.content, i)}
-                    className="self-start ml-1 p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
-                    aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
-                  >
-                    {speakingIndex === i ? <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> : <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
-                  </button>
+                  <div className="flex items-center gap-1 self-start ml-1">
+                    <button
+                      onClick={() => speak(msg.content, i)}
+                      className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                      aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
+                    >
+                      {speakingIndex === i ? <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> : <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
+                    </button>
+                    <button
+                      onClick={() => exportToPDF(msg.content)}
+                      className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                      aria-label="Download as PDF"
+                      title="Download as PDF"
+                    >
+                      <FileText className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
