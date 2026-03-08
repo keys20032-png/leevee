@@ -839,7 +839,7 @@ const AIChatbot = () => {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                Polly AI Assistant
+                Leevee AI Assistant
               </p>
               <p className="text-xs text-muted-foreground">Ask me about our resources</p>
             </div>

@@ -372,14 +372,14 @@ const FullScreenChatbot = () => {
                 className="inline-flex p-[2px] rounded-2xl"
                 style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
               >
-                <img src={logo} alt="Polly AI logo" className="w-16 h-16 rounded-[14px] object-cover" />
+                <img src={logo} alt="Leevee AI logo" className="w-16 h-16 rounded-[14px] object-cover" />
               </div>
               <div className="space-y-2">
                 <h1
                   className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  Polly AI
+                  Leevee AI
                   <span className="ml-2 text-lg font-normal text-muted-foreground">
                     · {currentMode.label}
                   </span>
@@ -546,7 +546,7 @@ const FullScreenChatbot = () => {
             </button>
           </form>
           <p className="text-xs text-muted-foreground/50 text-center mt-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Polly AI · Powered by Gemini
+            Leevee AI · Powered by Gemini
           </p>
         </div>
       </div>
