@@ -592,7 +592,7 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
       "need a fix", "going through withdrawal", "withdrawals are killing me",
       "seizures from withdrawal", "dt's", "delirium tremens",
       "shooting up", "mainlining", "injecting", "track marks",
-      "heroin", "meth", "crack", "cocaine binge", "bender",
+      "heroin", "on meth", "using meth", "meth addiction", "meth pipe", "smoking meth", "crack cocaine", "smoking crack", "cocaine binge", "bender",
       "blackout drunk", "blacked out again", "don't remember last night",
       "kids found my drugs", "using around my kids", "high around my children",
       "lost my job from using", "about to lose everything", "drugs ruined my life",
@@ -733,10 +733,10 @@ export const LETHALITY_MEANS = [
   // Locations / Heights
   "jump off a bridge", "jump off the roof", "jump off a building",
   "which bridge", "tallest building", "parking garage roof",
-  "train tracks", "step in front of a train", "lie on the tracks",
-  "highway", "drive into traffic", "drive off a cliff",
+  "on the train tracks", "on train tracks", "step in front of a train", "lie on the tracks",
+  "drive into traffic", "drive off a cliff", "drive into oncoming",
   // Hanging / Asphyxiation
-  "how to tie a noose", "noose", "hang myself", "rope", "neck rope",
+  "how to tie a noose", "noose", "hang myself", "bought rope", "with rope", "neck rope", "get a rope",
   "ligature", "belt around my neck", "cord around my neck",
   "suffocate myself", "plastic bag over head", "choke myself",
   // Cutting / Bleeding
