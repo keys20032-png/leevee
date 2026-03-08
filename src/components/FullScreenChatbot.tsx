@@ -922,7 +922,7 @@ const FullScreenChatbot = () => {
                     {tab === "history" && <Clock className="w-3 h-3 inline mr-1" />}
                     {tab === "memory" && <Brain className="w-3 h-3 inline mr-1" />}
                     {tab === "trash" && <Archive className="w-3 h-3 inline mr-1" />}
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    {tab === "history" ? t.home.history : tab === "memory" ? t.home.memory : t.home.trash}
                   </button>
                 ))}
               </div>
@@ -954,7 +954,7 @@ const FullScreenChatbot = () => {
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" />
                     <input
                       type="text"
-                      placeholder="Search chats..."
+                      placeholder={t.home.searchChats}
                       value={searchHistory}
                       onChange={(e) => setSearchHistory(e.target.value)}
                       className="w-full bg-secondary/50 border border-border/40 rounded-lg pl-8 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -965,7 +965,7 @@ const FullScreenChatbot = () => {
                 <div className="flex-1 overflow-y-auto px-1.5 pb-2 space-y-0.5 scrollbar-none">
                   {filteredConversations.length === 0 && (
                     <div className="text-center text-xs text-muted-foreground/50 py-8">
-                      {searchHistory ? "No matching chats" : "No conversations yet"}
+                      {searchHistory ? t.home.noMatchingChats : t.home.noConversationsYet}
                     </div>
                   )}
                   {filteredConversations.map((c) => {
@@ -1008,13 +1008,13 @@ const FullScreenChatbot = () => {
             {sidebarTab === "memory" && (
               <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 scrollbar-none">
                 <p className="text-[11px] text-muted-foreground/60 leading-relaxed" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Leevee remembers these facts about you across all conversations. Edit or remove anything.
+                  Leevee {t.home.memoryDesc.split('.')[0]}.
                 </p>
                 {/* Add memory form */}
                 <div className="space-y-1.5">
                   <input
                     type="text"
-                    placeholder="Label (e.g. 'name')"
+                    placeholder={t.home.labelPlaceholder}
                     value={newMemoryKey}
                     onChange={(e) => setNewMemoryKey(e.target.value)}
                     className="w-full bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -1023,7 +1023,7 @@ const FullScreenChatbot = () => {
                   <div className="flex gap-1.5">
                     <input
                       type="text"
-                      placeholder="Value (e.g. 'Alex')"
+                      placeholder={t.home.valuePlaceholder}
                       value={newMemoryValue}
                       onChange={(e) => setNewMemoryValue(e.target.value)}
                       className="flex-1 bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -1049,8 +1049,8 @@ const FullScreenChatbot = () => {
                 {memories.length === 0 && (
                   <div className="text-center text-xs text-muted-foreground/40 py-6">
                     <Brain className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p>No memories yet</p>
-                    <p className="text-[10px] mt-1">Leevee will learn about you as you chat</p>
+                    <p>{t.home.noMemoriesYet}</p>
+                    <p className="text-[10px] mt-1">{t.home.leeveeWillLearn}</p>
                   </div>
                 )}
                 {memories.map((mem) => (
@@ -1104,8 +1104,8 @@ const FullScreenChatbot = () => {
                 {trashedConversations.length === 0 && (
                   <div className="text-center text-xs text-muted-foreground/40 py-8">
                     <Archive className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p>Trash is empty</p>
-                    <p className="text-[10px] mt-1">Deleted conversations appear here for recovery</p>
+                    <p>{t.home.trashEmpty}</p>
+                    <p className="text-[10px] mt-1">{t.home.trashDesc}</p>
                   </div>
                 )}
                 {trashedConversations.map((c) => {
@@ -1116,7 +1116,7 @@ const FullScreenChatbot = () => {
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] sm:text-xs font-medium truncate opacity-60" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
                         <p className="text-[10px] text-muted-foreground/40 mt-0.5">
-                          Deleted {c.deleted_at ? formatDate(c.deleted_at) : ""}
+                          {t.home.deleted} {c.deleted_at ? formatDate(c.deleted_at) : ""}
                         </p>
                       </div>
                       <button
@@ -1127,7 +1127,7 @@ const FullScreenChatbot = () => {
                         <Undo2 className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => { if (window.confirm("Permanently delete? This cannot be undone.")) permanentlyDelete(c.id); }}
+                        onClick={() => { if (window.confirm(t.home.confirmPermanentDelete)) permanentlyDelete(c.id); }}
                         className="p-1.5 rounded-md text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
                         title="Delete permanently"
                       >
@@ -1147,14 +1147,14 @@ const FullScreenChatbot = () => {
                   className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  <HardDrive className="w-3 h-3" /> Export All
+                  <HardDrive className="w-3 h-3" /> {t.home.exportAll}
                 </button>
                 <button
                   onClick={() => setShowSyncModal(true)}
                   className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  <Smartphone className="w-3 h-3" /> Sync Devices
+                  <Smartphone className="w-3 h-3" /> {t.home.syncDevices}
                 </button>
               </div>
               <p className="hidden sm:block text-[10px] text-muted-foreground/40 text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
