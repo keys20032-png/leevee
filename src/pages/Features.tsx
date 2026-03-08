@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowLeft, MessageSquare, Flame, GraduationCap, PartyPopper, PenTool, Swords, ImageIcon, Brain, Shield, Mic, Download, Search, RefreshCw, Zap, Check, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -23,24 +24,30 @@ const CAPABILITIES = [
   { icon: Zap, title: "10+ AI Models", desc: "Powered by multiple frontier models including GPT-5, Gemini 2.5 Pro, and more — automatically selected per mode for best results." },
 ];
 
-const COMPARISON: { feature: string; leevee: boolean | string; grok: boolean | string }[] = [
-  { feature: "Dedicated Chat Modes (7)", leevee: true, grok: false },
-  { feature: "Vent Mode (non-judgmental)", leevee: true, grok: false },
-  { feature: "Debate Mode (Socratic)", leevee: true, grok: false },
-  { feature: "Image Generation", leevee: true, grok: true },
-  { feature: "Image Editing", leevee: true, grok: false },
-  { feature: "Persistent Memory Bank", leevee: true, grok: false },
-  { feature: "Data Export & Ownership", leevee: true, grok: false },
-  { feature: "Device Sync (no account)", leevee: true, grok: false },
-  { feature: "Crisis Detection + 988", leevee: true, grok: false },
-  { feature: "Safety Plan Builder", leevee: true, grok: false },
-  { feature: "Quick Exit Button", leevee: true, grok: false },
-  { feature: "Voice Input", leevee: true, grok: true },
-  { feature: "Real-Time Web Search", leevee: true, grok: true },
-  { feature: "Multi-language UI", leevee: "5 languages", grok: true },
-  { feature: "PWA / Installable", leevee: true, grok: false },
-  { feature: "Open / Indie Built", leevee: true, grok: false },
-  { feature: "Free Tier", leevee: true, grok: "Paid only" },
+const COMPARISON: { feature: string; leevee: boolean | string; grok: boolean | string; claude: boolean | string }[] = [
+  { feature: "Dedicated Chat Modes (7)", leevee: true, grok: false, claude: false },
+  { feature: "Vent Mode (non-judgmental)", leevee: true, grok: false, claude: false },
+  { feature: "Debate Mode (Socratic)", leevee: true, grok: false, claude: false },
+  { feature: "Image Generation", leevee: true, grok: true, claude: false },
+  { feature: "Image Editing", leevee: true, grok: false, claude: false },
+  { feature: "Persistent Memory Bank", leevee: true, grok: false, claude: "Limited" },
+  { feature: "Data Export & Ownership", leevee: true, grok: false, claude: false },
+  { feature: "Device Sync (no account)", leevee: true, grok: false, claude: false },
+  { feature: "Crisis Detection + 988", leevee: true, grok: false, claude: false },
+  { feature: "Safety Plan Builder", leevee: true, grok: false, claude: false },
+  { feature: "Quick Exit Button", leevee: true, grok: false, claude: false },
+  { feature: "Voice Input", leevee: true, grok: true, claude: true },
+  { feature: "Real-Time Web Search", leevee: true, grok: true, claude: true },
+  { feature: "Multi-language UI", leevee: "5 languages", grok: true, claude: true },
+  { feature: "PWA / Installable", leevee: true, grok: false, claude: false },
+  { feature: "Open / Indie Built", leevee: true, grok: false, claude: false },
+  { feature: "Free Tier", leevee: true, grok: "Paid only", claude: "Limited" },
+  { feature: "200k+ Context Window", leevee: false, grok: true, claude: true },
+  { feature: "Agentic / Computer Use", leevee: false, grok: false, claude: true },
+  { feature: "Enterprise / Team Plans", leevee: false, grok: true, claude: true },
+  { feature: "Frontier Benchmark Scores", leevee: false, grok: true, claude: true },
+  { feature: "Sex Work Education", leevee: true, grok: false, claude: "Refuses" },
+  { feature: "LGBTQ+ Inclusive by Design", leevee: true, grok: false, claude: "Neutral" },
 ];
 
 const Features = () => {
