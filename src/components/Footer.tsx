@@ -22,10 +22,10 @@ const Footer = () => {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-5">
               <div className="p-[1.5px] rounded-lg" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-              <img src={logo} alt="Ally logo" className="w-8 h-8 rounded-[6px] object-cover" />
+              <img src={logo} alt="Polly AI logo" className="w-8 h-8 rounded-[6px] object-cover" />
               </div>
               <span className="text-sm font-bold tracking-[0.15em] uppercase bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}>
-                Ally
+                Polly AI
               </span>
             </div>
             <p className="text-muted-foreground text-sm leading-[1.8] max-w-sm">{t.footer.tagline}</p>

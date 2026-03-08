@@ -22,13 +22,13 @@ const Navbar = () => {
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         <a href="#home" className="flex items-center gap-3 group">
           <div className="p-[1.5px] rounded-lg transition-transform group-hover:scale-105" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-          <img src={logo} alt="Ally logo" className="w-8 h-8 rounded-[6px] object-cover" />
+          <img src={logo} alt="Polly AI logo" className="w-8 h-8 rounded-[6px] object-cover" />
           </div>
           <span
             className="text-sm font-bold tracking-[0.15em] uppercase bg-clip-text text-transparent hidden sm:inline"
             style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            Ally
+            Polly AI
           </span>
         </a>
 
