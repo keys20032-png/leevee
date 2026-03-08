@@ -491,7 +491,8 @@ serve(async (req) => {
     }
 
     // ===== SERVER-SIDE CRISIS DETECTION (backup safety net) =====
-    const lastUserMsg = messages?.filter((m: { role: string }) => m.role === "user").pop()?.content || "";
+    const lastUserMsgObj = messages?.filter((m: { role: string }) => m.role === "user").pop();
+    const lastUserMsg = typeof lastUserMsgObj?.content === "string" ? lastUserMsgObj.content : "";
     const lower = lastUserMsg.toLowerCase().replace(/[^\w\s']/g, "");
 
     // LETHALITY GATE — hard block on specific means/methods
@@ -561,7 +562,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: imageData ? "google/gemini-2.5-flash" : "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages.map((m: any) => {
