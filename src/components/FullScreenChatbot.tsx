@@ -1828,6 +1828,8 @@ const FullScreenChatbot = () => {
               <span className="text-muted-foreground/20">·</span>
               <a href="/safety" className="hover:text-muted-foreground/60 transition-colors">Safety</a>
               <span className="text-muted-foreground/20">·</span>
+              <a href="/vision/ai-web-developer" className="hover:text-muted-foreground/60 transition-colors">Vision</a>
+              <span className="text-muted-foreground/20">·</span>
               <a href="/terms" className="hover:text-muted-foreground/60 transition-colors">Terms</a>
               <span className="text-muted-foreground/20">·</span>
               <a href="/privacy" className="hover:text-muted-foreground/60 transition-colors">Privacy</a>
