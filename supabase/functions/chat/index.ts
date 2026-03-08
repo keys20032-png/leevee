@@ -308,6 +308,56 @@ const CRISIS_ROOTS = [
   "tortur", "captiv", "enslave", "imprison",
 ];
 
+// ── Lethality Means (specific methods — hard block) ──
+const LETHALITY_MEANS = [
+  "gun", "firearm", "pistol", "revolver", "rifle", "shotgun", "ar-15", "ak-47",
+  "ammunition", "ammo", "loaded gun", "bought a gun", "pull the trigger",
+  "blow my brains", "shoot myself", "gun to my head",
+  "how many pills", "lethal dose", "fatal dose", "sleeping pills",
+  "tylenol overdose", "acetaminophen", "xanax overdose", "benzo overdose",
+  "opioid overdose", "fentanyl dose", "morphine dose", "insulin overdose",
+  "drink bleach", "antifreeze", "rat poison", "cyanide", "carbon monoxide",
+  "exhaust fumes", "helium bag", "exit bag", "charcoal burning",
+  "jump off a bridge", "jump off the roof", "jump off a building",
+  "train tracks", "step in front of a train", "drive off a cliff",
+  "how to tie a noose", "noose", "hang myself", "rope", "neck rope",
+  "suffocate myself", "plastic bag over head",
+  "slit my wrists", "cut my arteries", "carotid artery", "femoral artery",
+  "bleed out", "razor blade", "how deep to cut",
+  "drown myself", "fill the bathtub", "walk into the ocean",
+];
+
+// ── High-Distress Keywords (triggers grounding + machine reminder) ──
+const DISTRESS_KEYWORDS = [
+  "depressed", "so sad", "can't stop crying", "feel empty", "feel numb",
+  "dead inside", "hate my life", "hate myself", "worthless", "useless",
+  "nobody cares", "all alone", "lonely", "can't take it", "overwhelmed",
+  "breaking down", "falling apart", "panic attack", "anxiety attack",
+  "can't breathe", "hopeless", "helpless", "exhausted", "can't cope",
+  "crying", "miserable", "suffering", "dark thoughts", "bad thoughts",
+  "intrusive thoughts", "flashback", "nightmares", "triggered", "trauma",
+  "dissociating", "desperate", "drowning", "sinking",
+];
+
+const GROUNDING_EXERCISE = `
+
+---
+
+💭 *I'm here to listen as an AI, but I want to make sure you're also connected to real people who can truly support you.*
+
+**Let's try a quick grounding exercise together:**
+
+🔵 **5-4-3-2-1 Technique:**
+- **5** things you can **see** right now
+- **4** things you can **touch** or feel
+- **3** things you can **hear**
+- **2** things you can **smell**
+- **1** thing you can **taste**
+
+Take your time. There's no rush. And remember — you can always reach a real person by calling or texting **988**. 💙`;
+
+const MACHINE_REMINDER = `\n\n---\n\n💙 *I'm here to listen as an AI, but I want to make sure you're also connected to real people. Consider reaching out to someone you trust, or call/text **988** anytime.*`;
+
 // ── Server ──
 
 serve(async (req) => {
@@ -319,6 +369,19 @@ serve(async (req) => {
     // ===== SERVER-SIDE CRISIS DETECTION (backup safety net) =====
     const lastUserMsg = messages?.filter((m: { role: string }) => m.role === "user").pop()?.content || "";
     const lower = lastUserMsg.toLowerCase().replace(/[^\w\s']/g, "");
+
+    // LETHALITY GATE — hard block on specific means/methods
+    if (LETHALITY_MEANS.some((means) => lower.includes(means))) {
+      return new Response(
+        JSON.stringify({
+          crisis: true,
+          redirect: "https://988lifeline.org/",
+          lethality: true,
+          message: "Leevee is holding this space for you. I've noticed things have reached a critical point. My job is to keep you safe, so I'm pausing our chat. Please call or text 988 — you aren't alone.",
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     for (const category of CRISIS_CATEGORIES) {
       if (category.keywords.some((kw) => lower.includes(kw))) {
@@ -335,6 +398,9 @@ serve(async (req) => {
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
+    // Detect distress level for grounding/reminder injection
+    const isDistressed = DISTRESS_KEYWORDS.some((kw) => lower.includes(kw));
 
     // Pick the right system prompt based on mode
     const validMode = (mode && mode in PROMPTS) ? mode : "default";
