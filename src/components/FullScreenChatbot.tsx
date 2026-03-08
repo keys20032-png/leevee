@@ -333,6 +333,10 @@ const FullScreenChatbot = () => {
     }
   };
 
+  if (showSafetyCheck) {
+    return <SafetyCheckScreen onContinue={() => setShowSafetyCheck(false)} />;
+  }
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Top Bar */}
