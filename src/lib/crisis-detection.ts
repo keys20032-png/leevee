@@ -618,6 +618,28 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
     ],
   },
   {
+    label: "Mental Health Crisis",
+    url: "https://www.nami.org/help",
+    keywords: [
+      "depressed", "depression", "severely depressed", "clinical depression",
+      "anxiety", "severe anxiety", "anxiety attack", "panic attack", "panic disorder",
+      "cant stop crying", "crying all the time", "feel nothing", "feel numb", "feel empty",
+      "losing my mind", "going crazy", "mental breakdown", "nervous breakdown",
+      "cant get out of bed", "cant function", "cant cope", "cant take it anymore",
+      "bipolar crisis", "manic episode", "psychotic episode", "hearing voices",
+      "seeing things", "hallucinating", "paranoid", "paranoia",
+      "dissociating", "dissociation", "depersonalization", "derealization",
+      "ptsd", "flashbacks", "nightmares every night", "trauma response",
+      "intrusive thoughts", "obsessive thoughts", "ocd crisis",
+      "agoraphobia", "cant leave my house", "afraid to leave",
+      "schizophrenia", "schizoaffective",
+      "mental health help", "need a therapist", "need mental health support",
+      "therapy waitlist", "cant afford therapy", "no insurance mental health",
+      "medication not working", "meds not working", "stopped taking my meds",
+      "emotional crisis", "mental health crisis", "psychological crisis",
+    ],
+  },
+  {
     label: "Veterans Crisis",
     url: "https://www.veteranscrisisline.net/",
     keywords: [
