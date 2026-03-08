@@ -255,7 +255,11 @@ const FullScreenChatbot = () => {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
         body: JSON.stringify({ prompt }),
       });
-      if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Image generation failed." })); throw new Error(err.error || "Image generation failed."); }
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: "Image generation failed." }));
+        const isSafety = err.safety === true;
+        throw new Error(isSafety ? `⚠️ **Safety Filter**: ${err.error}` : (err.error || "Image generation failed."));
+      }
       const data = await resp.json();
       setMessages((prev) => [...prev, { role: "assistant", content: data.text || "Here's your generated image!", images: data.images || [] }]);
     } catch (e) {
