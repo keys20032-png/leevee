@@ -531,6 +531,117 @@ const KNOWLEDGE_TRIGGERS = new Set([
   "news about", "latest on", "trending", "what's happening", "whats happening",
 ]);
 
+const NEWS_TRIGGERS = new Set([
+  "news", "latest", "today", "recent", "current events", "what's happening",
+  "whats happening", "headlines", "breaking", "trending", "update on",
+  "what happened", "did you hear", "tea on", "spill", "drama about",
+  "gossip", "scandal", "controversy", "beef", "feud",
+]);
+
+// Diverse RSS feeds — no API key needed
+const RSS_FEEDS: { url: string; label: string; category: string }[] = [
+  // General / World
+  { url: "https://feeds.bbci.co.uk/news/rss.xml", label: "BBC News", category: "general" },
+  { url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", label: "NYT", category: "general" },
+  { url: "https://feeds.npr.org/1001/rss.xml", label: "NPR", category: "general" },
+  // Entertainment / Culture
+  { url: "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml", label: "BBC Entertainment", category: "entertainment" },
+  { url: "https://www.tmz.com/rss.xml", label: "TMZ", category: "entertainment" },
+  // Diverse voices
+  { url: "https://www.theroot.com/rss", label: "The Root", category: "culture" },
+  { url: "https://www.advocate.com/rss.xml", label: "The Advocate", category: "lgbtq" },
+  { url: "https://www.out.com/rss.xml", label: "Out Magazine", category: "lgbtq" },
+  // Tech
+  { url: "https://feeds.arstechnica.com/arstechnica/index", label: "Ars Technica", category: "tech" },
+];
+
+function shouldSearchNews(text: string, mode: string): boolean {
+  // Drama mode: always try news for relevant queries
+  if (mode === "drama") return true;
+  // Fun mode: check for news/trending triggers
+  const lower = text.toLowerCase();
+  for (const trigger of NEWS_TRIGGERS) {
+    if (lower.includes(trigger)) return true;
+  }
+  return false;
+}
+
+async function parseRSSFeed(feedUrl: string, label: string): Promise<{ title: string; link: string; label: string }[]> {
+  try {
+    const resp = await fetch(feedUrl, {
+      headers: { "User-Agent": "LeeveeAI/1.0" },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!resp.ok) return [];
+    const xml = await resp.text();
+    
+    // Simple XML parsing for RSS items
+    const items: { title: string; link: string; label: string }[] = [];
+    const itemRegex = /<item[^>]*>([\s\S]*?)<\/item>/gi;
+    let match;
+    let count = 0;
+    while ((match = itemRegex.exec(xml)) !== null && count < 5) {
+      const itemXml = match[1];
+      const titleMatch = itemXml.match(/<title[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/i);
+      const linkMatch = itemXml.match(/<link[^>]*>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/link>/i);
+      if (titleMatch?.[1]) {
+        items.push({
+          title: titleMatch[1].replace(/<[^>]*>/g, "").trim(),
+          link: linkMatch?.[1]?.replace(/<[^>]*>/g, "").trim() || "",
+          label,
+        });
+        count++;
+      }
+    }
+    return items;
+  } catch (e) {
+    console.error(`RSS fetch failed for ${label}:`, e);
+    return [];
+  }
+}
+
+async function fetchNewsHeadlines(query: string, mode: string): Promise<string> {
+  try {
+    // Pick feeds based on mode/query context
+    let feedsToCheck = RSS_FEEDS;
+    const lower = query.toLowerCase();
+    
+    // If query hints at specific categories, prioritize those
+    if (lower.match(/lgbtq|queer|trans|gay|lesbian|pride|drag/)) {
+      feedsToCheck = RSS_FEEDS.filter(f => f.category === "lgbtq" || f.category === "general");
+    } else if (lower.match(/drama|gossip|tea|celebrity|celeb|scandal|beef|feud/)) {
+      feedsToCheck = RSS_FEEDS.filter(f => f.category === "entertainment" || f.category === "culture" || f.category === "general");
+    } else if (lower.match(/tech|ai|app|software|silicon/)) {
+      feedsToCheck = RSS_FEEDS.filter(f => f.category === "tech" || f.category === "general");
+    }
+    
+    // Fetch up to 4 feeds in parallel for speed
+    const selectedFeeds = feedsToCheck.slice(0, 4);
+    const results = await Promise.all(
+      selectedFeeds.map(f => parseRSSFeed(f.url, f.label))
+    );
+    
+    const allItems = results.flat();
+    if (allItems.length === 0) return "";
+    
+    // Deduplicate by title similarity and take top items
+    const seen = new Set<string>();
+    const unique = allItems.filter(item => {
+      const key = item.title.toLowerCase().slice(0, 40);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, 12);
+    
+    const headlines = unique.map(item => `- [${item.label}] ${item.title}`).join("\n");
+    
+    return `\n\n[LIVE NEWS HEADLINES — from RSS feeds, refreshed in real-time]:\n${headlines}\n\nNote: These are REAL headlines from today. Reference them naturally. If the user asks about something specific, connect it to relevant headlines. Always attribute the source.`;
+  } catch (e) {
+    console.error("News fetch failed:", e);
+    return "";
+  }
+}
+
 function shouldSearchKnowledge(text: string, mode: string): boolean {
   // Always search in academic mode for factual grounding
   if (mode === "academic") return true;
