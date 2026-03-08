@@ -909,7 +909,7 @@ const FullScreenChatbot = () => {
     setMessages((prev) => prev.slice(0, idx));
     setFollowUps([]);
     haptic("light");
-    setTimeout(() => sendMessage(lastUserMsg.content), 100);
+    setTimeout(() => sendMessage(lastUserMsg.content, { skipCrisisCheck: true }), 100);
   };
 
   return (
@@ -1597,7 +1597,7 @@ const FullScreenChatbot = () => {
                   {currentMode.prompts.slice(0, 4).map((q) => (
                     <button
                       key={q}
-                      onClick={() => sendMessage(q)}
+                      onClick={() => sendMessage(q, { skipCrisisCheck: true })}
                       className="group px-3.5 py-3 text-[12px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.97]"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
@@ -1777,7 +1777,7 @@ const FullScreenChatbot = () => {
                 {followUps.map((q, qi) => (
                   <button
                     key={qi}
-                    onClick={() => { setFollowUps([]); sendMessage(q); }}
+                    onClick={() => { setFollowUps([]); sendMessage(q, { skipCrisisCheck: true }); }}
                     className="group inline-flex items-center gap-1.5 px-4 py-2.5 sm:px-3.5 sm:py-2 text-[13px] sm:text-xs rounded-xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 hover:shadow-md hover:shadow-primary/5 active:scale-[0.97]"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
