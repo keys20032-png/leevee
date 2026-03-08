@@ -308,24 +308,61 @@ const FullScreenChatbot = () => {
 
   // Export to PDF
   const exportToPDF = (text: string) => {
-    const doc = new jsPDF();
-    const margin = 20;
-    const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
-    const clean = text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/`([^`]+)`/g, "$1").replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?/g, "").replace(/```/g, ""));
-    
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    const lines = doc.splitTextToSize(clean, pageWidth);
-    let y = margin;
-    for (const line of lines) {
-      if (y > doc.internal.pageSize.getHeight() - margin) {
-        doc.addPage();
-        y = margin;
+    try {
+      const doc = new jsPDF();
+      const margin = 20;
+      const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+      const pageHeight = doc.internal.pageSize.getHeight();
+      
+      // Clean markdown
+      const clean = text
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?/g, "").replace(/```/g, ""));
+      
+      // Title
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("Leevee AI Response", margin, margin);
+      
+      // Date
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(128, 128, 128);
+      doc.text(new Date().toLocaleString(), margin, margin + 8);
+      
+      // Divider line
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin, margin + 12, pageWidth + margin, margin + 12);
+      
+      // Body text
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(30, 30, 30);
+      const lines = doc.splitTextToSize(clean, pageWidth);
+      let y = margin + 20;
+      
+      for (const line of lines) {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += 6;
       }
-      doc.text(line, margin, y);
-      y += 7;
+      
+      doc.save("leevee-response.pdf");
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      // Fallback: download as .txt
+      const blob = new Blob([text], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "leevee-response.txt";
+      link.click();
+      URL.revokeObjectURL(link.href);
     }
-    doc.save("leevee-response.pdf");
   };
 
   // Send message
