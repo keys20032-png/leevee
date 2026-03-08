@@ -134,7 +134,7 @@ const TermsOfService = () => {
           </p>
         </Section>
 
-        <Section title="10. Contact">
+        <Section title="11. Contact">
           <p>
             If you have questions about these Terms, please reach out through our{" "}
             <Link to="/" className="text-primary hover:underline">contact form</Link>.
