@@ -310,8 +310,8 @@ const CRISIS_CATEGORIES = [
       "homeless lgbtq", "lgbtq youth homeless", "deadnamed", "deadnaming",
       "misgendered", "denied my identity", "denied healthcare",
       "lost my queer community", "isolated from community",
-      "lgbtq", "lgbt", "transgender", "nonbinary", "questioning sexuality",
-      "questioning gender",
+      "lgbtq crisis", "lgbt crisis", "queer crisis",
+      "questioning sexuality", "questioning gender",
     ]),
   },
   {
