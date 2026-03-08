@@ -3,14 +3,16 @@ import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
+  Paperclip, FileText,
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
 import { haptic } from "@/lib/haptics";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
+import jsPDF from "jspdf";
 
-type Message = { role: "user" | "assistant"; content: string; images?: string[] };
+type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
