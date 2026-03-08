@@ -134,6 +134,40 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Notifications */}
+        <div className="rounded-xl border border-border bg-card p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Notifications</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                {pushSubscribed ? <Bell className="w-4 h-4 text-primary" /> : <BellOff className="w-4 h-4 text-muted-foreground" />}
+              </div>
+              <div>
+                <p className="text-sm font-medium">Daily check-in reminders</p>
+                <p className="text-xs text-muted-foreground">
+                  {pushStatus === "unsupported" ? "Not supported on this device" :
+                   pushStatus === "denied" ? "Blocked — enable in browser settings" :
+                   pushSubscribed ? "You'll get a daily nudge at 10am" : "Get a gentle reminder to check in"}
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={pushSubscribed}
+              disabled={pushLoading || pushStatus === "unsupported" || pushStatus === "denied"}
+              onCheckedChange={async (checked) => {
+                if (checked) {
+                  const ok = await pushSubscribe();
+                  if (ok) toast.success("Notifications enabled! 🔔");
+                  else if (pushStatus !== "denied") toast.error("Could not enable notifications.");
+                } else {
+                  await pushUnsubscribe();
+                  toast.success("Notifications disabled.");
+                }
+              }}
+            />
+          </div>
+        </div>
+
         {/* Account Info */}
         <div className="rounded-xl border border-border bg-card p-4 space-y-2">
           <p className="text-xs text-muted-foreground">Account created</p>
