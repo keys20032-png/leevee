@@ -501,6 +501,122 @@ function countMatches(text: string, keywords: Set<string>): number {
   return count;
 }
 
+// ── Open Knowledge Search ──
+
+const KNOWLEDGE_TRIGGERS = new Set([
+  "what is", "who is", "who was", "what are", "define", "explain", "tell me about",
+  "history of", "how does", "how do", "when did", "when was", "where is", "where was",
+  "why is", "why do", "why did", "meaning of", "definition of", "facts about",
+  "wikipedia", "look up", "search for", "what happened", "current events",
+  "news about", "latest on", "trending", "what's happening", "whats happening",
+]);
+
+function shouldSearchKnowledge(text: string, mode: string): boolean {
+  // Always search in academic mode for factual grounding
+  if (mode === "academic") return true;
+  // Fun mode: search for trivia/pop culture references
+  if (mode === "fun" && (text.includes("trivia") || text.includes("fact") || text.includes("quiz"))) return true;
+  // Check for knowledge triggers
+  const lower = text.toLowerCase();
+  for (const trigger of KNOWLEDGE_TRIGGERS) {
+    if (lower.includes(trigger)) return true;
+  }
+  // Questions that look factual (starts with question words + has specific nouns)
+  if (/^(what|who|when|where|why|how|is|are|was|were|did|does|do|can|could|will|would)\b/i.test(text.trim()) && text.length > 15) {
+    return true;
+  }
+  return false;
+}
+
+async function searchWikipedia(query: string): Promise<string> {
+  try {
+    // Extract key terms from the query
+    const searchTerms = query.replace(/^(what is|who is|tell me about|explain|define|history of|how does|why is|when did|where is|facts about)\s*/i, "").trim();
+    if (!searchTerms || searchTerms.length < 3) return "";
+
+    // Wikipedia API search
+    const searchUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(searchTerms.replace(/\s+/g, "_"))}`;
+    const resp = await fetch(searchUrl, { headers: { "User-Agent": "LeeveeAI/1.0" } });
+    
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.extract && data.extract.length > 50) {
+        return `[Wikipedia: ${data.title}] ${data.extract.slice(0, 800)}`;
+      }
+    }
+
+    // Fallback: search API
+    const searchResp = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchTerms)}&srlimit=3&format=json&origin=*`, {
+      headers: { "User-Agent": "LeeveeAI/1.0" },
+    });
+    if (searchResp.ok) {
+      const searchData = await searchResp.json();
+      const results = searchData.query?.search;
+      if (results && results.length > 0) {
+        // Get summary of top result
+        const topTitle = results[0].title;
+        const summaryResp = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topTitle.replace(/\s+/g, "_"))}`, {
+          headers: { "User-Agent": "LeeveeAI/1.0" },
+        });
+        if (summaryResp.ok) {
+          const summaryData = await summaryResp.json();
+          if (summaryData.extract) {
+            return `[Wikipedia: ${summaryData.title}] ${summaryData.extract.slice(0, 800)}`;
+          }
+        }
+        // Return snippet if summary fails
+        return results.map((r: any) => `[Wikipedia: ${r.title}] ${r.snippet.replace(/<[^>]*>/g, "")}`).join("\n").slice(0, 600);
+      }
+    }
+    return "";
+  } catch (e) {
+    console.error("Wikipedia search failed:", e);
+    return "";
+  }
+}
+
+async function searchDuckDuckGo(query: string): Promise<string> {
+  try {
+    const resp = await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`, {
+      headers: { "User-Agent": "LeeveeAI/1.0" },
+    });
+    if (!resp.ok) return "";
+    const data = await resp.json();
+    
+    const parts: string[] = [];
+    if (data.AbstractText) parts.push(`[DuckDuckGo Abstract] ${data.AbstractText.slice(0, 500)}`);
+    if (data.Answer) parts.push(`[DuckDuckGo Answer] ${data.Answer}`);
+    if (data.RelatedTopics?.length > 0) {
+      const topics = data.RelatedTopics
+        .filter((t: any) => t.Text)
+        .slice(0, 3)
+        .map((t: any) => t.Text.slice(0, 150));
+      if (topics.length > 0) parts.push(`[Related] ${topics.join(" | ")}`);
+    }
+    return parts.join("\n").slice(0, 800);
+  } catch (e) {
+    console.error("DuckDuckGo search failed:", e);
+    return "";
+  }
+}
+
+async function fetchOpenKnowledge(query: string, mode: string): Promise<string> {
+  const results: string[] = [];
+  
+  // Run Wikipedia and DuckDuckGo in parallel
+  const [wikiResult, ddgResult] = await Promise.all([
+    searchWikipedia(query),
+    searchDuckDuckGo(query),
+  ]);
+  
+  if (wikiResult) results.push(wikiResult);
+  if (ddgResult) results.push(ddgResult);
+
+  if (results.length === 0) return "";
+
+  return `\n\nOPEN KNOWLEDGE CONTEXT (from public databases — use naturally, cite sources when relevant, don't dump raw data):\n${results.join("\n\n")}`;
+}
+
 // ── Server ──
 
 serve(async (req) => {
