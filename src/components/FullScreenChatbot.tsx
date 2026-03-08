@@ -430,6 +430,22 @@ const FullScreenChatbot = () => {
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
     if ((!text && !pendingImage) || loading) return;
+
+    // Daily limit gate
+    if (isAtLimit) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: text || "(image)" },
+        {
+          role: "assistant",
+          content: tier === "free"
+            ? "⚡ **Daily limit reached!** You've used all **15 free messages** for today.\n\nUpgrade to **Pro** for 100 messages/day or **Premium** for unlimited access.\n\n[View Plans](/pricing)"
+            : "⚡ **Daily limit reached!** You've used all **100 Pro messages** for today.\n\nUpgrade to **Premium** for unlimited access.\n\n[View Plans](/pricing)",
+        },
+      ]);
+      return;
+    }
+
     haptic("medium");
 
     const msgText = text || (pendingImage ? "What's in this image?" : "");
