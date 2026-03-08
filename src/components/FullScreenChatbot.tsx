@@ -767,6 +767,31 @@ const FullScreenChatbot = () => {
     setChatSearchIdx(idx);
   };
 
+  // Generate branded shareable chat log
+  const shareBrandedLog = async () => {
+    const divider = "─".repeat(40);
+    const header = `✨ Leevee AI — Chat Log\n🗓 ${new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}\n🎯 Mode: ${MODE_CONFIG[mode].label}\n${divider}`;
+    const body = messages
+      .map((m) => `${m.role === "user" ? "🧑 You" : "🤖 Leevee"}\n${m.content}`)
+      .join(`\n${divider}\n`);
+    const footer = `${divider}\n💡 Powered by Leevee AI — ${window.location.origin}\n🧠 Your safe space to think, vent, learn & create.`;
+    const fullLog = `${header}\n\n${body}\n\n${footer}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Leevee AI Chat Log", text: fullLog });
+      } catch {
+        await navigator.clipboard.writeText(fullLog);
+        haptic("light");
+      }
+    } else {
+      await navigator.clipboard.writeText(fullLog);
+      haptic("light");
+    }
+    setShareMenuOpen(false);
+    setMoreMenuOpen(false);
+  };
+
   // Export full conversation as text
   const exportAsText = () => {
     const text = messages
@@ -1276,13 +1301,6 @@ const FullScreenChatbot = () => {
                 Leevee AI
               </h1>
             </div>
-            <button
-              onClick={() => { navigator.clipboard.writeText(window.location.origin); haptic("light"); }}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors active:scale-95"
-              title="Copy app link"
-            >
-              <Link2 className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Mode tabs */}
