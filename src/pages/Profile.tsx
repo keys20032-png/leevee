@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ArrowLeft, User, Mail, LogOut, Save } from "lucide-react";
+import { ArrowLeft, User, Mail, LogOut, Save, Crown, Star, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 
 const Profile = () => {
