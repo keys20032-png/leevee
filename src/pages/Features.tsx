@@ -360,6 +360,46 @@ const Features = () => {
             </div>
           </AnimatedSection>
 
+          {/* Topic 6: AI Lawsuits & Regulation */}
+          <AnimatedSection delay={320}>
+            <div className="rounded-xl border border-border bg-card/60 p-5 space-y-4">
+              <h4 className="font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                ⚖️ AI Lawsuits, Regulation Failures, and Who's Actually Accountable
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                As of early 2026, the AI industry faces an unprecedented wave of lawsuits and regulatory scrutiny — yet meaningful regulation remains elusive. This matters for every AI user, regardless of which product they choose.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">The Lawsuit Landscape</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Major AI companies face active litigation on multiple fronts: copyright infringement (NYT v. OpenAI, Getty v. Stability AI), privacy violations (class actions in IL, CA, and EU under GDPR), and harm claims from users who received dangerous outputs. In 2025–2026 alone, Anthropic faced scrutiny over Claude's refusal patterns blocking legitimate medical research, while xAI was criticized for Grok generating election misinformation during the 2025 UK general election.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Key case:</strong> The 2025 Doe v. Character AI wrongful death lawsuit — where a teenager's suicide was linked to an AI chatbot — forced the entire industry to reckon with whether AI companions need regulated safety standards, not just voluntary guidelines.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">The Regulation Vacuum</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    The EU AI Act (effective 2025) remains the only comprehensive framework, but enforcement has been slow and penalties rare. The US has no federal AI regulation — only a patchwork of executive orders and state-level bills. China's AI regulations focus on content control, not user safety. The result: companies self-regulate, which critics call "the fox guarding the henhouse."
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>The paradox:</strong> Anthropic's own "Responsible Scaling Policy" — once praised for promising to pause development if safety couldn't keep up — was quietly softened in late 2025 when competitive pressure from Grok 4 and GPT-5 made self-imposed limits commercially untenable.
+                  </p>
+                </div>
+              </div>
+              <div className="border-t border-border/50 pt-3 space-y-2">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <strong className="text-foreground">Where Leevee fits in this:</strong> As an indie project, Leevee isn't training models on scraped data — it uses API-accessed models, which means it doesn't face the same copyright liability as companies training on the open internet. But it <em>does</em> face the same responsibility for output safety, which is why crisis detection, lethality blocking, and content moderation are built in from day one — not bolted on after a lawsuit.
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed italic">
+                  The uncomfortable truth is that no AI company — indie or frontier — has solved accountability. The difference is whether you build safety because you care about users, or because you're trying to avoid the next lawsuit. Leevee was built by someone who's been on the other side of systems that failed vulnerable people. That's not a benchmark score. It's a design philosophy.
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+
           {/* Closing note */}
           <AnimatedSection delay={280}>
             <div className="rounded-xl border border-border/50 bg-secondary/30 p-5">
