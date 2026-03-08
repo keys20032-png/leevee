@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
-  PenTool, ImageIcon, Download, Phone, ChevronDown,
+  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame,
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
@@ -11,7 +11,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[] };
-type ChatMode = "default" | "academic" | "fun" | "creative" | "image";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "image";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
@@ -29,6 +29,20 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
       "Brainstorm business ideas",
       "Summarize a topic for me",
       "Plan my weekend trip",
+    ],
+  },
+  vent: {
+    label: "Vent",
+    icon: Flame,
+    description: "Let it all out — raw, unfiltered, no judgment. Leevee will listen. 🔥",
+    gradient: "from-red-500 to-orange-600",
+    prompts: [
+      "I just need to rant about my day",
+      "Everything is so frustrating right now",
+      "I'm so angry I could scream",
+      "Let me get this off my chest",
+      "Nobody understands what I'm going through",
+      "I just need someone to listen",
     ],
   },
   academic: {

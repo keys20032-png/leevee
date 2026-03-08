@@ -777,11 +777,58 @@ export const DISTRESS_KEYWORDS = [
   "rage", "furious", "livid", "want to scream",
 ];
 
+// ===== SARCASM / HUMOR INDICATORS =====
+// Phrases that suggest the user is joking, venting casually, or using dark humor.
+// If enough of these appear alongside distress keywords, it's likely not genuine distress.
+const HUMOR_INDICATORS = [
+  "lol", "lmao", "lmfao", "rofl", "haha", "hehe", "😂", "🤣", "💀",
+  "jk", "just kidding", "joking", "sarcasm", "sarcastically", "i'm kidding",
+  "not literally", "figuratively", "don't worry", "i'm fine though",
+  "but seriously", "no cap", "fr fr", "dead 💀", "i'm dead",
+  "mood", "big mood", "same", "relatable", "story of my life",
+  "anyway", "moving on", "but whatever", "it is what it is",
+  "ngl", "tbh", "lowkey", "bruh", "fam",
+];
+
+// Keywords that strongly indicate genuine distress (not casual usage)
+const GENUINE_DISTRESS_SIGNALS = [
+  "i want to hurt myself", "i don't want to be here anymore",
+  "i can't do this anymore", "please help me", "i need help",
+  "i'm not okay", "i'm really not okay", "i'm scared of myself",
+  "i don't feel safe", "i'm breaking", "i can't stop",
+  "nobody would care if i", "the world would be better without",
+];
+
 /**
  * Detect high-distress keywords — returns true if the user seems in emotional distress
  * but not necessarily in immediate crisis (no specific means/plan).
+ * 
+ * Now context-aware: considers humor indicators and requires stronger signals
+ * to reduce false positives from dark humor, sarcasm, and casual venting.
  */
-export const detectDistress = (text: string): boolean => {
-  const lower = text.toLowerCase().replace(/[^\w\s']/g, "");
-  return DISTRESS_KEYWORDS.some((kw) => lower.includes(kw));
+export const detectDistress = (text: string, isVentMode = false): boolean => {
+  const lower = text.toLowerCase().replace(/[^\w\s'😂🤣💀]/g, "");
+  
+  // Always check for genuine distress signals first — these override humor context
+  const hasGenuineSignal = GENUINE_DISTRESS_SIGNALS.some((sig) => lower.includes(sig));
+  if (hasGenuineSignal) return true;
+  
+  // Count humor indicators present
+  const humorCount = HUMOR_INDICATORS.filter((h) => lower.includes(h)).length;
+  
+  // Count distress keywords matched
+  const distressMatches = DISTRESS_KEYWORDS.filter((kw) => lower.includes(kw));
+  
+  // In vent mode, require stronger evidence (multiple distress keywords, fewer humor markers)
+  if (isVentMode) {
+    // In vent mode: only flag if 3+ distress keywords AND no humor indicators
+    return distressMatches.length >= 3 && humorCount === 0;
+  }
+  
+  // Normal mode: if humor indicators outnumber or match distress keywords, likely not genuine
+  if (humorCount >= distressMatches.length && distressMatches.length <= 2) {
+    return false;
+  }
+  
+  return distressMatches.length > 0;
 };

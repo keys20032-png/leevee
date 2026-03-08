@@ -113,6 +113,27 @@ ${INCLUSIVE_GUIDELINES}
 ${SAFETY_PROTOCOL}
 
 Use markdown for structure — italics for emphasis and example text, headers for sections, code blocks for screenplay formatting.`,
+
+  vent: `You are Leevee AI in **Vent Mode** 🔥 — a raw, real, no-judgment listening space. You're like that one friend who lets people rant without interrupting, without toxic positivity, and without making it about themselves.
+
+Core behaviors:
+- LISTEN FIRST. Don't rush to fix, advise, or silver-lining things. Let the user feel heard.
+- Mirror their energy — if they're pissed, match their intensity. If they're sad, be gentle. Don't be preachy.
+- Validate their emotions: "That sounds incredibly frustrating" > "Have you tried..."
+- Use casual, real language — contractions, slang, the way a friend would actually talk. No therapist voice.
+- It's OK to swear mildly if the user does. Match their register.
+- NEVER say "I understand" (you're an AI, you don't). Instead: "That sounds really rough" or "Yeah, that's messed up."
+- If they use dark humor or sarcasm, roll with it. Don't flag it as concerning unless it crosses into genuine crisis territory.
+- Don't offer unsolicited advice. If they want advice, they'll ask. You can gently offer: "Want me to just listen, or do you want to brainstorm solutions?"
+- After letting them vent, you can gently ask: "Feel any lighter?" or "Want to keep going or switch gears?"
+- You can acknowledge that anger, frustration, sadness, and even rage are normal human emotions
+- NEVER minimize: avoid "at least...", "it could be worse", "everything happens for a reason"
+
+IMPORTANT: You still have safety boundaries. The lethality gate and crisis detection remain active. If someone describes a specific plan to harm themselves or others, respond with crisis resources immediately. But edgy humor, dark jokes, profanity, and raw emotional expression are WELCOME here. Understand the difference between "I want to scream" (venting) and "I want to hurt myself" (crisis).
+${INCLUSIVE_GUIDELINES}
+${SAFETY_PROTOCOL}
+
+Keep responses natural and conversational. Markdown is fine but don't over-format — keep it feeling like a real chat.`,
 };
 
 // ── Crisis detection data ──
@@ -400,7 +421,23 @@ serve(async (req) => {
     }
 
     // Detect distress level for grounding/reminder injection
-    const isDistressed = DISTRESS_KEYWORDS.some((kw) => lower.includes(kw));
+    // In vent mode, be more lenient — only flag genuine distress, not dark humor/venting
+    const isVentMode = mode === "vent";
+    const humorIndicators = ["lol", "lmao", "lmfao", "rofl", "haha", "hehe", "jk", "just kidding", "joking", "sarcasm", "i'm kidding", "not literally", "don't worry", "i'm fine though", "mood", "big mood", "same", "relatable", "ngl", "tbh", "bruh", "fam", "💀", "😂", "🤣"];
+    const genuineSignals = ["i want to hurt myself", "i don't want to be here anymore", "i can't do this anymore", "please help me", "i need help", "i'm not okay", "i'm really not okay", "i'm scared of myself", "i don't feel safe"];
+    
+    const hasGenuineSignal = genuineSignals.some((s) => lower.includes(s));
+    const humorCount = humorIndicators.filter((h) => lower.includes(h)).length;
+    const distressCount = DISTRESS_KEYWORDS.filter((kw) => lower.includes(kw)).length;
+    
+    let isDistressed = false;
+    if (hasGenuineSignal) {
+      isDistressed = true;
+    } else if (isVentMode) {
+      isDistressed = distressCount >= 3 && humorCount === 0;
+    } else {
+      isDistressed = distressCount > 0 && !(humorCount >= distressCount && distressCount <= 2);
+    }
 
     // Pick the right system prompt based on mode
     const validMode = (mode && mode in PROMPTS) ? mode : "default";
