@@ -680,6 +680,101 @@ const FullScreenChatbot = () => {
     ? conversations.filter((c) => c.title.toLowerCase().includes(searchHistory.toLowerCase()))
     : conversations;
 
+  // Chat search: find matching message indices
+  const chatSearchMatches = useMemo(() => {
+    if (!chatSearch.trim()) return [];
+    const q = chatSearch.toLowerCase();
+    return messages
+      .map((m, i) => (m.content.toLowerCase().includes(q) ? i : -1))
+      .filter((i) => i !== -1);
+  }, [chatSearch, messages]);
+
+  // Navigate search results
+  const jumpToSearchMatch = (idx: number) => {
+    const el = document.getElementById(`msg-${chatSearchMatches[idx]}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setChatSearchIdx(idx);
+  };
+
+  // Export full conversation as text
+  const exportAsText = () => {
+    const text = messages
+      .map((m) => `${m.role === "user" ? "You" : "Leevee"}: ${m.content}`)
+      .join("\n\n");
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "leevee-conversation.txt";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    setShareMenuOpen(false);
+  };
+
+  // Export full conversation as PDF
+  const exportConversationPDF = () => {
+    try {
+      const doc = new jsPDF();
+      const margin = 20;
+      const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+      const pageHeight = doc.internal.pageSize.getHeight();
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("Leevee AI Conversation", margin, margin);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(128, 128, 128);
+      doc.text(new Date().toLocaleString(), margin, margin + 8);
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin, margin + 12, pageWidth + margin, margin + 12);
+      let y = margin + 20;
+      doc.setFontSize(11);
+      doc.setTextColor(30, 30, 30);
+      for (const msg of messages) {
+        const label = msg.role === "user" ? "You" : "Leevee";
+        const clean = msg.content
+          .replace(/\*\*(.*?)\*\*/g, "$1")
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+          .replace(/`([^`]+)`/g, "$1")
+          .replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?/g, "").replace(/```/g, ""));
+        doc.setFont("helvetica", "bold");
+        if (y > pageHeight - margin) { doc.addPage(); y = margin; }
+        doc.text(`${label}:`, margin, y);
+        y += 6;
+        doc.setFont("helvetica", "normal");
+        const lines = doc.splitTextToSize(clean, pageWidth);
+        for (const line of lines) {
+          if (y > pageHeight - margin) { doc.addPage(); y = margin; }
+          doc.text(line, margin, y);
+          y += 5.5;
+        }
+        y += 4;
+      }
+      doc.save("leevee-conversation.pdf");
+    } catch {
+      exportAsText();
+    }
+    setShareMenuOpen(false);
+  };
+
+  // Copy conversation to clipboard
+  const copyConversation = async () => {
+    const text = messages
+      .map((m) => `${m.role === "user" ? "You" : "Leevee"}: ${m.content}`)
+      .join("\n\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      haptic("light");
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setShareMenuOpen(false);
+  };
+
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const now = new Date();
