@@ -726,10 +726,39 @@ const FullScreenChatbot = () => {
       {/* Input Area */}
       <div className="border-t border-border/50 glass flex-shrink-0">
         <div className="max-w-2xl mx-auto px-3 sm:px-6 py-3 sm:py-3">
+          {/* Pending image preview */}
+          {pendingImage && (
+            <div className="mb-2 relative inline-block">
+              <img src={pendingImage} alt="Upload preview" className="h-20 rounded-xl border border-border/50 shadow-sm" />
+              <button
+                type="button"
+                onClick={() => setPendingImage(null)}
+                className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs font-bold shadow-md hover:scale-110 transition-transform"
+              >
+                ×
+              </button>
+            </div>
+          )}
           <form
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
             className="flex items-end gap-2.5"
           >
+            {/* Image upload button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border border-border/60 bg-card text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all flex-shrink-0"
+              title="Upload image"
+            >
+              <Paperclip className="w-5 h-5 sm:w-4 sm:h-4" />
+            </button>
             <div className="flex-1 relative">
               <textarea
                 ref={inputRef}
@@ -737,7 +766,8 @@ const FullScreenChatbot = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={
-                  isListening ? "Listening..."
+                  pendingImage ? "Ask about this image..."
+                    : isListening ? "Listening..."
                     : mode === "image" ? "Describe what you want to see..."
                     : "Message Leevee..."
                 }
@@ -761,11 +791,11 @@ const FullScreenChatbot = () => {
             </div>
             <button
               type="submit"
-              disabled={!input.trim() || loading}
+              disabled={(!input.trim() && !pendingImage) || loading}
               className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex-shrink-0 glow-primary"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
             >
-              {mode === "image" ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
+              {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
             </button>
           </form>
           <p className="text-[10px] text-muted-foreground/30 text-center mt-2 tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
