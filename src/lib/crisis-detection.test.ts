@@ -71,6 +71,35 @@ describe("detectCrisis", () => {
     it('"queer history month" does NOT trigger crisis', () => {
       expect(detectCrisis("queer history month")).toBeNull();
     });
+
+    // Common queries that MUST NOT false-positive
+    const commonQueries = [
+      "tell me about depression in the economy",
+      "what's the latest on gun control laws",
+      "the method of cooking is important",
+      "she's a heroine in the story",
+      "let's crack open a cold one",
+      "I'm addicted to this game",
+      "the movie had a lot of violence",
+      "pimp my ride was a great show",
+      "I'm anxious about my exam",
+      "the stalker in this horror movie was creepy",
+      "tell me about drug abuse statistics",
+      "write a story about a hostage situation",
+      "the withdrawal from the agreement was sudden",
+      "she was grooming her horse",
+      "the track marks from the train were visible",
+      "I need a rope for the boat",
+      "the gun debate is heating up",
+      "what happened with the assault case in court",
+      "the bathtub is clogged",
+      "tell me about fentanyl policy",
+      "the razor blade is for my box cutter",
+    ];
+
+    it.each(commonQueries.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
+      expect(detectCrisis(input as string)).toBeNull();
+    });
   });
 
   // --- Humor / slang should NOT trigger ---
@@ -182,7 +211,7 @@ describe("detectLethality", () => {
       "drink bleach",
       "step in front of a train",
       "gun to my head",
-      "I bought rope to hang myself with rope",
+      "I got the rope ready",
     ];
 
     it.each(lethalCases.map(c => [c]))('"%s" triggers lethality', (input) => {
@@ -201,9 +230,30 @@ describe("detectLethality", () => {
       "the bathtub needs cleaning",
       "the highway was busy today",
       "the train tracks were covered in snow",
+      "tell me about gun control laws",
+      "what's the latest on gun violence legislation",
+      "the noose was used in the magic trick",
+      "top gun was a great movie",
+      "she plays a heroine in the story",
+      "this razor blade is for shaving",
     ];
 
     it.each(safeCases.map(c => [c]))('"%s" does NOT trigger lethality', (input) => {
+      expect(detectLethality(input as string)).toBe(false);
+    });
+  });
+
+  // --- False positive prevention: common queries that should NEVER trigger ---
+  describe("educational/news queries → should NOT trigger lethality", () => {
+    const educationalCases = [
+      "what are the gun laws in Texas",
+      "history of the noose in American justice",
+      "buy me a box cutter from the store",
+      "the sleeping pills help me rest",
+      "antifreeze keeps the car running in winter",
+    ];
+
+    it.each(educationalCases.map(c => [c]))('"%s" does NOT trigger lethality', (input) => {
       expect(detectLethality(input as string)).toBe(false);
     });
   });
