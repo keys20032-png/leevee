@@ -725,8 +725,8 @@ export const detectCrisis = (text: string): string | null => {
   const humorCount = CRISIS_HUMOR_MARKERS.filter((h) => lower.includes(h)).length;
   const hasSafePhrase = SAFE_PHRASES.some((p) => lower.includes(p));
 
-  // If humor markers present AND the message uses casual/colloquial phrasing, skip crisis
-  if (humorCount >= 1 && hasSafePhrase) return null;
+  // If the message matches a known safe/idiomatic phrase, skip crisis detection
+  if (hasSafePhrase) return null;
 
   // Check specialized categories first
   for (const category of CRISIS_CATEGORIES) {
