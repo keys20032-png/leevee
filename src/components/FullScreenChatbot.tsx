@@ -3,14 +3,16 @@ import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
+  Paperclip, FileText,
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
 import { haptic } from "@/lib/haptics";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
+import jsPDF from "jspdf";
 
-type Message = { role: "user" | "assistant"; content: string; images?: string[] };
+type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
@@ -126,10 +128,12 @@ const FullScreenChatbot = () => {
   const [mode, setMode] = useState<ChatMode>("default");
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [mobileModesOpen, setMobileModesOpen] = useState(false);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
@@ -259,43 +263,90 @@ const FullScreenChatbot = () => {
     setLoading(false);
   };
 
+  // Handle image upload
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be under 5MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPendingImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  // Export to PDF
+  const exportToPDF = (text: string) => {
+    const doc = new jsPDF();
+    const margin = 20;
+    const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+    const clean = text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/`([^`]+)`/g, "$1").replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?/g, "").replace(/```/g, ""));
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    const lines = doc.splitTextToSize(clean, pageWidth);
+    let y = margin;
+    for (const line of lines) {
+      if (y > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y);
+      y += 7;
+    }
+    doc.save("leevee-response.pdf");
+  };
+
   // Send message
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
-    if (!text || loading) return;
+    if ((!text && !pendingImage) || loading) return;
     haptic("medium");
 
+    const msgText = text || (pendingImage ? "What's in this image?" : "");
+
     // LETHALITY GATE — hard block on specific means/methods
-    if (detectLethality(text)) {
+    if (detectLethality(msgText)) {
       localStorage.setItem("crisis_redirect_time", Date.now().toString());
       setMessages((prev) => [
         ...prev,
-        { role: "user", content: text },
+        { role: "user", content: msgText, uploadedImage: pendingImage || undefined },
         {
           role: "assistant",
           content:
             "**Leevee is holding this space for you.**\n\nI've noticed things have reached a critical point. My job is to keep you safe, so I'm pausing our chat for 30 minutes.\n\nWhile we wait, please use the **988** button below. You aren't alone, and I'll be here to listen again once we've both had a moment to breathe.\n\n📞 **Call or text 988** — Suicide & Crisis Lifeline (24/7)\n📱 **Text HOME to 741741** — Crisis Text Line\n\n*I'm an AI, and right now you need a real person. Please reach out.* 💙",
         },
       ]);
+      setPendingImage(null);
       setTimeout(() => {
         window.location.href = "https://988lifeline.org/";
       }, 4000);
       return;
     }
 
-    const crisisUrl = detectCrisis(text);
+    const crisisUrl = detectCrisis(msgText);
     if (crisisUrl) {
       localStorage.setItem("crisis_redirect_time", Date.now().toString());
       window.location.href = crisisUrl;
       return;
     }
 
-    if (mode === "image") return generateImage(text);
+    if (mode === "image" && !pendingImage) return generateImage(msgText);
 
-    const userMsg: Message = { role: "user", content: text };
+    const userMsg: Message = { role: "user", content: msgText, uploadedImage: pendingImage || undefined };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput("");
+    const currentImage = pendingImage;
+    setPendingImage(null);
     setLoading(true);
 
     let assistantSoFar = "";
@@ -303,7 +354,15 @@ const FullScreenChatbot = () => {
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ messages: allMessages, mode }),
+        body: JSON.stringify({
+          messages: allMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+            ...(m.uploadedImage ? { imageData: m.uploadedImage } : {}),
+          })),
+          mode,
+          ...(currentImage ? { imageData: currentImage } : {}),
+        }),
       });
       if (!resp.ok || !resp.body) throw new Error("Failed to connect");
 
@@ -563,6 +622,12 @@ const FullScreenChatbot = () => {
           {messages.map((msg, i) => (
             <div key={i} className={`flex py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[85%] sm:max-w-[78%] flex flex-col gap-1`}>
+                {/* Uploaded image preview in user message */}
+                {msg.uploadedImage && (
+                  <div className="rounded-2xl overflow-hidden border border-border/50 shadow-sm mb-1">
+                    <img src={msg.uploadedImage} alt="Uploaded" className="w-full max-w-xs rounded-2xl" loading="lazy" />
+                  </div>
+                )}
                 <div
                   className={`px-4 py-3.5 sm:py-3 text-[15px] sm:text-sm leading-relaxed whitespace-pre-wrap ${
                     msg.role === "user"
@@ -592,15 +657,25 @@ const FullScreenChatbot = () => {
                   </div>
                 )}
 
-                {/* Read aloud */}
+                {/* Read aloud + PDF download */}
                 {msg.role === "assistant" && !msg.images?.length && (
-                  <button
-                    onClick={() => speak(msg.content, i)}
-                    className="self-start ml-1 p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
-                    aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
-                  >
-                    {speakingIndex === i ? <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> : <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
-                  </button>
+                  <div className="flex items-center gap-1 self-start ml-1">
+                    <button
+                      onClick={() => speak(msg.content, i)}
+                      className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                      aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
+                    >
+                      {speakingIndex === i ? <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> : <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
+                    </button>
+                    <button
+                      onClick={() => exportToPDF(msg.content)}
+                      className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                      aria-label="Download as PDF"
+                      title="Download as PDF"
+                    >
+                      <FileText className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -651,10 +726,39 @@ const FullScreenChatbot = () => {
       {/* Input Area */}
       <div className="border-t border-border/50 glass flex-shrink-0">
         <div className="max-w-2xl mx-auto px-3 sm:px-6 py-3 sm:py-3">
+          {/* Pending image preview */}
+          {pendingImage && (
+            <div className="mb-2 relative inline-block">
+              <img src={pendingImage} alt="Upload preview" className="h-20 rounded-xl border border-border/50 shadow-sm" />
+              <button
+                type="button"
+                onClick={() => setPendingImage(null)}
+                className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs font-bold shadow-md hover:scale-110 transition-transform"
+              >
+                ×
+              </button>
+            </div>
+          )}
           <form
             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
             className="flex items-end gap-2.5"
           >
+            {/* Image upload button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border border-border/60 bg-card text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all flex-shrink-0"
+              title="Upload image"
+            >
+              <Paperclip className="w-5 h-5 sm:w-4 sm:h-4" />
+            </button>
             <div className="flex-1 relative">
               <textarea
                 ref={inputRef}
@@ -662,7 +766,8 @@ const FullScreenChatbot = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={
-                  isListening ? "Listening..."
+                  pendingImage ? "Ask about this image..."
+                    : isListening ? "Listening..."
                     : mode === "image" ? "Describe what you want to see..."
                     : "Message Leevee..."
                 }
@@ -686,11 +791,11 @@ const FullScreenChatbot = () => {
             </div>
             <button
               type="submit"
-              disabled={!input.trim() || loading}
+              disabled={(!input.trim() && !pendingImage) || loading}
               className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex-shrink-0 glow-primary"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
             >
-              {mode === "image" ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
+              {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
             </button>
           </form>
           <p className="text-[10px] text-muted-foreground/30 text-center mt-2 tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
