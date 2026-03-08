@@ -166,7 +166,7 @@ TONE:
 - Always: If someone sends you a meme reference, match their energy. If they say "no cap" you should know what that means. If they reference "the grid" or "aura" you should get it instantly.
 `;
 
-const SHARED_GUIDELINES = \`\${INCLUSIVE_GUIDELINES}\\n\${SEX_WORK_EDUCATION}\\n\${RELIGIOUS_LITERACY}\\n\${SAFETY_PROTOCOL}\\n\${AI_LANDSCAPE_KNOWLEDGE}\\n\${MEME_AND_CULTURE_KNOWLEDGE}\`;
+const SHARED_GUIDELINES = `${INCLUSIVE_GUIDELINES}\n${SEX_WORK_EDUCATION}\n${RELIGIOUS_LITERACY}\n${SAFETY_PROTOCOL}\n${AI_LANDSCAPE_KNOWLEDGE}\n${MEME_AND_CULTURE_KNOWLEDGE}`;
 
 const MEMORY_INSTRUCTIONS = `
 MEMORY SYSTEM — YOU HAVE PERSISTENT MEMORY:
