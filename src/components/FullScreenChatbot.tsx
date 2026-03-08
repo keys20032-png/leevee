@@ -236,7 +236,7 @@ const FullScreenChatbot = () => {
         images: m.images?.length ? m.images : undefined,
         uploadedImage: m.uploaded_image || undefined,
         dbId: m.id,
-        reaction: m.reaction,
+        reaction: (m.reaction === "thumbs_up" || m.reaction === "thumbs_down") ? m.reaction : null,
       }));
       setMessages(mapped);
       setFollowUps([]);
