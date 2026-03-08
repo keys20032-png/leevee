@@ -3,7 +3,7 @@ import InstallBanner from "@/components/InstallBanner";
 
 const Index = () => {
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-dvh flex flex-col bg-background overflow-hidden">
       <InstallBanner />
       <a
         href="#main-content"
