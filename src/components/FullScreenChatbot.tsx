@@ -128,10 +128,12 @@ const FullScreenChatbot = () => {
   const [mode, setMode] = useState<ChatMode>("default");
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [mobileModesOpen, setMobileModesOpen] = useState(false);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
