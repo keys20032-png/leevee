@@ -115,14 +115,26 @@ const TermsOfService = () => {
           </p>
         </Section>
 
-        <Section title="9. Changes to These Terms">
+        <Section title="9. Refund Policy">
+          <p>
+            Leevee AI operates as a subscription-based service. All subscription fees are <strong className="text-foreground">non-refundable</strong>.
+            When you subscribe to a paid plan, you gain immediate access to premium features for the duration of your billing period.
+          </p>
+          <ul className="list-disc pl-5 space-y-1.5">
+            <li>No refunds will be issued for partial billing periods, unused features, or early cancellation.</li>
+            <li>You may cancel your subscription at any time through the subscription management portal. Upon cancellation, you will retain access to paid features until the end of your current billing cycle.</li>
+            <li>If you believe you were charged in error, please contact us within 7 days of the charge through our contact form.</li>
+          </ul>
+        </Section>
+
+        <Section title="10. Changes to These Terms">
           <p>
             We may update these Terms from time to time. Continued use of the Service after changes are posted
             constitutes acceptance of the revised Terms. Material changes will be communicated through the Service.
           </p>
         </Section>
 
-        <Section title="10. Contact">
+        <Section title="11. Contact">
           <p>
             If you have questions about these Terms, please reach out through our{" "}
             <Link to="/" className="text-primary hover:underline">contact form</Link>.
