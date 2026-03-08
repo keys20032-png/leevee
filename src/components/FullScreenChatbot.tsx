@@ -5,6 +5,7 @@ import {
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
+  Share2, X, ChevronUp, Link2,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
@@ -137,6 +138,10 @@ const FullScreenChatbot = () => {
   const [followUps, setFollowUps] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchHistory, setSearchHistory] = useState("");
+  const [chatSearch, setChatSearch] = useState("");
+  const [chatSearchOpen, setChatSearchOpen] = useState(false);
+  const [chatSearchIdx, setChatSearchIdx] = useState(0);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -675,6 +680,101 @@ const FullScreenChatbot = () => {
     ? conversations.filter((c) => c.title.toLowerCase().includes(searchHistory.toLowerCase()))
     : conversations;
 
+  // Chat search: find matching message indices
+  const chatSearchMatches = useMemo(() => {
+    if (!chatSearch.trim()) return [];
+    const q = chatSearch.toLowerCase();
+    return messages
+      .map((m, i) => (m.content.toLowerCase().includes(q) ? i : -1))
+      .filter((i) => i !== -1);
+  }, [chatSearch, messages]);
+
+  // Navigate search results
+  const jumpToSearchMatch = (idx: number) => {
+    const el = document.getElementById(`msg-${chatSearchMatches[idx]}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setChatSearchIdx(idx);
+  };
+
+  // Export full conversation as text
+  const exportAsText = () => {
+    const text = messages
+      .map((m) => `${m.role === "user" ? "You" : "Leevee"}: ${m.content}`)
+      .join("\n\n");
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "leevee-conversation.txt";
+    link.click();
+    URL.revokeObjectURL(link.href);
+    setShareMenuOpen(false);
+  };
+
+  // Export full conversation as PDF
+  const exportConversationPDF = () => {
+    try {
+      const doc = new jsPDF();
+      const margin = 20;
+      const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+      const pageHeight = doc.internal.pageSize.getHeight();
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("Leevee AI Conversation", margin, margin);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(128, 128, 128);
+      doc.text(new Date().toLocaleString(), margin, margin + 8);
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margin, margin + 12, pageWidth + margin, margin + 12);
+      let y = margin + 20;
+      doc.setFontSize(11);
+      doc.setTextColor(30, 30, 30);
+      for (const msg of messages) {
+        const label = msg.role === "user" ? "You" : "Leevee";
+        const clean = msg.content
+          .replace(/\*\*(.*?)\*\*/g, "$1")
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+          .replace(/`([^`]+)`/g, "$1")
+          .replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?/g, "").replace(/```/g, ""));
+        doc.setFont("helvetica", "bold");
+        if (y > pageHeight - margin) { doc.addPage(); y = margin; }
+        doc.text(`${label}:`, margin, y);
+        y += 6;
+        doc.setFont("helvetica", "normal");
+        const lines = doc.splitTextToSize(clean, pageWidth);
+        for (const line of lines) {
+          if (y > pageHeight - margin) { doc.addPage(); y = margin; }
+          doc.text(line, margin, y);
+          y += 5.5;
+        }
+        y += 4;
+      }
+      doc.save("leevee-conversation.pdf");
+    } catch {
+      exportAsText();
+    }
+    setShareMenuOpen(false);
+  };
+
+  // Copy conversation to clipboard
+  const copyConversation = async () => {
+    const text = messages
+      .map((m) => `${m.role === "user" ? "You" : "Leevee"}: ${m.content}`)
+      .join("\n\n");
+    try {
+      await navigator.clipboard.writeText(text);
+      haptic("light");
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    setShareMenuOpen(false);
+  };
+
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const now = new Date();
@@ -861,7 +961,57 @@ const FullScreenChatbot = () => {
             })}
           </nav>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
+            {/* Chat search toggle */}
+            {messages.length > 0 && (
+              <button
+                onClick={() => { setChatSearchOpen(!chatSearchOpen); setChatSearch(""); setChatSearchIdx(0); }}
+                className={`p-2 rounded-lg transition-colors ${chatSearchOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
+                title="Search in chat"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            )}
+            {/* Share / export */}
+            {messages.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => setShareMenuOpen(!shareMenuOpen)}
+                  className={`p-2 rounded-lg transition-colors ${shareMenuOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
+                  title="Share conversation"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+                {shareMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
+                    <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
+                      <button
+                        onClick={copyConversation}
+                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                      >
+                        <Copy className="w-3.5 h-3.5" /> Copy to clipboard
+                      </button>
+                      <button
+                        onClick={exportAsText}
+                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                      >
+                        <FileText className="w-3.5 h-3.5" /> Export as .txt
+                      </button>
+                      <button
+                        onClick={exportConversationPDF}
+                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                      >
+                        <Download className="w-3.5 h-3.5" /> Export as PDF
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             <a
               href="tel:988"
               className="inline-flex items-center gap-1 px-3 sm:px-2.5 py-1.5 rounded-lg text-[11px] sm:text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors min-h-[36px]"
@@ -873,6 +1023,50 @@ const FullScreenChatbot = () => {
             <ThemeToggle />
           </div>
         </header>
+
+        {/* Chat search bar */}
+        {chatSearchOpen && (
+          <div className="flex items-center gap-2 px-3 sm:px-6 py-2 border-b border-border/50 bg-card/80 backdrop-blur-sm animate-message-in">
+            <Search className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+            <input
+              type="text"
+              placeholder="Search messages..."
+              value={chatSearch}
+              onChange={(e) => { setChatSearch(e.target.value); setChatSearchIdx(0); }}
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              autoFocus
+            />
+            {chatSearchMatches.length > 0 && (
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] text-muted-foreground tabular-nums">
+                  {chatSearchIdx + 1}/{chatSearchMatches.length}
+                </span>
+                <button
+                  onClick={() => { const next = (chatSearchIdx - 1 + chatSearchMatches.length) % chatSearchMatches.length; jumpToSearchMatch(next); }}
+                  className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <ChevronUp className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => { const next = (chatSearchIdx + 1) % chatSearchMatches.length; jumpToSearchMatch(next); }}
+                  className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+            {chatSearch && chatSearchMatches.length === 0 && (
+              <span className="text-[10px] text-muted-foreground/50">No results</span>
+            )}
+            <button
+              onClick={() => { setChatSearchOpen(false); setChatSearch(""); }}
+              className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         {/* Chat Area */}
         <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
@@ -929,7 +1123,7 @@ const FullScreenChatbot = () => {
 
             {/* Messages */}
             {messages.map((msg, i) => (
-              <div key={i} className={`flex py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div key={i} id={`msg-${i}`} className={`flex py-3 sm:py-2 animate-message-in ${msg.role === "user" ? "justify-end" : "justify-start"} ${chatSearch && chatSearchMatches.includes(i) ? "ring-2 ring-primary/40 rounded-2xl" : ""}`}>
                 <div className={`max-w-[85%] sm:max-w-[78%] flex flex-col gap-1`}>
                   {msg.uploadedImage && (
                     <div className="rounded-2xl overflow-hidden border border-border/50 shadow-sm mb-1">
