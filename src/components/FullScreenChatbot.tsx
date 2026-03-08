@@ -788,7 +788,9 @@ const FullScreenChatbot = () => {
                   }`}
                   style={msg.role === "user" ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" } : undefined}
                 >
-                  {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
+                  {msg.role === "assistant" ? (
+                    <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
+                  ) : msg.content}
                 </div>
 
                 {/* Generated images */}
@@ -847,6 +849,14 @@ const FullScreenChatbot = () => {
                 {/* Read aloud + PDF download */}
                 {msg.role === "assistant" && !msg.images?.length && (
                   <div className="flex items-center gap-1 self-start ml-1">
+                    <button
+                      onClick={() => copyMessage(msg.content, i)}
+                      className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                      aria-label="Copy message"
+                      title="Copy to clipboard"
+                    >
+                      {copiedIndex === i ? <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-green-500" /> : <Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
+                    </button>
                     <button
                       onClick={() => speak(msg.content, i)}
                       className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
