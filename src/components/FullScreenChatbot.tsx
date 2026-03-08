@@ -400,9 +400,7 @@ const FullScreenChatbot = () => {
         { role: "user", content: text || "(image)" },
         {
           role: "assistant",
-          content: tier === "free"
-            ? "⚡ **Daily limit reached!** You've used all **15 free messages** for today.\n\nUpgrade to **Pro** for 100 messages/day or **Premium** for unlimited access.\n\n[View Plans](/pricing)"
-            : "⚡ **Daily limit reached!** You've used all **100 Pro messages** for today.\n\nUpgrade to **Premium** for unlimited access.\n\n[View Plans](/pricing)",
+          content: tier === "free" ? t.home.dailyLimitFree : t.home.dailyLimitPro,
         },
       ]);
       return;
@@ -559,7 +557,7 @@ const FullScreenChatbot = () => {
         }
       }
     } catch {
-      setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: t.home.connectionError }]);
     }
     setLoading(false);
 
@@ -879,7 +877,7 @@ const FullScreenChatbot = () => {
   // Confirm before clearing chat with messages
   const confirmNewChat = () => {
     if (messages.length > 0) {
-      if (window.confirm("Start a new chat? Your current conversation is saved in history.")) {
+      if (window.confirm(t.home.confirmNewChat)) {
         startNewChat();
       }
     } else {
@@ -1354,17 +1352,17 @@ const FullScreenChatbot = () => {
                       <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
                       <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
                         <button onClick={shareBrandedLog} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Share2 className="w-3.5 h-3.5" /> Share chat log
+                          <Share2 className="w-3.5 h-3.5" /> {t.home.shareChatLog}
                         </button>
                         <div className="mx-2 my-0.5 h-px bg-border/40" />
                         <button onClick={copyConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Copy className="w-3.5 h-3.5" /> Copy to clipboard
+                          <Copy className="w-3.5 h-3.5" /> {t.home.copyToClipboard}
                         </button>
                         <button onClick={exportAsText} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <FileText className="w-3.5 h-3.5" /> Export as .txt
+                          <FileText className="w-3.5 h-3.5" /> {t.home.exportAsTxt}
                         </button>
                         <button onClick={exportConversationPDF} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Download className="w-3.5 h-3.5" /> Export as PDF
+                          <Download className="w-3.5 h-3.5" /> {t.home.exportAsPdf}
                         </button>
                       </div>
                     </>
@@ -1500,7 +1498,7 @@ const FullScreenChatbot = () => {
             <Search className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
             <input
               type="text"
-              placeholder="Search messages..."
+              placeholder={t.home.searchMessagesPlaceholder}
               value={chatSearch}
               onChange={(e) => { setChatSearch(e.target.value); setChatSearchIdx(0); }}
               className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
@@ -1527,7 +1525,7 @@ const FullScreenChatbot = () => {
               </div>
             )}
             {chatSearch && chatSearchMatches.length === 0 && (
-              <span className="text-[10px] text-muted-foreground/50">No results</span>
+              <span className="text-[10px] text-muted-foreground/50">{t.home.noResults}</span>
             )}
             <button
               onClick={() => { setChatSearchOpen(false); setChatSearch(""); }}
