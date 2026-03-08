@@ -287,10 +287,6 @@ const CrisisResources = () => {
     return false;
   });
 
-  if (showChecklist) {
-    return <SafetyCheckScreen onContinue={() => setShowChecklist(false)} />;
-  }
-
   const filtered = useMemo(() => {
     return resources.filter((r) => {
       const matchesCategory = activeCategory === "All" || r.category === activeCategory;
@@ -302,6 +298,10 @@ const CrisisResources = () => {
       return matchesCategory && matchesSearch;
     });
   }, [search, activeCategory]);
+
+  if (showChecklist) {
+    return <SafetyCheckScreen onContinue={() => setShowChecklist(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
