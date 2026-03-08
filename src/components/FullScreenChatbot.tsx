@@ -1261,6 +1261,9 @@ const FullScreenChatbot = () => {
                 Leevee AI
               </h1>
             </div>
+            <div className="hidden sm:block">
+              <LanguageSelector />
+            </div>
           </div>
 
           {/* Mode tabs */}
