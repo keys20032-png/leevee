@@ -575,9 +575,24 @@ const FullScreenChatbot = () => {
     }
     setLoading(false);
 
-    // Save final assistant message to DB
+    // Save final assistant message to DB + extract memories
     if (convoId && assistantDbId && assistantSoFar) {
-      updateMessageContent(assistantDbId, assistantSoFar);
+      // Extract and save any [MEMORY_SAVE] tags
+      const memoryPattern = /\[MEMORY_SAVE:\s*key="([^"]+)"\s*value="([^"]+)"\]/g;
+      let memMatch;
+      let cleanedContent = assistantSoFar;
+      while ((memMatch = memoryPattern.exec(assistantSoFar)) !== null) {
+        const [fullMatch, memKey, memValue] = memMatch;
+        addMemory(memKey, memValue, "auto");
+        cleanedContent = cleanedContent.replace(fullMatch, "").trim();
+      }
+      // Update with cleaned content (without memory tags)
+      updateMessageContent(assistantDbId, cleanedContent);
+      if (cleanedContent !== assistantSoFar) {
+        setMessages((prev) =>
+          prev.map((m, i) => i === prev.length - 1 && m.role === "assistant" ? { ...m, content: cleanedContent } : m)
+        );
+      }
     }
 
     // Generate follow-up suggestions
