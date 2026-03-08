@@ -1362,6 +1362,10 @@ const FullScreenChatbot = () => {
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
                       <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
+                        <button onClick={() => { navigator.clipboard.writeText(window.location.origin); haptic("light"); setShareMenuOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <Link2 className="w-3.5 h-3.5" /> Copy app link
+                        </button>
+                        <div className="mx-2 my-0.5 h-px bg-border/40" />
                         <button onClick={copyConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                           <Copy className="w-3.5 h-3.5" /> Copy to clipboard
                         </button>
