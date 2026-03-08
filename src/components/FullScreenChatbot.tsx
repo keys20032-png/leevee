@@ -1001,7 +1001,7 @@ const FullScreenChatbot = () => {
               </>
             )}
 
-            {/* Mobile: more menu consolidates search, share, new chat, theme */}
+            {/* Mobile: more menu with all features */}
             <div className="sm:hidden relative">
               <button
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
@@ -1012,7 +1012,7 @@ const FullScreenChatbot = () => {
               {moreMenuOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 z-50 w-52 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 animate-message-in">
+                  <div className="absolute right-0 top-full mt-2 z-50 w-56 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 animate-message-in">
                     <button
                       onClick={() => { startNewChat(); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
@@ -1035,6 +1035,13 @@ const FullScreenChatbot = () => {
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
                           <Copy className="w-4 h-4" /> Copy conversation
+                        </button>
+                        <button
+                          onClick={() => { exportAsText(); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                        >
+                          <FileText className="w-4 h-4" /> Export as .txt
                         </button>
                         <button
                           onClick={() => { exportConversationPDF(); setMoreMenuOpen(false); }}
@@ -1061,7 +1068,7 @@ const FullScreenChatbot = () => {
               title="Crisis Line: 988"
             >
               <Phone className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
-              <span className="hidden sm:inline">988</span>
+              <span>988</span>
             </a>
             <div className="hidden sm:block">
               <ThemeToggle />
@@ -1203,17 +1210,17 @@ const FullScreenChatbot = () => {
                         <div key={imgIdx} className="rounded-2xl overflow-hidden border border-border/50 shadow-lg">
                           <div className="relative group">
                             <img src={imgSrc} alt={`Generated image ${imgIdx + 1}`} className="w-full max-w-md rounded-t-2xl" loading="lazy" />
-                            <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                            <div className="absolute top-3 right-3 flex gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-200">
                               <button
                                 onClick={() => setEditingImage(imgSrc)}
-                                className="p-2 rounded-xl glass glass-border text-foreground hover:bg-card"
+                                className="p-2.5 sm:p-2 rounded-xl glass glass-border text-foreground hover:bg-card active:scale-95"
                                 title="Edit image"
                               >
                                 <Pencil className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => downloadImage(imgSrc, imgIdx)}
-                                className="p-2 rounded-xl glass glass-border text-foreground hover:bg-card"
+                                className="p-2.5 sm:p-2 rounded-xl glass glass-border text-foreground hover:bg-card active:scale-95"
                                 title="Download image"
                               >
                                 <Download className="w-4 h-4" />
@@ -1292,15 +1299,15 @@ const FullScreenChatbot = () => {
                       </button>
                       <button
                         onClick={() => exportToPDF(msg.content)}
-                        className="hidden sm:flex p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                        className="p-2 sm:p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all active:scale-90"
                         aria-label="Download as PDF"
                         title="Download as PDF"
                       >
-                        <FileText className="w-3.5 h-3.5" />
+                        <FileText className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                       </button>
                       {msg.metrics && (
-                        <span className="hidden sm:inline ml-1 text-[10px] text-muted-foreground/40 font-mono tabular-nums" title={`TTFT: ${msg.metrics.ttft}ms · Total: ${msg.metrics.total}ms · Mode: ${msg.metrics.mode}`}>
-                          ⚡ {msg.metrics.ttft < 1000 ? `${msg.metrics.ttft}ms` : `${(msg.metrics.ttft / 1000).toFixed(1)}s`} · {msg.metrics.total < 1000 ? `${msg.metrics.total}ms` : `${(msg.metrics.total / 1000).toFixed(1)}s`}
+                        <span className="ml-1 text-[10px] text-muted-foreground/40 font-mono tabular-nums" title={`TTFT: ${msg.metrics.ttft}ms · Total: ${msg.metrics.total}ms · Mode: ${msg.metrics.mode}`}>
+                          ⚡ {msg.metrics.ttft < 1000 ? `${msg.metrics.ttft}ms` : `${(msg.metrics.ttft / 1000).toFixed(1)}s`}
                         </span>
                       )}
                     </div>
@@ -1421,14 +1428,14 @@ const FullScreenChatbot = () => {
             </form>
             <p className="text-[10px] text-muted-foreground/30 text-center mt-1.5 sm:mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               <span>Leevee AI</span>
-              <span className="hidden sm:inline text-muted-foreground/20">·</span>
-              <span className="hidden sm:inline">Powered by Gemini</span>
+              <span className="text-muted-foreground/20">·</span>
+              <span>Powered by Gemini</span>
               <span className="text-muted-foreground/20">·</span>
               <a href="/safety" className="hover:text-muted-foreground/60 transition-colors">Safety</a>
-              <span className="hidden sm:inline text-muted-foreground/20">·</span>
-              <a href="/terms" className="hidden sm:inline hover:text-muted-foreground/60 transition-colors">Terms</a>
-              <span className="hidden sm:inline text-muted-foreground/20">·</span>
-              <a href="/privacy" className="hidden sm:inline hover:text-muted-foreground/60 transition-colors">Privacy</a>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/terms" className="hover:text-muted-foreground/60 transition-colors">Terms</a>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/privacy" className="hover:text-muted-foreground/60 transition-colors">Privacy</a>
             </p>
           </div>
         </div>
