@@ -150,7 +150,7 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-primary-foreground text-sm font-semibold tracking-wide uppercase transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Continue to Polly AI
+              Continue to Resources
             </button>
           </div>
         )}

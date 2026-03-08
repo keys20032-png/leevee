@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CrisisResourceCard from "@/components/CrisisResourceCard";
+import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 
 export interface CrisisResource {
   name: string;
@@ -277,6 +278,14 @@ export const resources: CrisisResource[] = [
 const CrisisResources = () => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [showChecklist, setShowChecklist] = useState(() => {
+    const fromCrisis = localStorage.getItem("crisis_redirect");
+    if (fromCrisis) {
+      localStorage.removeItem("crisis_redirect");
+      return true;
+    }
+    return false;
+  });
 
   const filtered = useMemo(() => {
     return resources.filter((r) => {
@@ -289,6 +298,10 @@ const CrisisResources = () => {
       return matchesCategory && matchesSearch;
     });
   }, [search, activeCategory]);
+
+  if (showChecklist) {
+    return <SafetyCheckScreen onContinue={() => setShowChecklist(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
