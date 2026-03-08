@@ -9,7 +9,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { prompt } = await req.json();
+    const { prompt, sourceImage } = await req.json();
 
     if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
       return new Response(JSON.stringify({ error: "A prompt is required." }), {
@@ -20,6 +20,14 @@ serve(async (req) => {
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    // Build message content: text-only for generation, multimodal for editing
+    const userContent = sourceImage
+      ? [
+          { type: "text", text: prompt.trim() },
+          { type: "image_url", image_url: { url: sourceImage } },
+        ]
+      : prompt.trim();
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -32,7 +40,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: prompt.trim(),
+            content: userContent,
           },
         ],
         modalities: ["image", "text"],
