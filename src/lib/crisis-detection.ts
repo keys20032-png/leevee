@@ -720,12 +720,13 @@ const CRISIS_HUMOR_MARKERS = [
 
 // High-severity keywords that should ALWAYS trigger, even alongside safe phrases
 const OVERRIDE_CRISIS_KEYWORDS = [
-  "end my life", "ending my life", "kill myself", "hang myself", "shoot myself",
+  "end my life", "kill myself", "hang myself", "shoot myself",
   "slit my wrist", "jump off", "drown myself", "want to die", "suicide",
   "suicidal", "take my life", "hurt myself", "overdose", "end it all",
   "kms", "kys", "unalive", "better off dead", "no reason to live",
   "planning to die", "ready to die", "got the rope", "gun to my head",
   "bleed out", "pills to die", "drink bleach",
+  "ending my life", "ends my life", "ended my life",
 ];
 
 // Phrases that neutralize an override keyword (e.g. "want to die laughing" is idiomatic)
