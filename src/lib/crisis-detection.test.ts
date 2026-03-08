@@ -59,6 +59,27 @@ describe("detectCrisis", () => {
     });
   });
 
+  // --- Humor / slang should NOT trigger ---
+  describe("humor and slang → should NOT redirect", () => {
+    const humorCases = [
+      "bruh I'm dying this is so funny",
+      "lmao this test killed me 💀",
+      "I'm so dead rn haha",
+      "this homework is killing me bruh",
+    ];
+
+    it.each(humorCases.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
+      expect(detectCrisis(input as string)).toBeNull();
+    });
+  });
+
+  // --- Genuine crisis MUST still trigger even with some casual words ---
+  describe("genuine crisis intent → should still redirect", () => {
+    it('"I genuinely want to hurt myself" triggers crisis', () => {
+      expect(detectCrisis("I genuinely want to hurt myself")).not.toBeNull();
+    });
+  });
+
   // --- "feel trapped" is intentionally a crisis keyword ---
   describe("intentional crisis keywords in ambiguous contexts", () => {
     it('"I feel trapped in my job" triggers because "feel trapped" is a crisis keyword', () => {
