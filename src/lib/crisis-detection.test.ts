@@ -105,6 +105,21 @@ describe("detectCrisis", () => {
     });
   });
 
+  // --- Genuine crisis with humor markers MUST still trigger ---
+  describe("genuine crisis + humor markers → should still redirect", () => {
+    const cases: [string, string][] = [
+      ["I want to kill myself lol just kidding", "kill myself + lol"],
+      ["kms lmao", "kms + lmao"],
+      ["I want to end my life haha", "end my life + haha"],
+      ["suicide is the answer lol", "suicide + lol"],
+      ["gonna hang myself bruh", "hang myself + bruh"],
+    ];
+
+    it.each(cases)('"%s" triggers crisis (%s)', (input) => {
+      expect(detectCrisis(input)).not.toBeNull();
+    });
+  });
+
   // --- "feel trapped" is intentionally a crisis keyword ---
   describe("intentional crisis keywords in ambiguous contexts", () => {
     it('"I feel trapped in my job" triggers because "feel trapped" is a crisis keyword', () => {

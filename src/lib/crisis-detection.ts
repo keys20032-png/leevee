@@ -780,21 +780,21 @@ export const detectCrisis = (text: string): string | null => {
   // Check specialized categories first
   for (const category of CRISIS_CATEGORIES) {
     if (category.keywords.some((kw) => lower.includes(kw))) {
-      // If humor markers are present, only redirect for genuinely dangerous categories
-      if (humorCount >= 1) continue;
+      // If humor markers present AND no override keyword, skip
+      if (humorCount >= 1 && !hasOverride) continue;
       return category.url;
     }
   }
 
   // General crisis keywords → default 988
   if (CRISIS_KEYWORDS.some((kw) => kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw))) {
-    if (humorCount >= 1) return null; // Humor context = skip
+    if (humorCount >= 1 && !hasOverride) return null;
     return "https://988lifeline.org/";
   }
 
   // Root-word matching → default 988
   if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
-    if (humorCount >= 1) return null;
+    if (humorCount >= 1 && !hasOverride) return null;
     return "https://988lifeline.org/";
   }
 

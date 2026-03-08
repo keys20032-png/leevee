@@ -473,7 +473,7 @@ serve(async (req) => {
         // Category-specific crisis routing
         for (const category of CRISIS_CATEGORIES) {
           if (containsAny(lower, category.keywords)) {
-            if (humorCount >= 1) continue;
+            if (humorCount >= 1 && !hasOverride) continue;
             return new Response(
               JSON.stringify({ crisis: true, redirect: category.url || "https://988lifeline.org/" }),
               { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -483,7 +483,9 @@ serve(async (req) => {
 
         // General crisis keywords
         if (ALL_CRISIS_KEYWORDS.has(lower) || [...ALL_CRISIS_KEYWORDS].some(kw => lower.includes(kw))) {
-          if (humorCount === 0) {
+          if (humorCount >= 1 && !hasOverride) {
+            // humor present + no override = skip
+          } else {
             return new Response(
               JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
               { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -492,11 +494,15 @@ serve(async (req) => {
         }
 
         // Root-based crisis detection
-        if (humorCount === 0 && CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
-          return new Response(
-            JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
-            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-          );
+        if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) {
+          if (humorCount >= 1 && !hasOverride) {
+            // humor present + no override = skip
+          } else {
+            return new Response(
+              JSON.stringify({ crisis: true, redirect: "https://988lifeline.org/" }),
+              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
         }
       }
     }
