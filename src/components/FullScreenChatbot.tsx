@@ -18,6 +18,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import { jsPDF } from "jspdf";
 import { useConversations, type ChatMessage } from "@/hooks/use-conversations";
 import { useAuth } from "@/hooks/use-auth";
+import { useDailyLimit } from "@/hooks/use-daily-limit";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
@@ -135,6 +136,7 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
 
 const FullScreenChatbot = () => {
   const { user, profile } = useAuth();
+  const { isAtLimit, remaining, limit, increment, tier } = useDailyLimit();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -428,6 +430,22 @@ const FullScreenChatbot = () => {
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
     if ((!text && !pendingImage) || loading) return;
+
+    // Daily limit gate
+    if (isAtLimit) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: text || "(image)" },
+        {
+          role: "assistant",
+          content: tier === "free"
+            ? "⚡ **Daily limit reached!** You've used all **15 free messages** for today.\n\nUpgrade to **Pro** for 100 messages/day or **Premium** for unlimited access.\n\n[View Plans](/pricing)"
+            : "⚡ **Daily limit reached!** You've used all **100 Pro messages** for today.\n\nUpgrade to **Premium** for unlimited access.\n\n[View Plans](/pricing)",
+        },
+      ]);
+      return;
+    }
+
     haptic("medium");
 
     const msgText = text || (pendingImage ? "What's in this image?" : "");
@@ -482,6 +500,7 @@ const FullScreenChatbot = () => {
     const currentImage = pendingImage;
     setPendingImage(null);
     setLoading(true);
+    increment();
 
     // Save user message to DB
     if (convoId) {
@@ -1841,6 +1860,18 @@ const FullScreenChatbot = () => {
                 {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
               </button>
             </form>
+            {tier !== "premium" && (
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <span className={`text-[10px] tracking-wider uppercase ${remaining <= 3 ? "text-destructive" : "text-muted-foreground/40"}`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                  {remaining}/{limit === Infinity ? "∞" : limit} messages left today
+                </span>
+                {remaining <= 5 && (
+                  <a href="/pricing" className="text-[10px] text-primary hover:underline tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    Upgrade
+                  </a>
+                )}
+              </div>
+            )}
             <p className="text-[10px] text-muted-foreground/30 text-center mt-1.5 sm:mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               <span>Leevee AI</span>
               <span className="text-muted-foreground/20">·</span>
