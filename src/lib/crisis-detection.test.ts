@@ -77,10 +77,22 @@ describe("detectCrisis", () => {
     });
   });
 
-  // --- Genuine crisis MUST still trigger even with some casual words ---
-  describe("genuine crisis intent → should still redirect", () => {
-    it('"I genuinely want to hurt myself" triggers crisis', () => {
-      expect(detectCrisis("I genuinely want to hurt myself")).not.toBeNull();
+  // --- Genuine crisis MUST still trigger even with safe-phrase substrings ---
+  describe("genuine crisis with safe-phrase substring → should still redirect", () => {
+    it('"ending my life" alone triggers', () => {
+      expect(detectCrisis("ending my life")).not.toBeNull();
+    });
+    it('"dead serious about ending my life" triggers', () => {
+      expect(detectCrisis("I am dead serious about ending my life")).not.toBeNull();
+    });
+    it('"dead tired + kill myself" triggers', () => {
+      expect(detectCrisis("I am dead tired of living and want to kill myself")).not.toBeNull();
+    });
+    it('"dying to + end it all" triggers', () => {
+      expect(detectCrisis("I am dying to end it all")).not.toBeNull();
+    });
+    it('"dead serious + want to die" triggers', () => {
+      expect(detectCrisis("I am dead serious I want to die")).not.toBeNull();
     });
   });
 

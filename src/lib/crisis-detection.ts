@@ -2,7 +2,7 @@
 
 export const CRISIS_KEYWORDS = [
   // ===== SUICIDAL IDEATION =====
-  "suicide", "suicidal", "kill myself", "end my life", "want to die", "don't want to live",
+  "suicide", "suicidal", "kill myself", "end my life", "ending my life", "want to die", "don't want to live",
   "self harm", "self-harm", "cutting myself", "hurt myself", "no reason to live",
   "better off dead", "can't go on", "end it all", "take my life", "not worth living",
   "give up on life", "wanna die", "wish i was dead", "rather be dead", "no point in living",
@@ -718,6 +718,49 @@ const CRISIS_HUMOR_MARKERS = [
   "story of my life", "don't worry", "i'm fine",
 ];
 
+// High-severity keywords that should ALWAYS trigger, even alongside safe phrases
+const _overrideList = [
+  "end my life",
+  "kill myself",
+  "hang myself",
+  "shoot myself",
+  "slit my wrist",
+  "jump off",
+  "drown myself",
+  "want to die",
+  "suicide",
+  "suicidal",
+  "take my life",
+  "hurt myself",
+  "overdose",
+  "end it all",
+  "kms",
+  "kys",
+  "unalive",
+  "better off dead",
+  "no reason to live",
+  "planning to die",
+  "ready to die",
+  "got the rope",
+  "gun to my head",
+  "bleed out",
+  "pills to die",
+  "drink bleach",
+];
+// Also match conjugated forms
+const OVERRIDE_CRISIS_KEYWORDS = [
+  ..._overrideList,
+  "ending my life",
+  "ends my life",
+  "ended my life",
+];
+
+// Phrases that neutralize an override keyword (e.g. "want to die laughing" is idiomatic)
+const OVERRIDE_NEUTRALIZERS = [
+  "die laughing", "dying laughing", "to die for", "die of laughter",
+  "die from laughter", "want to die laughing",
+];
+
 export const detectCrisis = (text: string): string | null => {
   const lower = text.toLowerCase().replace(/[^\w\s'😂🤣💀]/g, "");
 
@@ -725,8 +768,14 @@ export const detectCrisis = (text: string): string | null => {
   const humorCount = CRISIS_HUMOR_MARKERS.filter((h) => lower.includes(h)).length;
   const hasSafePhrase = SAFE_PHRASES.some((p) => lower.includes(p));
 
-  // If the message matches a known safe/idiomatic phrase, skip crisis detection
-  if (hasSafePhrase) return null;
+  // Check for high-severity override keywords that trump safe phrases
+  const hasNeutralizer = OVERRIDE_NEUTRALIZERS.some((n) => lower.includes(n));
+  const hasOverride = !hasNeutralizer && OVERRIDE_CRISIS_KEYWORDS.some((kw) =>
+    kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw)
+  );
+
+  // If safe phrase present but NO override keyword, skip crisis detection
+  if (hasSafePhrase && !hasOverride) return null;
 
   // Check specialized categories first
   for (const category of CRISIS_CATEGORIES) {
