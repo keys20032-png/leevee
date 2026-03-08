@@ -439,6 +439,36 @@ export const CRISIS_ROOTS = [
 
 export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string }[] = [
   {
+    label: "Suicide & Self-Harm",
+    url: "https://988lifeline.org/",
+    keywords: [
+      "want to die", "wanna die", "want to kill myself", "going to kill myself",
+      "planning to kill myself", "thinking about killing myself", "suicidal",
+      "suicidal thoughts", "suicidal ideation", "end my life", "end it all",
+      "no reason to live", "not worth living", "life isnt worth it",
+      "better off dead", "everyone would be better off without me",
+      "nobody would miss me", "nobody would care if i died",
+      "i dont want to be here", "dont want to be alive", "wish i was dead",
+      "wish i wasnt born", "wish i didnt exist", "i cant do this anymore",
+      "i cant go on", "theres no way out", "no way out", "trapped",
+      "unalive", "unalive myself", "kms", "kys", "ctb", "sui",
+      "self harm", "self-harm", "selfharm", "cutting myself", "cutting my wrists",
+      "hurting myself", "burn myself", "hit myself", "scratch myself",
+      "overdose", "take all my pills", "swallow pills", "hang myself",
+      "jump off", "jump from", "drive off a bridge", "slit my wrists",
+      "gun to my head", "pull the trigger", "blow my brains out",
+      "drown myself", "poison myself", "drink bleach",
+      "goodbye letter", "suicide note", "writing my note", "final goodbye",
+      "giving away my things", "saying goodbye to everyone",
+      "attempted suicide", "tried to kill myself", "almost killed myself",
+      "survived attempt", "failed attempt", "method", "painless way to die",
+      "how to die", "ways to die", "easiest way to die",
+      "i have a plan", "i have a date", "set a date",
+      "nothing matters", "whats the point", "pointless", "hopeless",
+      "worthless", "im a burden", "burden to everyone",
+    ],
+  },
+  {
     label: "Child Abuse",
     url: "https://www.childhelp.org/",
     keywords: [
