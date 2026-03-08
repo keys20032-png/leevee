@@ -264,7 +264,29 @@ const FullScreenChatbot = () => {
     setLoading(false);
   };
 
-  // Handle image upload
+  // Edit an existing image
+  const editImage = async (sourceImage: string, editPrompt: string) => {
+    const userMsg: Message = { role: "user", content: `✏️ Edit: ${editPrompt}` };
+    setMessages((prev) => [...prev, userMsg]);
+    setEditingImage(null);
+    setInput("");
+    setLoading(true);
+    try {
+      const resp = await fetch(IMAGE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
+        body: JSON.stringify({ prompt: editPrompt, sourceImage }),
+      });
+      if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Image editing failed." })); throw new Error(err.error || "Image editing failed."); }
+      const data = await resp.json();
+      setMessages((prev) => [...prev, { role: "assistant", content: data.text || "Here's your edited image!", images: data.images || [] }]);
+    } catch (e) {
+      setMessages((prev) => [...prev, { role: "assistant", content: e instanceof Error ? e.message : "Sorry, image editing failed." }]);
+    }
+    setLoading(false);
+  };
+
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
