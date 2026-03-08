@@ -48,7 +48,6 @@ const Navbar = () => {
             </a>
           ))}
           <div className="w-px h-5 bg-border/50 mx-1" />
-          <LanguageSelector />
           <TextSizeToggle />
           <ThemeToggle />
         </div>
@@ -80,7 +79,6 @@ const Navbar = () => {
             </a>
           ))}
           <div className="flex items-center gap-3 pt-3">
-            <LanguageSelector />
             <TextSizeToggle />
             <ThemeToggle />
           </div>
