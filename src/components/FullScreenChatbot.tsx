@@ -910,7 +910,7 @@ const FullScreenChatbot = () => {
             {mobileModesOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setMobileModesOpen(false)} />
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-56 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-1.5 animate-message-in">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-60 max-h-[70vh] overflow-y-auto scrollbar-none rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-1.5 animate-message-in">
                   {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
                     const cfg = MODE_CONFIG[key];
                     const Icon = cfg.icon;
@@ -919,18 +919,15 @@ const FullScreenChatbot = () => {
                       <button
                         key={key}
                         onClick={() => { switchMode(key); setMobileModesOpen(false); }}
-                        className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] font-medium transition-all duration-200 ${
+                        className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 active:scale-[0.97] ${
                           isActive
                             ? "text-primary-foreground shadow-md"
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
                         }`}
-                        style={isActive ? { background: `linear-gradient(135deg, ${cfg.gradient.split(', ').slice(1).join(', ').replace(')', '')})`, fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
+                        style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
                       >
-                        <Icon className="w-4.5 h-4.5 flex-shrink-0" />
-                        <div className="text-left">
-                          <span className="block leading-tight">{cfg.label}</span>
-                          <span className={`block text-[11px] leading-tight mt-0.5 ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground/60'}`}>{cfg.description.slice(0, 40)}…</span>
-                        </div>
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-left leading-tight">{cfg.label}</span>
                       </button>
                     );
                   })}
