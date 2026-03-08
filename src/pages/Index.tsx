@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import FullScreenChatbot from "@/components/FullScreenChatbot";
 import InstallBanner from "@/components/InstallBanner";
+import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 import OnboardingFlow from "@/components/OnboardingFlow";
 
@@ -86,6 +87,7 @@ const Index = () => {
       <main id="main-content" role="main" className="flex-1 overflow-hidden">
         <FullScreenChatbot />
       </main>
+      <PushNotificationPrompt />
     </div>
   );
 };
