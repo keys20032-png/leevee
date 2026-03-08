@@ -64,6 +64,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const checkSubscription = async () => {
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (!currentSession) {
+      setTier("free");
+      setSubscribed(false);
+      setSubscriptionEnd(null);
+      return;
+    }
     try {
       setCheckingSubscription(true);
       const { data, error } = await supabase.functions.invoke("check-subscription");
