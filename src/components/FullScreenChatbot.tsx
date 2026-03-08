@@ -860,27 +860,11 @@ const FullScreenChatbot = () => {
               </button>
             </div>
           )}
-          <form
-            onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-            className="flex items-end gap-2.5"
-          >
-            {/* Image upload button */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center border border-border/60 bg-card text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all flex-shrink-0"
-              title="Upload image"
-            >
-              <Paperclip className="w-5 h-5 sm:w-4 sm:h-4" />
-            </button>
-            <div className="flex-1 relative">
+           <form
+             onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+             className="flex items-end gap-2.5"
+           >
+             <div className="flex-1 relative">
               <textarea
                 ref={inputRef}
                 value={input}
