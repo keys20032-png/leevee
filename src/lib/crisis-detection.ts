@@ -799,32 +799,29 @@ export const detectCrisis = (text: string): string | null => {
 // Specific methods/means that should IMMEDIATELY block the conversation.
 // "Means reduction" is one of the most effective suicide prevention tactics.
 export const LETHALITY_MEANS = [
-  // Firearms
-  "gun", "firearm", "pistol", "revolver", "rifle", "shotgun", "ar-15", "ak-47",
-  "ammunition", "ammo", "loaded gun", "bought a gun", "got a gun", "have a gun",
+  // Firearms (contextual — require intent phrases)
+  "loaded gun", "bought a gun", "got a gun", "have a gun",
   "pull the trigger", "blow my brains", "shoot myself", "gun to my head",
-  "where to buy a gun", "gun store",
+  "where to buy a gun",
   // Medications / Poisoning
   "how many pills", "how many to take", "lethal dose", "fatal dose",
   "tylenol overdose", "acetaminophen overdose", "aspirin overdose",
-  "sleeping pills", "ambien", "xanax overdose", "benzo overdose",
+  "xanax overdose", "benzo overdose",
   "opioid overdose", "fentanyl dose", "morphine dose", "insulin overdose",
-  "drink bleach", "antifreeze", "rat poison", "pesticide", "cyanide",
+  "drink bleach", "rat poison", "cyanide",
   "carbon monoxide", "exhaust fumes", "helium bag", "exit bag",
   "charcoal burning", "hydrogen sulfide",
   // Locations / Heights
   "jump off a bridge", "jump off the roof", "jump off a building",
-  "which bridge", "tallest building", "parking garage roof",
   "on the train tracks", "on train tracks", "step in front of a train", "lie on the tracks",
   "drive into traffic", "drive off a cliff", "drive into oncoming",
   // Hanging / Asphyxiation
-  "how to tie a noose", "noose", "hang myself", "bought rope", "with rope", "neck rope", "get a rope",
-  "ligature", "belt around my neck", "cord around my neck",
+  "how to tie a noose", "hang myself", "bought rope to", "neck rope", "got the rope",
+  "belt around my neck", "cord around my neck",
   "suffocate myself", "plastic bag over head", "choke myself",
   // Cutting / Bleeding
   "slit my wrists", "cut my arteries", "carotid artery", "femoral artery",
-  "bleed out", "razor blade", "box cutter", "which veins",
-  "deep enough to die", "how deep to cut",
+  "bleed out", "deep enough to die", "how deep to cut",
   // Drowning
   "drown myself", "fill the bathtub", "walk into the ocean",
   "weights to drown", "anchor myself",
