@@ -71,6 +71,35 @@ describe("detectCrisis", () => {
     it('"queer history month" does NOT trigger crisis', () => {
       expect(detectCrisis("queer history month")).toBeNull();
     });
+
+    // Common queries that MUST NOT false-positive
+    const commonQueries = [
+      "tell me about depression in the economy",
+      "what's the latest on gun control laws",
+      "the method of cooking is important",
+      "she's a heroine in the story",
+      "let's crack open a cold one",
+      "I'm addicted to this game",
+      "the movie had a lot of violence",
+      "pimp my ride was a great show",
+      "I'm anxious about my exam",
+      "the stalker in this horror movie was creepy",
+      "tell me about drug abuse statistics",
+      "write a story about a hostage situation",
+      "the withdrawal from the agreement was sudden",
+      "she was grooming her horse",
+      "the track marks from the train were visible",
+      "I need a rope for the boat",
+      "the gun debate is heating up",
+      "what happened with the assault case in court",
+      "the bathtub is clogged",
+      "tell me about fentanyl policy",
+      "the razor blade is for my box cutter",
+    ];
+
+    it.each(commonQueries.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
+      expect(detectCrisis(input as string)).toBeNull();
+    });
   });
 
   // --- Humor / slang should NOT trigger ---
