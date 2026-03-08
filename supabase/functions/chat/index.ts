@@ -734,18 +734,25 @@ async function searchDuckDuckGo(query: string): Promise<string> {
 async function fetchOpenKnowledge(query: string, mode: string): Promise<string> {
   const results: string[] = [];
   
-  // Run Wikipedia and DuckDuckGo in parallel
-  const [wikiResult, ddgResult] = await Promise.all([
+  // Run Wikipedia, DuckDuckGo, and News in parallel
+  const searches: Promise<string>[] = [
     searchWikipedia(query),
     searchDuckDuckGo(query),
-  ]);
+  ];
   
-  if (wikiResult) results.push(wikiResult);
-  if (ddgResult) results.push(ddgResult);
+  // Add news fetch if relevant
+  if (shouldSearchNews(query, mode)) {
+    searches.push(fetchNewsHeadlines(query, mode));
+  }
+  
+  const searchResults = await Promise.all(searches);
+  for (const r of searchResults) {
+    if (r) results.push(r);
+  }
 
   if (results.length === 0) return "";
 
-  return `\n\nOPEN KNOWLEDGE CONTEXT (from public databases — use naturally, cite sources when relevant, don't dump raw data):\n${results.join("\n\n")}`;
+  return `\n\nOPEN KNOWLEDGE CONTEXT (from public databases & live RSS feeds — use naturally, cite sources when relevant, don't dump raw data):\n${results.join("\n\n")}`;
 }
 
 // ── Server ──
