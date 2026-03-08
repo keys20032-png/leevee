@@ -3,7 +3,7 @@ import FullScreenChatbot from "@/components/FullScreenChatbot";
 import InstallBanner from "@/components/InstallBanner";
 import SafetyCheckScreen from "@/components/SafetyCheckScreen";
 
-const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
+const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
 
 const getCrisisTime = (): number | null => {
   const raw = localStorage.getItem("crisis_redirect_time");

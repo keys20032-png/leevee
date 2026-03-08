@@ -5,7 +5,7 @@ import {
   PenTool, ImageIcon, Download, Phone, ChevronDown,
 } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
-import { detectCrisis } from "@/lib/crisis-detection";
+import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
 import { haptic } from "@/lib/haptics";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";

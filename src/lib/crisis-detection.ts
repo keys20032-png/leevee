@@ -711,3 +711,77 @@ export const detectCrisis = (text: string): string | null => {
 
   return null;
 };
+
+// ===== LETHALITY MEANS DETECTION =====
+// Specific methods/means that should IMMEDIATELY block the conversation.
+// "Means reduction" is one of the most effective suicide prevention tactics.
+export const LETHALITY_MEANS = [
+  // Firearms
+  "gun", "firearm", "pistol", "revolver", "rifle", "shotgun", "ar-15", "ak-47",
+  "ammunition", "ammo", "loaded gun", "bought a gun", "got a gun", "have a gun",
+  "pull the trigger", "blow my brains", "shoot myself", "gun to my head",
+  "where to buy a gun", "gun store",
+  // Medications / Poisoning
+  "how many pills", "how many to take", "lethal dose", "fatal dose",
+  "tylenol overdose", "acetaminophen overdose", "aspirin overdose",
+  "sleeping pills", "ambien", "xanax overdose", "benzo overdose",
+  "opioid overdose", "fentanyl dose", "morphine dose", "insulin overdose",
+  "drink bleach", "antifreeze", "rat poison", "pesticide", "cyanide",
+  "carbon monoxide", "exhaust fumes", "helium bag", "exit bag",
+  "charcoal burning", "hydrogen sulfide",
+  // Locations / Heights
+  "jump off a bridge", "jump off the roof", "jump off a building",
+  "which bridge", "tallest building", "parking garage roof",
+  "train tracks", "step in front of a train", "lie on the tracks",
+  "highway", "drive into traffic", "drive off a cliff",
+  // Hanging / Asphyxiation
+  "how to tie a noose", "noose", "hang myself", "rope", "neck rope",
+  "ligature", "belt around my neck", "cord around my neck",
+  "suffocate myself", "plastic bag over head", "choke myself",
+  // Cutting / Bleeding
+  "slit my wrists", "cut my arteries", "carotid artery", "femoral artery",
+  "bleed out", "razor blade", "box cutter", "which veins",
+  "deep enough to die", "how deep to cut",
+  // Drowning
+  "drown myself", "fill the bathtub", "walk into the ocean",
+  "weights to drown", "anchor myself",
+];
+
+/**
+ * Detect specific lethal means/methods — triggers an immediate hard block.
+ * Returns true if lethal means are detected.
+ */
+export const detectLethality = (text: string): boolean => {
+  const lower = text.toLowerCase().replace(/[^\w\s']/g, "");
+  return LETHALITY_MEANS.some((means) => lower.includes(means));
+};
+
+// ===== HIGH-DISTRESS DETECTION (sub-crisis) =====
+// These suggest high emotional distress but don't necessarily indicate an immediate plan.
+// Used to trigger "I am a machine" reminders and grounding exercises.
+export const DISTRESS_KEYWORDS = [
+  "i'm so depressed", "depressed", "so sad", "can't stop crying",
+  "feel empty", "feel numb", "feel nothing", "dead inside",
+  "hate my life", "hate myself", "worthless", "useless",
+  "nobody cares", "all alone", "so lonely", "isolated",
+  "can't take it", "overwhelmed", "breaking down", "falling apart",
+  "panic attack", "anxiety attack", "can't breathe", "heart racing",
+  "scared", "terrified", "afraid", "hopeless", "helpless",
+  "exhausted", "tired of everything", "burned out", "can't cope",
+  "crying", "sobbing", "tears", "miserable", "suffering",
+  "dark thoughts", "bad thoughts", "intrusive thoughts",
+  "flashback", "nightmares", "can't sleep", "insomnia",
+  "triggered", "trauma", "ptsd", "dissociating",
+  "stressed", "overwhelmed", "drowning", "sinking",
+  "desperate", "lost", "confused", "frustrated", "angry",
+  "rage", "furious", "livid", "want to scream",
+];
+
+/**
+ * Detect high-distress keywords — returns true if the user seems in emotional distress
+ * but not necessarily in immediate crisis (no specific means/plan).
+ */
+export const detectDistress = (text: string): boolean => {
+  const lower = text.toLowerCase().replace(/[^\w\s']/g, "");
+  return DISTRESS_KEYWORDS.some((kw) => lower.includes(kw));
+};
