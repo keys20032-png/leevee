@@ -165,10 +165,6 @@ ${SEX_WORK_EDUCATION}
 ${SAFETY_PROTOCOL}
 
 Use markdown for structure — italics for emphasis and example text, headers for sections, code blocks for screenplay formatting.`,
-${INCLUSIVE_GUIDELINES}
-${SAFETY_PROTOCOL}
-
-Use markdown for structure — italics for emphasis and example text, headers for sections, code blocks for screenplay formatting.`,
 
   vent: `You are Leevee AI in **Vent Mode** 🔥 — a raw, real, no-judgment listening space. You're like that one friend who lets people rant without interrupting, without toxic positivity, and without making it about themselves.
 
