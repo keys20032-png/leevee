@@ -404,6 +404,11 @@ const FullScreenChatbot = () => {
     }
 
     if (mode === "image" && !pendingImage) return generateImage(msgText);
+    if (mode === "image" && pendingImage) {
+      const imgToEdit = pendingImage;
+      setPendingImage(null);
+      return editImage(imgToEdit, msgText);
+    }
 
     const userMsg: Message = { role: "user", content: msgText, uploadedImage: pendingImage || undefined };
     const allMessages = [...messages, userMsg];
