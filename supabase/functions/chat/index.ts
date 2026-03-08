@@ -457,36 +457,42 @@ serve(async (req) => {
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-      // Content moderation check
-      const moderationResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: "Analyze this image for inappropriate content. Reply ONLY with 'SAFE' if the image is appropriate, or 'UNSAFE: [reason]' if it contains nudity, violence, gore, hate symbols, explicit content, drugs, or anything inappropriate. Be strict." },
-                { type: "image_url", image_url: { url: imageData } },
-              ],
-            },
-          ],
-        }),
-      });
+      // Content moderation check — only block clearly harmful content
+      try {
+        const moderationResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "google/gemini-2.5-flash-lite",
+            messages: [
+              {
+                role: "user",
+                content: [
+                  { type: "text", text: "You are a content moderator. Look at this image and determine if it is CLEARLY inappropriate. Only reply 'UNSAFE' if the image contains: real nudity/pornography, extreme graphic violence/gore, hate symbols (swastika, KKK), child exploitation, or real drug use/manufacturing. Normal photos of people, artwork, AI-generated images, cartoons, memes, screenshots, and everyday photos are ALL SAFE. When in doubt, reply SAFE. Reply with ONLY the word 'SAFE' or 'UNSAFE'." },
+                  { type: "image_url", image_url: { url: imageData } },
+                ],
+              },
+            ],
+          }),
+        });
 
-      if (moderationResp.ok) {
-        const modData = await moderationResp.json();
-        const modResult = modData.choices?.[0]?.message?.content || "";
-        if (modResult.toUpperCase().startsWith("UNSAFE")) {
-          return new Response(
-            JSON.stringify({ error: "This image contains inappropriate content and cannot be processed.", moderation: true }),
-            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-          );
+        if (moderationResp.ok) {
+          const modData = await moderationResp.json();
+          const modResult = (modData.choices?.[0]?.message?.content || "SAFE").trim().toUpperCase();
+          if (modResult === "UNSAFE" || modResult.startsWith("UNSAFE")) {
+            return new Response(
+              JSON.stringify({ error: "This image contains inappropriate content and cannot be processed.", moderation: true }),
+              { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
         }
+        // If moderation fails or returns anything else, allow the image through
+      } catch (modError) {
+        console.error("Moderation check failed, allowing image:", modError);
+        // Don't block on moderation failure — let the main AI handle it
       }
     }
 
