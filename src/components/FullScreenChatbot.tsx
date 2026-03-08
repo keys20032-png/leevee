@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX, Mic, MicOff, GraduationCap, PartyPopper, MessageSquare, PenTool } from "lucide-react";
+import { Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX, Mic, MicOff, GraduationCap, PartyPopper, MessageSquare, PenTool, ImageIcon, Download } from "lucide-react";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis } from "@/lib/crisis-detection";
 
-type Message = { role: "user" | "assistant"; content: string };
-type ChatMode = "default" | "academic" | "fun" | "creative";
+type Message = { role: "user" | "assistant"; content: string; images?: string[] };
+type ChatMode = "default" | "academic" | "fun" | "creative" | "image";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
 
 const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; prompts: string[] }> = {
   default: {
@@ -59,6 +60,19 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
       "Write a movie scene with dialogue",
       "Help me develop a character",
       "Critique my opening paragraph",
+    ],
+  },
+  image: {
+    label: "Image",
+    icon: ImageIcon,
+    description: "AI image generator. Describe what you want to see and Polly will create it 🎨",
+    prompts: [
+      "A cozy cabin in a snowy forest",
+      "Futuristic city at sunset",
+      "A cat wearing a tiny hat",
+      "Abstract art with vibrant colors",
+      "A dragon reading a book",
+      "Underwater coral reef scene",
     ],
   },
 };
@@ -144,6 +158,41 @@ const FullScreenChatbot = () => {
     setMessages([]);
   };
 
+  const generateImage = async (prompt: string) => {
+    const userMsg: Message = { role: "user", content: prompt };
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const resp = await fetch(IMAGE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: "Image generation failed." }));
+        throw new Error(err.error || "Image generation failed.");
+      }
+
+      const data = await resp.json();
+      const assistantMsg: Message = {
+        role: "assistant",
+        content: data.text || "Here's your generated image!",
+        images: data.images || [],
+      };
+      setMessages((prev) => [...prev, assistantMsg]);
+    } catch (e) {
+      setMessages((prev) => [...prev, { role: "assistant", content: e instanceof Error ? e.message : "Sorry, image generation failed. Please try again." }]);
+    }
+
+    setLoading(false);
+  };
+
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
     if (!text || loading) return;
@@ -153,6 +202,11 @@ const FullScreenChatbot = () => {
       localStorage.setItem("safehub_crisis_redirect", "true");
       window.location.href = crisisUrl;
       return;
+    }
+
+    // Image mode uses a separate flow
+    if (mode === "image") {
+      return generateImage(text);
     }
 
     const userMsg: Message = { role: "user", content: text };
@@ -229,6 +283,15 @@ const FullScreenChatbot = () => {
     setLoading(false);
   };
 
+  const downloadImage = (dataUrl: string, index: number) => {
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = `polly-ai-image-${index + 1}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const renderContent = (text: string) => {
     const codeBlockParts = text.split(/(```[\s\S]*?```)/g);
     return codeBlockParts.map((segment, si) => {
@@ -273,8 +336,8 @@ const FullScreenChatbot = () => {
     <div className="flex flex-col h-full">
       {/* Mode Selector Bar */}
       <div className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-2">
-          <span className="text-xs text-muted-foreground font-medium mr-1 hidden sm:inline" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Mode:</span>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-2 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          <span className="text-xs text-muted-foreground font-medium mr-1 hidden sm:inline flex-shrink-0" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Mode:</span>
           {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
             const cfg = MODE_CONFIG[key];
             const Icon = cfg.icon;
@@ -283,7 +346,7 @@ const FullScreenChatbot = () => {
               <button
                 key={key}
                 onClick={() => switchMode(key)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex-shrink-0 ${
                   isActive
                     ? "text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary border border-transparent hover:border-border"
@@ -364,7 +427,31 @@ const FullScreenChatbot = () => {
                 >
                   {msg.role === "assistant" ? renderContent(msg.content) : msg.content}
                 </div>
-                {msg.role === "assistant" && (
+
+                {/* Render generated images */}
+                {msg.images && msg.images.length > 0 && (
+                  <div className="flex flex-col gap-2 mt-1">
+                    {msg.images.map((imgSrc, imgIdx) => (
+                      <div key={imgIdx} className="relative group rounded-xl overflow-hidden border border-border shadow-sm">
+                        <img
+                          src={imgSrc}
+                          alt={`Generated image ${imgIdx + 1}`}
+                          className="w-full max-w-md rounded-xl"
+                          loading="lazy"
+                        />
+                        <button
+                          onClick={() => downloadImage(imgSrc, imgIdx)}
+                          className="absolute top-2 right-2 p-2 rounded-lg bg-background/80 backdrop-blur-sm border border-border text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                          title="Download image"
+                        >
+                          <Download className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {msg.role === "assistant" && !msg.images?.length && (
                   <button
                     onClick={() => speak(msg.content, i)}
                     className="self-start ml-1 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
@@ -393,11 +480,22 @@ const FullScreenChatbot = () => {
                 <Bot className="w-4 h-4 text-primary-foreground" />
               </div>
               <div className="bg-card border border-border px-4 py-3 rounded-2xl rounded-bl-md">
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                </div>
+                {mode === "image" ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                    </div>
+                    <span className="text-xs text-muted-foreground ml-1">Generating image…</span>
+                  </div>
+                ) : (
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -415,7 +513,13 @@ const FullScreenChatbot = () => {
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={isListening ? "Listening..." : "Ask me anything..."}
+              placeholder={
+                isListening
+                  ? "Listening..."
+                  : mode === "image"
+                  ? "Describe what you want to see..."
+                  : "Ask me anything..."
+              }
               className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             />
@@ -438,7 +542,7 @@ const FullScreenChatbot = () => {
               className="w-11 h-11 rounded-xl flex items-center justify-center disabled:opacity-40 transition-all hover:scale-105 active:scale-95 flex-shrink-0"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
             >
-              <Send className="w-4 h-4 text-primary-foreground" />
+              {mode === "image" ? <ImageIcon className="w-4 h-4 text-primary-foreground" /> : <Send className="w-4 h-4 text-primary-foreground" />}
             </button>
           </form>
           <p className="text-xs text-muted-foreground/50 text-center mt-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
