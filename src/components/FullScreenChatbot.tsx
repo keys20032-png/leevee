@@ -530,6 +530,7 @@ const FullScreenChatbot = () => {
           mode,
           sessionId,
           ...(currentImage ? { imageData: currentImage } : {}),
+          ...(skipCrisisCheck ? { skipCrisisCheck: true } : {}),
         }),
       });
 
