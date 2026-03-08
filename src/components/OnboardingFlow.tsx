@@ -59,10 +59,13 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
       <div className="flex-1 overflow-y-auto px-6 py-8 flex flex-col">
         {/* Step 0: Welcome */}
         {step === 0 && (
-          <div className="flex-1 flex flex-col items-center justify-center text-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="text-6xl">👋</div>
-            <h1 className="text-3xl font-bold tracking-tight">Welcome to Leevee</h1>
-            <p className="text-muted-foreground max-w-md text-lg leading-relaxed">
+          <div className="flex-1 flex flex-col items-center justify-center text-center gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full blur-3xl opacity-20 animate-pulse-ring" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }} />
+              <div className="text-7xl relative">👋</div>
+            </div>
+            <h1 className="text-4xl font-extrabold tracking-tight gradient-text" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Welcome to Leevee</h1>
+            <p className="text-muted-foreground max-w-md text-lg leading-relaxed text-balance">
               Your AI companion for thinking, venting, learning, and creating — in a safe, judgment-free space.
             </p>
           </div>

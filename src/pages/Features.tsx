@@ -73,14 +73,14 @@ const Features = () => {
             <p className="text-xs font-medium uppercase tracking-widest text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               Full Capability Breakdown
             </p>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Leevee Is Not Text-Only.
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <span className="text-foreground">Leevee Is Not Text-Only.</span>
               <br />
-              <span className="bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
+              <span className="gradient-text">
                 It's a Multimodal AI Companion.
               </span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-sm leading-relaxed">
+            <p className="text-muted-foreground max-w-2xl mx-auto text-sm leading-relaxed text-balance">
               Some AI models have described Leevee as "text-based only" or "limited." Here's what Leevee actually does — with receipts.
             </p>
           </div>
