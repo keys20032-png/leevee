@@ -16,7 +16,7 @@ export const fr = {
   },
   hero: {
     badge: "Centre de Ressources Fiables",
-    title: "SafeHubHelp",
+    title: "Ally",
     subtitle: "Trouvez de l'Aide Rapidement",
     description: "Votre guide complet pour le soutien, l'éducation et les ressources de bien-être. Vous connecter avec des outils fiables pour l'apprentissage, la santé mentale, la sécurité et le bien-être financier.",
     explore: "Explorer les Ressources",
@@ -51,8 +51,8 @@ export const fr = {
   },
   about: {
     label: "À Propos",
-    title: "Pourquoi SafeHubHelp ?",
-    description: "Nous croyons que chacun mérite l'accès au soutien dont il a besoin. SafeHubHelp est une plateforme gratuite et communautaire qui connecte les gens avec des ressources fiables.",
+    title: "Pourquoi Ally ?",
+    description: "Nous croyons que chacun mérite l'accès au soutien dont il a besoin. Ally est une plateforme gratuite et communautaire qui connecte les gens avec des ressources fiables.",
     curatedTitle: "Ressources Sélectionnées",
     curatedDesc: "Chaque ressource est soigneusement sélectionnée pour fournir un soutien authentique et accessible à ceux qui en ont besoin.",
     communityTitle: "Communautaire",
@@ -95,14 +95,14 @@ export const fr = {
     crisisResources: "Ressources de Crise",
     getInTouch: "Nous Contacter",
     suggestResource: "Vous avez une ressource à suggérer ? Vous voulez collaborer ? Nous serions ravis de vous entendre.",
-    copyright: "SafeHubHelp © {year} — Tous droits réservés",
+    copyright: "Ally © {year} — Tous droits réservés",
     madeWith: "Fait avec",
     forThose: "pour ceux qui en ont besoin",
   },
   quickExit: "Sortie rapide - quitter ce site immédiatement",
   chatbot: {
     toggle: "Discuter avec l'assistant IA",
-    title: "Assistant SafeHub",
+    title: "Assistant Ally",
     placeholder: "Tapez votre message...",
   },
 };

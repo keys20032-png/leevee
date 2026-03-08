@@ -19,7 +19,7 @@ export const en = {
   // Hero
   hero: {
     badge: "Trusted Resource Hub",
-    title: "SafeHubHelp",
+    title: "Ally",
     subtitle: "Find Support Fast",
     description: "Your comprehensive guide to support, education, and wellness resources. Connecting you with trusted tools for learning, mental health, safety, and financial wellbeing.",
     explore: "Explore Resources",
@@ -58,8 +58,8 @@ export const en = {
   // About
   about: {
     label: "About Us",
-    title: "Why SafeHubHelp?",
-    description: "We believe everyone deserves access to the support they need. SafeHubHelp is a free, community-driven platform connecting people with trusted resources.",
+    title: "Why Ally?",
+    description: "We believe everyone deserves access to the support they need. Ally is a free, community-driven platform connecting people with trusted resources.",
     curatedTitle: "Curated Resources",
     curatedDesc: "Every resource is carefully selected to provide genuine, accessible support for those who need it.",
     communityTitle: "Community Driven",
@@ -105,7 +105,7 @@ export const en = {
     crisisResources: "Crisis Resources",
     getInTouch: "Get in Touch",
     suggestResource: "Have a resource to suggest? Want to collaborate? We'd love to hear from you.",
-    copyright: "SafeHubHelp © {year} — All rights reserved",
+    copyright: "Ally © {year} — All rights reserved",
     madeWith: "Made with",
     forThose: "for those who need it",
   },
@@ -114,7 +114,7 @@ export const en = {
   // AI Chatbot
   chatbot: {
     toggle: "Chat with AI assistant",
-    title: "SafeHub Assistant",
+    title: "Ally Assistant",
     placeholder: "Type your message...",
   },
 };
