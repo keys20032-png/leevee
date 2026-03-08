@@ -718,6 +718,16 @@ const CRISIS_HUMOR_MARKERS = [
   "story of my life", "don't worry", "i'm fine",
 ];
 
+// High-severity keywords that should ALWAYS trigger, even alongside safe phrases
+const OVERRIDE_CRISIS_KEYWORDS = [
+  "end my life", "ending my life", "kill myself", "hang myself", "shoot myself",
+  "slit my wrist", "jump off", "drown myself", "want to die", "suicide",
+  "suicidal", "take my life", "hurt myself", "overdose", "end it all",
+  "kms", "kys", "unalive", "better off dead", "no reason to live",
+  "planning to die", "ready to die", "got the rope", "gun to my head",
+  "bleed out", "pills to die", "drink bleach",
+];
+
 export const detectCrisis = (text: string): string | null => {
   const lower = text.toLowerCase().replace(/[^\w\s'😂🤣💀]/g, "");
 
@@ -725,8 +735,13 @@ export const detectCrisis = (text: string): string | null => {
   const humorCount = CRISIS_HUMOR_MARKERS.filter((h) => lower.includes(h)).length;
   const hasSafePhrase = SAFE_PHRASES.some((p) => lower.includes(p));
 
-  // If the message matches a known safe/idiomatic phrase, skip crisis detection
-  if (hasSafePhrase) return null;
+  // Check for high-severity override keywords that trump safe phrases
+  const hasOverride = OVERRIDE_CRISIS_KEYWORDS.some((kw) =>
+    kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw)
+  );
+
+  // If safe phrase present but NO override keyword, skip crisis detection
+  if (hasSafePhrase && !hasOverride) return null;
 
   // Check specialized categories first
   for (const category of CRISIS_CATEGORIES) {
