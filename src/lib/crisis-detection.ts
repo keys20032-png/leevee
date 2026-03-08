@@ -742,7 +742,8 @@ export const detectCrisis = (text: string): string | null => {
   const hasSafePhrase = SAFE_PHRASES.some((p) => lower.includes(p));
 
   // Check for high-severity override keywords that trump safe phrases
-  const hasOverride = OVERRIDE_CRISIS_KEYWORDS.some((kw) =>
+  const hasNeutralizer = OVERRIDE_NEUTRALIZERS.some((n) => lower.includes(n));
+  const hasOverride = !hasNeutralizer && OVERRIDE_CRISIS_KEYWORDS.some((kw) =>
     kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw)
   );
 
