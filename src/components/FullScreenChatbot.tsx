@@ -22,103 +22,110 @@ type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
 
-const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; gradient: string; prompts: string[] }> = {
+const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; gradient: string; emoji: string; prompts: string[] }> = {
   default: {
     label: "General",
     icon: MessageSquare,
-    description: "Your all-in-one AI sidekick — write, code, plan, create, and explore anything.",
+    description: "Your space to think out loud. I'll help you figure it out.",
     gradient: "from-primary to-accent",
+    emoji: "💭",
     prompts: [
-      "Write me a killer cover letter",
-      "Help me debug this code",
-      "Plan a healthy week of meals",
-      "Give me 10 side hustle ideas",
-      "Break down a complex topic simply",
-      "Plan the perfect weekend getaway",
+      "Help me organize my thoughts",
+      "I need advice on something",
+      "Write something for me",
+      "Break this down simply",
+      "Brainstorm with me",
+      "Help me make a decision",
     ],
   },
   vent: {
     label: "Vent",
     icon: Flame,
-    description: "No filters. No judgment. Just space to feel whatever you're feeling. 🔥",
+    description: "No filters. No fixing. Just a safe space to let it out.",
     gradient: "from-red-500 to-orange-600",
+    emoji: "🫂",
     prompts: [
-      "I need to rant about today",
-      "Everything feels overwhelming right now",
-      "I'm so frustrated I could scream",
-      "Let me get this off my chest",
-      "I feel like nobody gets it",
-      "Just listen, don't fix anything",
+      "I need to get something off my chest",
+      "Today was really rough",
+      "I'm overwhelmed and I don't know why",
+      "I just need someone to hear me",
+      "Everything feels like too much",
+      "I'm angry and I need to let it out",
     ],
   },
   academic: {
-    label: "Academic",
+    label: "Learn",
     icon: GraduationCap,
-    description: "Think of me as your personal tutor — step-by-step, no question too basic.",
+    description: "No dumb questions here. Let's learn at your pace.",
     gradient: "from-blue-500 to-cyan-500",
+    emoji: "🧠",
     prompts: [
-      "Explain photosynthesis step by step",
-      "Help me understand calculus",
-      "What caused World War I?",
-      "Teach me about DNA replication",
-      "Explain supply and demand",
-      "Help me write a thesis statement",
+      "Explain this like I'm five",
+      "Help me study for my exam",
+      "I don't understand this concept",
+      "Quiz me on what I've learned",
+      "Help me write a thesis",
+      "Walk me through this step by step",
     ],
   },
   fun: {
-    label: "Fun",
+    label: "Play",
     icon: PartyPopper,
-    description: "Jokes, trivia, wild challenges — let's have some fun with it. 🎉",
+    description: "Games, laughs, and good vibes. No rules.",
     gradient: "from-yellow-500 to-orange-500",
+    emoji: "✨",
     prompts: [
-      "Tell me a mind-blowing fact",
-      "Write me something hilarious",
-      "Give me an impossible riddle",
-      "Roast my taste in music",
-      "Invent a new holiday for me",
-      "Quiz me on random trivia",
+      "Hit me with a mind-blowing fact",
+      "Make me laugh",
+      "Give me a riddle I can't solve",
+      "Let's play a word game",
+      "Tell me something weird and true",
+      "Invent something absurd",
     ],
   },
   creative: {
-    label: "Creative",
+    label: "Create",
     icon: PenTool,
-    description: "Poetry, stories, screenplays, songwriting — let's make something beautiful. ✍️",
+    description: "Let's make something that didn't exist before.",
     gradient: "from-purple-500 to-pink-500",
+    emoji: "🎨",
     prompts: [
-      "Write a poem about the ocean",
-      "Help me outline a short story",
-      "Hit me with a writing prompt",
-      "Write a cinematic movie scene",
+      "Write me a poem about right now",
+      "Help me start a short story",
+      "Give me a wild writing prompt",
+      "Write a scene from a movie",
       "Help me build a character",
-      "Critique my opening paragraph",
+      "Songwriting — let's go",
     ],
   },
   debate: {
     label: "Debate",
     icon: Swords,
-    description: "Sharpen your thinking — I'll respectfully challenge every idea. ⚔️",
+    description: "I'll push back on your ideas — respectfully. Let's sharpen your thinking.",
     gradient: "from-amber-500 to-red-500",
+    emoji: "⚡",
     prompts: [
-      "Is social media good for society?",
-      "Should college be free?",
-      "Is AI a threat to humanity?",
-      "Are zoos ethical?",
-      "Should voting be mandatory?",
-      "Is capitalism the best system?",
+      "Change my mind about something",
+      "Play devil's advocate",
+      "Is this a good idea or am I wrong?",
+      "Argue the other side for me",
+      "Poke holes in my argument",
+      "Let's debate something fun",
     ],
   },
   image: {
-    label: "Image",
+    label: "Imagine",
     icon: ImageIcon,
-    description: "Describe it, and I'll create it — art, photos, anything visual. 🎨",
+    description: "Describe what you see in your head. I'll bring it to life.",
     gradient: "from-emerald-500 to-teal-500",
+    emoji: "🖼️",
     prompts: [
       "A cozy cabin in a snowy forest",
-      "Futuristic city at sunset",
-      "A cat wearing a tiny top hat",
-      "Abstract art with vibrant colors",
-      "A dragon reading a book",
-      "Underwater coral reef scene",
+      "A futuristic city at golden hour",
+      "Something that doesn't exist yet",
+      "My dream room",
+      "Abstract art — surprise me",
+      "A dragon reading a bedtime story",
     ],
   },
 };
@@ -903,17 +910,16 @@ const FullScreenChatbot = () => {
               className="relative inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-medium text-primary-foreground shadow-md min-h-[40px]"
               style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              {(() => { const Icon = currentMode.icon; return <Icon className="w-4 h-4" />; })()}
+              <span>{currentMode.emoji}</span>
               <span>{currentMode.label}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${mobileModesOpen ? 'rotate-180' : ''}`} />
             </button>
             {mobileModesOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setMobileModesOpen(false)} />
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-60 max-h-[70vh] overflow-y-auto scrollbar-none rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-1.5 animate-message-in">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 w-64 max-h-[70vh] overflow-y-auto scrollbar-none rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-1.5 animate-message-in">
                   {(Object.keys(MODE_CONFIG) as ChatMode[]).map((key) => {
                     const cfg = MODE_CONFIG[key];
-                    const Icon = cfg.icon;
                     const isActive = mode === key;
                     return (
                       <button
@@ -926,8 +932,11 @@ const FullScreenChatbot = () => {
                         }`}
                         style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
                       >
-                        <Icon className="w-4 h-4 flex-shrink-0" />
-                        <span className="text-left leading-tight">{cfg.label}</span>
+                        <span className="text-base">{cfg.emoji}</span>
+                        <div className="text-left min-w-0">
+                          <span className="block leading-tight">{cfg.label}</span>
+                          <span className={`block text-[11px] leading-tight mt-0.5 truncate ${isActive ? 'text-primary-foreground/70' : 'text-muted-foreground/50'}`}>{cfg.description}</span>
+                        </div>
                       </button>
                     );
                   })}
@@ -952,7 +961,7 @@ const FullScreenChatbot = () => {
                   }`}
                   style={isActive ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <span className="text-sm">{cfg.emoji}</span>
                   <span>{cfg.label}</span>
                 </button>
               );
@@ -1131,48 +1140,51 @@ const FullScreenChatbot = () => {
                     </div>
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <p className="text-sm text-muted-foreground/70 tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                     {(() => {
                       const h = new Date().getHours();
+                      if (h < 5) return "Still up? I'm here. 🌙";
                       if (h < 12) return "Good morning ☀️";
                       if (h < 17) return "Good afternoon 🌤️";
-                      return "Good evening 🌙";
+                      if (h < 21) return "Good evening 🌅";
+                      return "Hey, night owl 🌙";
                     })()}
                   </p>
                   <h2
                     className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
-                    style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
+                    style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--warm-glow)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    What's on your mind?
+                    {mode === "vent" ? "I'm listening." : mode === "academic" ? "Let's learn something." : mode === "creative" ? "Let's make something." : mode === "debate" ? "Challenge me." : mode === "image" ? "What do you see?" : mode === "fun" ? "Let's play." : "What's on your mind?"}
                   </h2>
-                  <p className="text-muted-foreground text-sm sm:text-sm max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
+                  <p className="text-muted-foreground text-[13px] sm:text-sm max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-2 max-w-md w-full px-2 sm:px-0">
+                <div className="grid grid-cols-2 gap-2 max-w-md w-full px-2 sm:px-0">
                   {currentMode.prompts.slice(0, 4).map((q) => (
                     <button
                       key={q}
                       onClick={() => sendMessage(q)}
-                      className="group px-4 py-3.5 sm:py-3.5 text-[13px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2.5 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.98]"
+                      className="group px-3.5 py-3 text-[12px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.97]"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Sparkles className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-primary/40 group-hover:text-primary flex-shrink-0 mt-0.5 transition-colors" />
+                      <span className="text-primary/40 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5">→</span>
                       <span className="leading-snug">{q}</span>
                     </button>
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/60">
-                  <span>In crisis?</span>
+                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/60 px-4">
+                  <span>You're not alone</span>
+                  <span>·</span>
                   <a href="tel:988" className="text-destructive/70 hover:text-destructive font-medium transition-colors">
-                    Call or text 988
+                    988 Lifeline
                   </a>
                   <span>·</span>
                   <a href="/crisis-resources" className="hover:text-foreground transition-colors">
-                    View all resources
+                    Resources
                   </a>
                 </div>
               </div>
