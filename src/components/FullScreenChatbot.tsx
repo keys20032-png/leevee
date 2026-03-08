@@ -12,6 +12,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
+import { useI18n } from "@/i18n/I18nContext";
 import { haptic } from "@/lib/haptics";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
