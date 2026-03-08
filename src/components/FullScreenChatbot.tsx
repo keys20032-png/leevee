@@ -5,7 +5,7 @@ import {
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
-  Share2, X, ChevronUp, Link2,
+  Share2, X, ChevronUp, Link2, MoreHorizontal,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
@@ -142,6 +142,7 @@ const FullScreenChatbot = () => {
   const [chatSearchOpen, setChatSearchOpen] = useState(false);
   const [chatSearchIdx, setChatSearchIdx] = useState(0);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -792,22 +793,22 @@ const FullScreenChatbot = () => {
       {sidebarOpen && (
         <>
           <div className="fixed inset-0 z-30 bg-background/60 backdrop-blur-sm sm:hidden" onClick={() => setSidebarOpen(false)} />
-          <aside className="fixed sm:relative z-40 h-full w-72 sm:w-64 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
-            <div className="flex items-center justify-between px-3 py-3 border-b border-border/50">
+           <aside className="fixed sm:relative z-40 h-full w-[80vw] max-w-72 sm:w-64 flex-shrink-0 border-r border-border/50 bg-card flex flex-col animate-message-in">
+            <div className="flex items-center justify-between px-3 py-3.5 sm:py-3 border-b border-border/50">
               <span className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>History</span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => { startNewChat(); setSidebarOpen(false); }}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                  className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
                   title="New chat"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-5 h-5 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                  className="p-2 sm:p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors active:scale-95"
                 >
-                  <PanelLeftClose className="w-4 h-4" />
+                  <PanelLeftClose className="w-5 h-5 sm:w-4 sm:h-4" />
                 </button>
               </div>
             </div>
@@ -835,27 +836,27 @@ const FullScreenChatbot = () => {
               {filteredConversations.map((c) => (
                 <div
                   key={c.id}
-                  className={`group flex items-center gap-2 px-2.5 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${
+                  className={`group flex items-center gap-2.5 px-3 py-3.5 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-150 active:scale-[0.98] ${
                     activeConversationId === c.id
                       ? "bg-primary/10 text-foreground"
                       : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
                   }`}
                   onClick={() => { setActiveConversationId(c.id); setMode(c.mode as ChatMode); setSidebarOpen(false); }}
                 >
-                  <MessageSquare className="w-3.5 h-3.5 flex-shrink-0" />
+                  <MessageSquare className="w-4 h-4 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
-                    <p className="text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
+                    <p className="text-[13px] sm:text-xs font-medium truncate" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
+                    <p className="text-[11px] sm:text-[10px] text-muted-foreground/50 flex items-center gap-1 mt-0.5">
                       <Clock className="w-2.5 h-2.5" />
                       {formatDate(c.updated_at)}
                     </p>
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); deleteConversation(c.id); }}
-                    className="p-1 rounded-md opacity-0 group-hover:opacity-100 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition-all"
+                    className="p-2 sm:p-1 rounded-md sm:opacity-0 sm:group-hover:opacity-100 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
                     title="Delete"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-4 h-4 sm:w-3 sm:h-3" />
                   </button>
                 </div>
               ))}
@@ -867,26 +868,26 @@ const FullScreenChatbot = () => {
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="flex items-center justify-between px-3 sm:px-6 h-14 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-          <div className="flex items-center gap-2">
+        <header className="flex items-center justify-between px-2 sm:px-6 h-12 sm:h-14 border-b border-border/50 glass glass-border flex-shrink-0 z-10" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Sidebar toggle */}
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              className="p-2.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors active:scale-95"
               title="Chat history"
             >
-              <PanelLeftOpen className="w-4 h-4" />
+              <PanelLeftOpen className="w-5 h-5 sm:w-4 sm:h-4" />
             </button>
-            {/* New chat */}
+            {/* New chat - hidden on mobile, accessible from sidebar */}
             <button
               onClick={startNewChat}
-              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+              className="hidden sm:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
               title="New chat"
             >
               <Plus className="w-4 h-4" />
             </button>
-            <div className="p-[1.5px] rounded-xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-              <img src={logo} alt="Leevee AI" className="w-9 h-9 sm:w-8 sm:h-8 rounded-[10px] object-cover" />
+            <div className="p-[1.5px] rounded-xl hidden sm:block" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
+              <img src={logo} alt="Leevee AI" className="w-8 h-8 rounded-[10px] object-cover" />
             </div>
             <div className="hidden sm:block">
               <h1 className="text-sm font-bold tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -961,66 +962,110 @@ const FullScreenChatbot = () => {
             })}
           </nav>
 
-          <div className="flex items-center gap-1">
-            {/* Chat search toggle */}
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            {/* Desktop: show all controls */}
             {messages.length > 0 && (
-              <button
-                onClick={() => { setChatSearchOpen(!chatSearchOpen); setChatSearch(""); setChatSearchIdx(0); }}
-                className={`p-2 rounded-lg transition-colors ${chatSearchOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
-                title="Search in chat"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-            )}
-            {/* Share / export */}
-            {messages.length > 0 && (
-              <div className="relative">
+              <>
                 <button
-                  onClick={() => setShareMenuOpen(!shareMenuOpen)}
-                  className={`p-2 rounded-lg transition-colors ${shareMenuOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
-                  title="Share conversation"
+                  onClick={() => { setChatSearchOpen(!chatSearchOpen); setChatSearch(""); setChatSearchIdx(0); }}
+                  className={`hidden sm:flex p-2 rounded-lg transition-colors ${chatSearchOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
+                  title="Search in chat"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Search className="w-4 h-4" />
                 </button>
-                {shareMenuOpen && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
-                    <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
-                      <button
-                        onClick={copyConversation}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                      >
-                        <Copy className="w-3.5 h-3.5" /> Copy to clipboard
-                      </button>
-                      <button
-                        onClick={exportAsText}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                      >
-                        <FileText className="w-3.5 h-3.5" /> Export as .txt
-                      </button>
-                      <button
-                        onClick={exportConversationPDF}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                      >
-                        <Download className="w-3.5 h-3.5" /> Export as PDF
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
+                <div className="hidden sm:block relative">
+                  <button
+                    onClick={() => setShareMenuOpen(!shareMenuOpen)}
+                    className={`p-2 rounded-lg transition-colors ${shareMenuOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}
+                    title="Share conversation"
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </button>
+                  {shareMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
+                      <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
+                        <button onClick={copyConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <Copy className="w-3.5 h-3.5" /> Copy to clipboard
+                        </button>
+                        <button onClick={exportAsText} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <FileText className="w-3.5 h-3.5" /> Export as .txt
+                        </button>
+                        <button onClick={exportConversationPDF} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                          <Download className="w-3.5 h-3.5" /> Export as PDF
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
             )}
+
+            {/* Mobile: more menu consolidates search, share, new chat, theme */}
+            <div className="sm:hidden relative">
+              <button
+                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                className={`p-2.5 rounded-lg transition-colors active:scale-95 ${moreMenuOpen ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
+              {moreMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMoreMenuOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 z-50 w-52 rounded-2xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 animate-message-in">
+                    <button
+                      onClick={() => { startNewChat(); setMoreMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    >
+                      <Plus className="w-4 h-4" /> New chat
+                    </button>
+                    {messages.length > 0 && (
+                      <>
+                        <button
+                          onClick={() => { setChatSearchOpen(true); setChatSearch(""); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                        >
+                          <Search className="w-4 h-4" /> Search messages
+                        </button>
+                        <button
+                          onClick={() => { copyConversation(); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                        >
+                          <Copy className="w-4 h-4" /> Copy conversation
+                        </button>
+                        <button
+                          onClick={() => { exportConversationPDF(); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+                          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                        >
+                          <Download className="w-4 h-4" /> Export as PDF
+                        </button>
+                      </>
+                    )}
+                    <div className="mx-2 my-1 h-px bg-border/50" />
+                    <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl">
+                      <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
             <a
               href="tel:988"
-              className="inline-flex items-center gap-1 px-3 sm:px-2.5 py-1.5 rounded-lg text-[11px] sm:text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors min-h-[36px]"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] sm:text-[10px] font-bold tracking-wider uppercase bg-destructive/15 text-destructive border border-destructive/20 hover:bg-destructive/25 transition-colors min-h-[36px] sm:min-h-[36px]"
               title="Crisis Line: 988"
             >
               <Phone className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
               <span className="hidden sm:inline">988</span>
             </a>
-            <ThemeToggle />
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
           </div>
         </header>
 
@@ -1197,19 +1242,18 @@ const FullScreenChatbot = () => {
 
                   {/* Assistant message actions: copy, reactions, speak, PDF */}
                   {msg.role === "assistant" && !msg.images?.length && (
-                    <div className="flex items-center gap-0.5 self-start ml-1">
+                    <div className="flex items-center gap-0.5 sm:gap-0.5 self-start ml-1 flex-wrap">
                       <button
                         onClick={() => copyMessage(msg.content, i)}
-                        className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                        className="p-2 sm:p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all active:scale-90"
                         aria-label="Copy message"
                         title="Copy to clipboard"
                       >
                         {copiedIndex === i ? <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-green-500" /> : <Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
                       </button>
-                      {/* Thumbs up */}
                       <button
                         onClick={() => toggleReaction(i, "thumbs_up")}
-                        className={`p-1.5 rounded-lg transition-all ${
+                        className={`p-2 sm:p-1.5 rounded-lg transition-all active:scale-90 ${
                           msg.reaction === "thumbs_up"
                             ? "text-green-500 bg-green-500/10"
                             : "text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50"
@@ -1219,10 +1263,9 @@ const FullScreenChatbot = () => {
                       >
                         <ThumbsUp className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                       </button>
-                      {/* Thumbs down */}
                       <button
                         onClick={() => toggleReaction(i, "thumbs_down")}
-                        className={`p-1.5 rounded-lg transition-all ${
+                        className={`p-2 sm:p-1.5 rounded-lg transition-all active:scale-90 ${
                           msg.reaction === "thumbs_down"
                             ? "text-destructive bg-destructive/10"
                             : "text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50"
@@ -1234,21 +1277,21 @@ const FullScreenChatbot = () => {
                       </button>
                       <button
                         onClick={() => speak(msg.content, i)}
-                        className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                        className="p-2 sm:p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all active:scale-90"
                         aria-label={speakingIndex === i ? "Stop speaking" : "Read aloud"}
                       >
                         {speakingIndex === i ? <VolumeX className="w-4 h-4 sm:w-3.5 sm:h-3.5" /> : <Volume2 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
                       </button>
                       <button
                         onClick={() => exportToPDF(msg.content)}
-                        className="p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
+                        className="hidden sm:flex p-1.5 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-secondary/50 transition-all"
                         aria-label="Download as PDF"
                         title="Download as PDF"
                       >
-                        <FileText className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                        <FileText className="w-3.5 h-3.5" />
                       </button>
                       {msg.metrics && (
-                        <span className="ml-1 text-[10px] text-muted-foreground/40 font-mono tabular-nums" title={`TTFT: ${msg.metrics.ttft}ms · Total: ${msg.metrics.total}ms · Mode: ${msg.metrics.mode}`}>
+                        <span className="hidden sm:inline ml-1 text-[10px] text-muted-foreground/40 font-mono tabular-nums" title={`TTFT: ${msg.metrics.ttft}ms · Total: ${msg.metrics.total}ms · Mode: ${msg.metrics.mode}`}>
                           ⚡ {msg.metrics.ttft < 1000 ? `${msg.metrics.ttft}ms` : `${(msg.metrics.ttft / 1000).toFixed(1)}s`} · {msg.metrics.total < 1000 ? `${msg.metrics.total}ms` : `${(msg.metrics.total / 1000).toFixed(1)}s`}
                         </span>
                       )}
@@ -1265,10 +1308,10 @@ const FullScreenChatbot = () => {
                   <button
                     key={qi}
                     onClick={() => { setFollowUps([]); sendMessage(q); }}
-                    className="group inline-flex items-center gap-1.5 px-3.5 py-2 text-xs rounded-xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 hover:shadow-md hover:shadow-primary/5 active:scale-[0.97]"
+                    className="group inline-flex items-center gap-1.5 px-4 py-2.5 sm:px-3.5 sm:py-2 text-[13px] sm:text-xs rounded-xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 hover:shadow-md hover:shadow-primary/5 active:scale-[0.97]"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    <Sparkles className="w-3 h-3 text-primary/40 group-hover:text-primary flex-shrink-0 transition-colors" />
+                    <Sparkles className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-primary/40 group-hover:text-primary flex-shrink-0 transition-colors" />
                     <span className="leading-snug">{q}</span>
                   </button>
                 ))}
@@ -1313,7 +1356,7 @@ const FullScreenChatbot = () => {
 
         {/* Input Area */}
         <div className="border-t border-border/50 glass flex-shrink-0">
-          <div className="max-w-2xl mx-auto px-3 sm:px-6 py-3 sm:py-3">
+          <div className="max-w-2xl mx-auto px-2 sm:px-6 py-2 sm:py-3">
             {pendingImage && (
               <div className="mb-2 relative inline-block">
                 <img src={pendingImage} alt="Upload preview" className="h-20 rounded-xl border border-border/50 shadow-sm" />
@@ -1368,14 +1411,16 @@ const FullScreenChatbot = () => {
                 {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
               </button>
             </form>
-            <p className="text-[10px] text-muted-foreground/30 text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              <span>Leevee AI · Powered by Gemini</span>
+            <p className="text-[10px] text-muted-foreground/30 text-center mt-1.5 sm:mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <span>Leevee AI</span>
+              <span className="hidden sm:inline text-muted-foreground/20">·</span>
+              <span className="hidden sm:inline">Powered by Gemini</span>
               <span className="text-muted-foreground/20">·</span>
               <a href="/safety" className="hover:text-muted-foreground/60 transition-colors">Safety</a>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/terms" className="hover:text-muted-foreground/60 transition-colors">Terms</a>
-              <span className="text-muted-foreground/20">·</span>
-              <a href="/privacy" className="hover:text-muted-foreground/60 transition-colors">Privacy</a>
+              <span className="hidden sm:inline text-muted-foreground/20">·</span>
+              <a href="/terms" className="hidden sm:inline hover:text-muted-foreground/60 transition-colors">Terms</a>
+              <span className="hidden sm:inline text-muted-foreground/20">·</span>
+              <a href="/privacy" className="hidden sm:inline hover:text-muted-foreground/60 transition-colors">Privacy</a>
             </p>
           </div>
         </div>
