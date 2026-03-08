@@ -10,7 +10,7 @@ import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-dete
 import { haptic } from "@/lib/haptics";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string };
 type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
