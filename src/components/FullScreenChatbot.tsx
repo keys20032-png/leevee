@@ -208,7 +208,7 @@ const FullScreenChatbot = () => {
 
     const crisisUrl = detectCrisis(text);
     if (crisisUrl) {
-      localStorage.setItem("crisis_redirect", "true");
+      localStorage.setItem("crisis_redirect_time", Date.now().toString());
       window.location.href = crisisUrl;
       return;
     }
@@ -233,7 +233,7 @@ const FullScreenChatbot = () => {
       const contentType = resp.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
         const json = await resp.json();
-        if (json.crisis && json.redirect) { localStorage.setItem("crisis_redirect", "true"); window.location.href = json.redirect; return; }
+        if (json.crisis && json.redirect) { localStorage.setItem("crisis_redirect_time", Date.now().toString()); window.location.href = json.redirect; return; }
       }
 
       const reader = resp.body.getReader();

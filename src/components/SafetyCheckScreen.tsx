@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Shield, Phone, Heart, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Shield, Phone, Heart, CheckCircle2, Clock } from "lucide-react";
 import logo from "@/assets/safehelphublogo.jpg";
 
 const CHECKLIST_ITEMS = [
@@ -11,17 +11,43 @@ const CHECKLIST_ITEMS = [
 
 interface SafetyCheckScreenProps {
   onContinue: () => void;
+  crisisTimestamp?: number | null;
+  cooldownMs?: number;
 }
 
-const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
+const formatTime = (ms: number) => {
+  const totalSec = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+};
+
+const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 600000 }: SafetyCheckScreenProps) => {
   const [checked, setChecked] = useState<boolean[]>(CHECKLIST_ITEMS.map(() => false));
   const [safeAnswer, setSafeAnswer] = useState<null | boolean>(null);
+  const [remaining, setRemaining] = useState(() => {
+    if (!crisisTimestamp) return 0;
+    return Math.max(0, cooldownMs - (Date.now() - crisisTimestamp));
+  });
+
+  const locked = remaining > 0;
+
+  useEffect(() => {
+    if (!crisisTimestamp) return;
+    const id = setInterval(() => {
+      const left = Math.max(0, cooldownMs - (Date.now() - crisisTimestamp));
+      setRemaining(left);
+      if (left <= 0) clearInterval(id);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [crisisTimestamp, cooldownMs]);
 
   const toggleItem = (index: number) => {
+    if (locked) return;
     setChecked((prev) => prev.map((v, i) => (i === index ? !v : v)));
   };
 
-  const canProceed = safeAnswer === true;
+  const canProceed = !locked && safeAnswer === true;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
@@ -41,6 +67,24 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
             Before you continue, let's take a moment to check in with yourself.
           </p>
         </div>
+
+        {/* Countdown Timer */}
+        {locked && (
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 text-center space-y-3 animate-in fade-in duration-500">
+            <div className="flex items-center justify-center gap-2">
+              <Clock className="w-5 h-5 text-primary" />
+              <span className="text-sm font-semibold text-primary uppercase tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Take a moment
+              </span>
+            </div>
+            <p className="text-3xl font-bold text-foreground tracking-wider" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              {formatTime(remaining)}
+            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+              A real person is ready to talk. Please consider calling <span className="font-semibold text-foreground">988</span> before continuing.
+            </p>
+          </div>
+        )}
 
         {/* 988 Crisis Card */}
         <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-5 text-center space-y-2">
@@ -63,7 +107,7 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
         </div>
 
         {/* Wellness Checklist */}
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+        <div className={`rounded-xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Heart className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -76,6 +120,7 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
                 <button
                   onClick={() => toggleItem(i)}
                   className="w-full flex items-center gap-3 text-left group"
+                  disabled={locked}
                 >
                   <div
                     className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${
@@ -96,7 +141,7 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
         </div>
 
         {/* Safety Question */}
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+        <div className={`rounded-xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -106,7 +151,8 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
           <p className="text-sm text-muted-foreground">Are you in a safe place right now?</p>
           <div className="flex gap-3">
             <button
-              onClick={() => setSafeAnswer(true)}
+              onClick={() => !locked && setSafeAnswer(true)}
+              disabled={locked}
               className={`flex-1 py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all ${
                 safeAnswer === true
                   ? "text-primary-foreground shadow-lg"
@@ -117,7 +163,8 @@ const SafetyCheckScreen = ({ onContinue }: SafetyCheckScreenProps) => {
               Yes, I'm safe
             </button>
             <button
-              onClick={() => setSafeAnswer(false)}
+              onClick={() => !locked && setSafeAnswer(false)}
+              disabled={locked}
               className={`flex-1 py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all ${
                 safeAnswer === false
                   ? "bg-destructive text-destructive-foreground shadow-lg"
