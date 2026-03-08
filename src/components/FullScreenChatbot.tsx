@@ -21,7 +21,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useDailyLimit } from "@/hooks/use-daily-limit";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
@@ -130,6 +130,21 @@ const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare;
       "My dream room",
       "Abstract art — surprise me",
       "A dragon reading a bedtime story",
+    ],
+  },
+  drama: {
+    label: "Drama",
+    icon: Flame,
+    description: "Spill the tea ☕ — messy gossip with real receipts.",
+    gradient: "from-pink-500 to-rose-600",
+    emoji: "💅",
+    prompts: [
+      "Give me the wildest celebrity beef of all time",
+      "What's the messiest reality TV moment ever?",
+      "Break down the Taylor Swift vs Kanye timeline",
+      "Tell me about a historical rivalry that was PETTY",
+      "What's the most dramatic internet feud?",
+      "Spill some tea I've never heard before",
     ],
   },
 };
