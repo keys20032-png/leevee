@@ -450,7 +450,45 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, mode } = await req.json();
+    const { messages, mode, imageData } = await req.json();
+
+    // If an image is attached, moderate it first
+    if (imageData) {
+      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+      // Content moderation check
+      const moderationResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            {
+              role: "user",
+              content: [
+                { type: "text", text: "Analyze this image for inappropriate content. Reply ONLY with 'SAFE' if the image is appropriate, or 'UNSAFE: [reason]' if it contains nudity, violence, gore, hate symbols, explicit content, drugs, or anything inappropriate. Be strict." },
+                { type: "image_url", image_url: { url: imageData } },
+              ],
+            },
+          ],
+        }),
+      });
+
+      if (moderationResp.ok) {
+        const modData = await moderationResp.json();
+        const modResult = modData.choices?.[0]?.message?.content || "";
+        if (modResult.toUpperCase().startsWith("UNSAFE")) {
+          return new Response(
+            JSON.stringify({ error: "This image contains inappropriate content and cannot be processed.", moderation: true }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
+    }
 
     // ===== SERVER-SIDE CRISIS DETECTION (backup safety net) =====
     const lastUserMsg = messages?.filter((m: { role: string }) => m.role === "user").pop()?.content || "";
@@ -526,7 +564,19 @@ serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...messages.map((m: any) => {
+            // If a message has imageData, convert to multimodal format
+            if (m.imageData) {
+              return {
+                role: m.role,
+                content: [
+                  ...(m.content ? [{ type: "text", text: m.content }] : []),
+                  { type: "image_url", image_url: { url: m.imageData } },
+                ],
+              };
+            }
+            return m;
+          }),
         ],
         stream: true,
       }),
