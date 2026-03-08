@@ -912,12 +912,14 @@ const FullScreenChatbot = () => {
               {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
             </button>
           </form>
-          <p className="text-[10px] text-muted-foreground/30 text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          <p className="text-[10px] text-muted-foreground/30 text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             <span>Leevee AI · Powered by Gemini</span>
             <span className="text-muted-foreground/20">·</span>
             <a href="/safety" className="hover:text-muted-foreground/60 transition-colors">Safety</a>
             <span className="text-muted-foreground/20">·</span>
             <a href="/terms" className="hover:text-muted-foreground/60 transition-colors">Terms</a>
+            <span className="text-muted-foreground/20">·</span>
+            <a href="/privacy" className="hover:text-muted-foreground/60 transition-colors">Privacy</a>
           </p>
         </div>
       </div>
