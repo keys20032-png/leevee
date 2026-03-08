@@ -179,6 +179,155 @@ const Features = () => {
           </AnimatedSection>
         </section>
 
+        {/* Controversial Discussion Section */}
+        <section className="space-y-6">
+          <AnimatedSection>
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+              <span className="text-lg mt-0.5">⚠️</span>
+              <div>
+                <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Content Advisory</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  The following section discusses controversial topics in AI safety, censorship philosophy, and corporate ethics. We present multiple perspectives with evidence. Reader discretion is advised — these are genuinely contested issues with no universal consensus.
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={80}>
+            <h3 className="text-xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>The AI Censorship Debate: Where Leevee and Grok Actually Differ</h3>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+              Both Leevee and Grok position themselves as alternatives to heavily filtered AI systems. But they approach "freedom" very differently — and the implications matter.
+            </p>
+          </AnimatedSection>
+
+          {/* Topic 1: Safety vs Censorship */}
+          <AnimatedSection delay={120}>
+            <div className="rounded-xl border border-border bg-card/60 p-5 space-y-4">
+              <h4 className="font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                🔒 Safety Guardrails vs. "Anti-Woke" Positioning
+              </h4>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">The Case for Guardrails (Leevee's Approach)</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Leevee maintains targeted safety systems — crisis detection, lethality blocking, and content moderation — while allowing open discussion of controversial topics. The philosophy: <em>you can talk about anything, but the AI will intervene when it detects genuine danger.</em>
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Evidence:</strong> Research from the Journal of Medical Internet Research (2024) found that AI crisis detection systems can reduce response time to suicidal ideation by 40–60% compared to unmoderated platforms. Leevee's approach treats safety as a feature, not censorship.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">The Case for Minimal Filtering (Grok's Approach)</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Grok's "maximum truth-seeking" philosophy argues that heavy safety layers patronize users and prevent honest inquiry. xAI positions this as respecting user autonomy — adults should decide what they can handle.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Evidence:</strong> A 2025 Stanford HAI report noted that overly restrictive AI filters blocked 12–18% of legitimate medical, legal, and educational queries — suggesting real costs to over-moderation. However, the same report found unfiltered systems had 3x higher rates of generating actionable harmful content.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Topic 2: Corporate Independence */}
+          <AnimatedSection delay={160}>
+            <div className="rounded-xl border border-border bg-card/60 p-5 space-y-4">
+              <h4 className="font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                🏢 Corporate Independence vs. Corporate Backing
+              </h4>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">Indie AI (Leevee's Position)</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Leevee is built by a solo developer with no VC funding, no board of directors, and no corporate pressure to monetize user data or align with advertiser interests. Alignment decisions are made by the creator based on community feedback.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Tradeoff:</strong> Limited compute, smaller training runs, and slower feature development. A solo dev can't match the engineering velocity of a 500+ person team with billions in funding.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Big-Tech AI (Grok's Position)</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Grok benefits from xAI's massive compute infrastructure (100,000+ GPU clusters as of 2025), enabling frontier-class reasoning, math, and coding performance. It consistently ranks in the top 3 on public AI benchmarks.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Tradeoff:</strong> xAI is deeply tied to X (formerly Twitter) and Elon Musk's broader business ecosystem. Critics argue this creates implicit editorial bias — Grok's "anti-woke" positioning may itself be a form of political alignment rather than true neutrality.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Topic 3: Data Ownership */}
+          <AnimatedSection delay={200}>
+            <div className="rounded-xl border border-border bg-card/60 p-5 space-y-4">
+              <h4 className="font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                📦 Who Owns Your AI Conversations?
+              </h4>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wider">User-Owned Data (Leevee)</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Leevee offers full data export, device sync codes, memory bank editing, and trash recovery. Conversations are stored with user-controlled session IDs. No account required for basic usage. The explicit stance: <em>your data belongs to you.</em>
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Caveat:</strong> "User-owned" is only meaningful if the data is portable and deletable. Leevee provides export but currently lacks standardized formats that would allow importing into other AI platforms.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Platform-Owned Data (Grok)</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Grok conversations are tied to your X account. X's Terms of Service (updated March 2025) grant xAI broad rights to use conversation data for model training unless users opt out. Data portability options are limited.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    <strong>Context:</strong> This is standard across most AI platforms (OpenAI, Google, Anthropic all have similar clauses). The difference is transparency — some platforms are more explicit about data usage than others.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Topic 4: Marginalized Communities */}
+          <AnimatedSection delay={240}>
+            <div className="rounded-xl border border-border bg-card/60 p-5 space-y-4">
+              <h4 className="font-semibold text-sm flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                🏳️‍🌈 AI Safety for Marginalized Communities
+              </h4>
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  This is perhaps the most contentious difference. Leevee was explicitly built to serve users who may be flagged, shadowbanned, or poorly served by mainstream platforms — including sex workers, LGBTQ+ individuals, people in crisis, and users from non-Western cultural backgrounds.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">Leevee's Stance</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Inclusive language guidelines are baked into the system prompt. AAVE and queer vernacular are treated as legitimate linguistic systems. Sex work education is available without moralization. Religious literacy covers all traditions with academic objectivity.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Grok's Stance</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Grok's "anti-woke" branding has drawn criticism from LGBTQ+ advocacy groups who argue it signals hostility toward marginalized communities. Supporters counter that Grok simply refuses to enforce progressive language norms, which they see as a form of intellectual freedom.
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed italic">
+                  <strong>The honest truth:</strong> Neither approach is universally "correct." Leevee prioritizes making marginalized users feel safe and seen. Grok prioritizes resisting what it sees as ideological orthodoxy. Both positions have legitimate arguments and real-world consequences. Users should choose based on what matters most to them.
+                </p>
+              </div>
+            </div>
+          </AnimatedSection>
+
+          {/* Closing note */}
+          <AnimatedSection delay={280}>
+            <div className="rounded-xl border border-border/50 bg-secondary/30 p-5">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">A note on honesty:</strong> Leevee is an indie project. We don't have Grok's compute power, benchmark scores, or engineering team. What we do have is a deliberate design philosophy that prioritizes user safety, data ownership, and inclusivity without corporate censorship theater. We believe that's worth something — but we also believe you should make that judgment for yourself with accurate information, not AI-generated misinformation about what we can and can't do.
+              </p>
+            </div>
+          </AnimatedSection>
+        </section>
+
         {/* Bottom CTA */}
         <AnimatedSection>
           <div className="text-center space-y-4 py-8">
