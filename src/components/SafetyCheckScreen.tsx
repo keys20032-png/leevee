@@ -77,15 +77,15 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
   const canProceed = !locked && safeAnswer === true;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg space-y-6">
+    <div className="min-h-dvh bg-background flex items-start sm:items-center justify-center px-4 py-6 sm:py-12 overflow-y-auto" style={{ paddingBottom: "max(env(safe-area-inset-bottom), 24px)" }}>
+      <div className="w-full max-w-lg space-y-5 sm:space-y-6">
         {/* Logo & Header */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-3 sm:space-y-4">
           <div className="inline-flex p-[2px] rounded-2xl mx-auto" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-            <img src={logo} alt="Leevee AI logo" className="w-16 h-16 rounded-[14px] object-cover" />
+            <img src={logo} alt="Leevee AI logo" className="w-14 h-14 sm:w-16 sm:h-16 rounded-[14px] object-cover" />
           </div>
           <h1
-            className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground"
+            className="text-xl sm:text-3xl font-bold tracking-tight text-foreground leading-tight"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
             Leevee is holding this space for you.
@@ -94,7 +94,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
 
         {/* Intercept Message */}
         {locked && (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-6 text-center space-y-5 animate-in fade-in duration-500">
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:p-6 text-center space-y-4 sm:space-y-5 animate-in fade-in duration-500">
             <p className="text-sm text-muted-foreground leading-relaxed max-w-sm mx-auto">
               I've noticed things have reached a critical point. My job is to keep you safe, so I'm pausing our chat.
               While we wait, please use the <span className="font-semibold text-foreground">988</span> button below.
@@ -132,8 +132,8 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
           </div>
         )}
 
-        {/* 988 Crisis Card */}
-        <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-5 text-center space-y-2">
+        {/* 988 Crisis Card — large, prominent, easy to tap */}
+        <div className="rounded-2xl border-2 border-destructive/40 bg-destructive/10 p-5 sm:p-5 text-center space-y-3">
           <div className="flex items-center justify-center gap-2">
             <Phone className="w-5 h-5 text-destructive" />
             <span className="text-sm font-semibold text-destructive" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -142,21 +142,26 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
           </div>
           <a
             href="tel:988"
-            className="inline-block text-4xl font-bold text-destructive hover:underline tracking-wider"
+            className="inline-flex items-center justify-center gap-3 w-full max-w-xs mx-auto py-4 rounded-xl bg-destructive text-destructive-foreground text-2xl font-bold tracking-wider shadow-lg hover:shadow-xl transition-all active:scale-[0.97]"
             style={{ fontFamily: "'Space Grotesk', sans-serif" }}
           >
-            988
+            <Phone className="w-6 h-6" />
+            Call 988
           </a>
           <p className="text-xs text-destructive/80">
-            Suicide &amp; Crisis Lifeline — Call or text, available 24/7
+            Suicide &amp; Crisis Lifeline — Call or text, 24/7
           </p>
-          <p className="text-xs text-destructive/70 mt-1">
-            Or text <span className="font-semibold">HOME</span> to <span className="font-semibold">741741</span> (Crisis Text Line)
-          </p>
+          <a
+            href="sms:741741?body=HOME"
+            className="inline-flex items-center justify-center gap-2 w-full max-w-xs mx-auto py-3 rounded-xl border-2 border-destructive/30 text-destructive text-sm font-semibold hover:bg-destructive/10 transition-all active:scale-[0.97]"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            Text HOME to 741741
+          </a>
         </div>
 
-        {/* Digital Safety Plan — always available during cooldown */}
-        <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+        {/* Digital Safety Plan */}
+        <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -177,7 +182,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
                 value={safetyPlan.person}
                 onChange={(e) => updateSafetyPlan("person", e.target.value)}
                 placeholder="e.g., Mom, best friend Alex, therapist Dr. Lee"
-                className="w-full bg-background border border-border/60 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                className="w-full bg-background border border-border/60 rounded-xl px-4 py-3 sm:py-2.5 text-[15px] sm:text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               />
             </div>
@@ -191,7 +196,7 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
                 value={safetyPlan.place}
                 onChange={(e) => updateSafetyPlan("place", e.target.value)}
                 placeholder="e.g., My bedroom, the library, grandma's house"
-                className="w-full bg-background border border-border/60 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                className="w-full bg-background border border-border/60 rounded-xl px-4 py-3 sm:py-2.5 text-[15px] sm:text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               />
             </div>
@@ -205,39 +210,39 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
                 value={safetyPlan.distraction}
                 onChange={(e) => updateSafetyPlan("distraction", e.target.value)}
                 placeholder="e.g., Drawing, walking the dog, listening to music"
-                className="w-full bg-background border border-border/60 rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+                className="w-full bg-background border border-border/60 rounded-xl px-4 py-3 sm:py-2.5 text-[15px] sm:text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                 style={{ fontFamily: "'Space Grotesk', sans-serif" }}
               />
             </div>
           </div>
         </div>
 
-        {/* Wellness Checklist — locked during cooldown */}
-        <div className={`rounded-xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
+        {/* Wellness Checklist */}
+        <div className={`rounded-2xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Heart className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               Wellness Check-In
             </h2>
           </div>
-          <ul className="space-y-3">
+          <ul className="space-y-2">
             {CHECKLIST_ITEMS.map((item, i) => (
               <li key={i}>
                 <button
                   onClick={() => toggleItem(i)}
-                  className="w-full flex items-center gap-3 text-left group"
+                  className="w-full flex items-center gap-3 text-left group py-2 sm:py-1 active:scale-[0.98] transition-transform"
                   disabled={locked}
                 >
                   <div
-                    className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                    className={`w-6 h-6 sm:w-5 sm:h-5 rounded-lg sm:rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${
                       checked[i]
                         ? "border-primary bg-primary"
                         : "border-border group-hover:border-primary/50"
                     }`}
                   >
-                    {checked[i] && <CheckCircle2 className="w-3.5 h-3.5 text-primary-foreground" />}
+                    {checked[i] && <CheckCircle2 className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-primary-foreground" />}
                   </div>
-                  <span className={`text-sm transition-colors ${checked[i] ? "text-foreground" : "text-muted-foreground"}`}>
+                  <span className={`text-[15px] sm:text-sm transition-colors ${checked[i] ? "text-foreground" : "text-muted-foreground"}`}>
                     {item}
                   </span>
                 </button>
@@ -246,23 +251,23 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
           </ul>
         </div>
 
-        {/* Safety Question — locked during cooldown */}
-        <div className={`rounded-xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
+        {/* Safety Question */}
+        <div className={`rounded-2xl border border-border bg-card p-5 space-y-4 transition-opacity ${locked ? "opacity-40 pointer-events-none" : ""}`}>
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               Safety Check
             </h2>
           </div>
-          <p className="text-sm text-muted-foreground">Are you in a safe place right now?</p>
+          <p className="text-[15px] sm:text-sm text-muted-foreground">Are you in a safe place right now?</p>
           <div className="flex gap-3">
             <button
               onClick={() => { if (!locked) { haptic("medium"); setSafeAnswer(true); } }}
               disabled={locked}
-              className={`flex-1 py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all ${
+              className={`flex-1 py-4 sm:py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all active:scale-[0.97] ${
                 safeAnswer === true
                   ? "text-primary-foreground shadow-lg"
-                  : "border border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                  : "border-2 border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
               }`}
               style={safeAnswer === true ? { background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" } : { fontFamily: "'Space Grotesk', sans-serif" }}
             >
@@ -271,10 +276,10 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
             <button
               onClick={() => { if (!locked) { haptic("heavy"); setSafeAnswer(false); } }}
               disabled={locked}
-              className={`flex-1 py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all ${
+              className={`flex-1 py-4 sm:py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all active:scale-[0.97] ${
                 safeAnswer === false
                   ? "bg-destructive text-destructive-foreground shadow-lg"
-                  : "border border-border text-muted-foreground hover:border-destructive/40 hover:text-foreground"
+                  : "border-2 border-border text-muted-foreground hover:border-destructive/40 hover:text-foreground"
               }`}
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
@@ -283,21 +288,30 @@ const SafetyCheckScreen = ({ onContinue, crisisTimestamp, cooldownMs = 1800000 }
           </div>
 
           {safeAnswer === false && (
-            <div className="rounded-lg bg-destructive/10 border border-destructive/30 p-4 space-y-2 animate-in fade-in duration-300">
+            <div className="rounded-xl bg-destructive/10 border border-destructive/30 p-4 space-y-3 animate-in fade-in duration-300">
               <p className="text-sm font-semibold text-destructive">Please reach out now:</p>
-              <p className="text-sm text-destructive/90">
-                Call or text <a href="tel:988" className="font-bold underline">988</a> to speak with someone who can help. You are not alone.
-              </p>
-              <p className="text-xs text-destructive/70 mt-1">
-                You can also text HOME to <span className="font-semibold">741741</span> (Crisis Text Line)
-              </p>
+              <a
+                href="tel:988"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-destructive text-destructive-foreground font-bold text-base shadow-md active:scale-[0.97] transition-all"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              >
+                <Phone className="w-5 h-5" />
+                Call 988 Now
+              </a>
+              <a
+                href="sms:741741?body=HOME"
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-destructive/40 text-destructive font-semibold text-sm active:scale-[0.97] transition-all"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              >
+                Text HOME to 741741
+              </a>
             </div>
           )}
         </div>
 
         {/* Continue Button */}
         {canProceed && (
-          <div className="text-center animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="text-center pb-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <button
               onClick={onContinue}
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-primary-foreground text-sm font-semibold tracking-wide uppercase transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
