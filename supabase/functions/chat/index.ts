@@ -796,9 +796,19 @@ serve(async (req) => {
       }
     }
 
-    // Build system prompt
+    // ===== OPEN KNOWLEDGE SEARCH =====
+    let knowledgeBlock = "";
     const validMode = (mode && mode in MODE_PROMPTS) ? mode : "default";
-    let systemPrompt = MODE_PROMPTS[validMode] + "\n" + SHARED_GUIDELINES + "\n" + MEMORY_INSTRUCTIONS + memoryBlock;
+    if (lastUserMsg && shouldSearchKnowledge(lastUserMsg, validMode) && !imageData) {
+      try {
+        knowledgeBlock = await fetchOpenKnowledge(lastUserMsg, validMode);
+      } catch (e) {
+        console.error("Knowledge search failed:", e);
+      }
+    }
+
+    // Build system prompt
+    let systemPrompt = MODE_PROMPTS[validMode] + "\n" + SHARED_GUIDELINES + "\n" + MEMORY_INSTRUCTIONS + memoryBlock + knowledgeBlock;
 
     if (isDistressed) {
       systemPrompt += "\n\nIMPORTANT: User appears in emotional distress. After your response, append a compassionate AI reminder and suggest the 5-4-3-2-1 grounding exercise. Be warm, not clinical.";
