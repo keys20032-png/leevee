@@ -95,6 +95,8 @@ const getModeConfig = (t: any): Record<ChatMode, { label: string; icon: typeof M
 });
 
 const FullScreenChatbot = () => {
+  const { t } = useI18n();
+  const MODE_CONFIG = useMemo(() => getModeConfig(t), [t]);
   const { user, profile } = useAuth();
   const { isAtLimit, remaining, limit, increment, tier } = useDailyLimit();
   const [messages, setMessages] = useState<Message[]>([]);
