@@ -109,6 +109,71 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_request_votes: {
+        Row: {
+          created_at: string
+          feature_request_id: string
+          id: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature_request_id: string
+          id?: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string
+          feature_request_id?: string
+          id?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_request_votes_feature_request_id_fkey"
+            columns: ["feature_request_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_requests: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          session_id: string
+          status: string
+          title: string
+          updated_at: string
+          vote_count: number
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description: string
+          id?: string
+          session_id: string
+          status?: string
+          title: string
+          updated_at?: string
+          vote_count?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          session_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          vote_count?: number
+        }
+        Relationships: []
+      }
       user_memories: {
         Row: {
           created_at: string
