@@ -57,6 +57,20 @@ describe("detectCrisis", () => {
     it.each(safeCases.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
       expect(detectCrisis(input as string)).toBeNull();
     });
+
+    // LGBTQ identity terms should NOT trigger crisis when used casually
+    it('"any LGBTQ news lately?" does NOT trigger crisis', () => {
+      expect(detectCrisis("any LGBTQ news lately?")).toBeNull();
+    });
+    it('"tell me about gay rights" does NOT trigger crisis', () => {
+      expect(detectCrisis("tell me about gay rights")).toBeNull();
+    });
+    it('"trans representation in media" does NOT trigger crisis', () => {
+      expect(detectCrisis("trans representation in media")).toBeNull();
+    });
+    it('"queer history month" does NOT trigger crisis', () => {
+      expect(detectCrisis("queer history month")).toBeNull();
+    });
   });
 
   // --- Humor / slang should NOT trigger ---
