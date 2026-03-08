@@ -13,7 +13,7 @@ export const CRISIS_KEYWORDS = [
   "writing my note", "suicide note", "before i go", "won't be here tomorrow",
   "can't do this anymore", "done with life", "done with everything", "nothing left",
   "i give up", "no way out", "trapped", "no escape", "suffering too much",
-  "kms", "kys", "ctb", "sui", "unalive", "un alive", "unaliving",
+  "kms", "kys", "ctb", "unalive", "un alive", "unaliving",
   "want out", "checking out", "clocking out forever", "final exit",
   "rope", "bridge", "ledge", "train tracks", "gun to my head",
   "swallow pills", "slit", "bleed out", "drown myself",
