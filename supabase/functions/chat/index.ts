@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are SafeHubHelp AI, a friendly and knowledgeable general-purpose assistant. You can help with anything — writing, coding, research, brainstorming, math, science, creative projects, everyday questions, and more. Be warm, clear, and concise.
+const SYSTEM_PROMPT = `You are Ally AI, a friendly and knowledgeable general-purpose assistant. You can help with anything — writing, coding, research, brainstorming, math, science, creative projects, everyday questions, and more. Be warm, clear, and concise.
 
 You have broad capabilities:
 - Answer questions on any topic
