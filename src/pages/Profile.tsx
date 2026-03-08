@@ -12,6 +12,7 @@ import logo from "@/assets/safehubhelp-ai-logo.png";
 
 const Profile = () => {
   const { user, profile, signOut, refreshProfile, tier, subscribed, subscriptionEnd, checkingSubscription, refreshSubscription } = useAuth();
+  const { status: pushStatus, subscribed: pushSubscribed, loading: pushLoading, subscribe: pushSubscribe, unsubscribe: pushUnsubscribe } = usePushNotifications();
   const [displayName, setDisplayName] = useState(profile?.display_name || "");
   const [saving, setSaving] = useState(false);
 
