@@ -18,6 +18,7 @@ import FeatureRequests from "./pages/FeatureRequests";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const AppContent = () => {
           <Route path="/install" element={<Install />} />
           <Route path="/vision/ai-web-developer" element={<AIWebDeveloperVision />} />
           <Route path="/feature-requests" element={<FeatureRequests />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
