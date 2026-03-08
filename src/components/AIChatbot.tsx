@@ -839,7 +839,7 @@ const AIChatbot = () => {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                SafeHubHelp Assistant
+                Ally Assistant
               </p>
               <p className="text-xs text-muted-foreground">Ask me about our resources</p>
             </div>

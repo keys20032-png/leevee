@@ -231,14 +231,14 @@ const FullScreenChatbot = () => {
                 className="inline-flex p-[2px] rounded-2xl"
                 style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
               >
-                <img src={logo} alt="SafeHubHelp logo" className="w-16 h-16 rounded-[14px] object-cover" />
+                <img src={logo} alt="Ally logo" className="w-16 h-16 rounded-[14px] object-cover" />
               </div>
               <div className="space-y-2">
                 <h1
                   className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  SafeHubHelp AI
+                  Ally AI
                 </h1>
                 <p className="text-muted-foreground text-sm max-w-md">
                   Your all-purpose AI assistant. Ask me anything — writing, coding, research, brainstorming, and more.
