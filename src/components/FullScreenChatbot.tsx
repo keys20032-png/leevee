@@ -263,43 +263,90 @@ const FullScreenChatbot = () => {
     setLoading(false);
   };
 
+  // Handle image upload
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be under 5MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPendingImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  // Export to PDF
+  const exportToPDF = (text: string) => {
+    const doc = new jsPDF();
+    const margin = 20;
+    const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+    const clean = text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/`([^`]+)`/g, "$1").replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?/g, "").replace(/```/g, ""));
+    
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    const lines = doc.splitTextToSize(clean, pageWidth);
+    let y = margin;
+    for (const line of lines) {
+      if (y > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y);
+      y += 7;
+    }
+    doc.save("leevee-response.pdf");
+  };
+
   // Send message
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
-    if (!text || loading) return;
+    if ((!text && !pendingImage) || loading) return;
     haptic("medium");
 
+    const msgText = text || (pendingImage ? "What's in this image?" : "");
+
     // LETHALITY GATE — hard block on specific means/methods
-    if (detectLethality(text)) {
+    if (detectLethality(msgText)) {
       localStorage.setItem("crisis_redirect_time", Date.now().toString());
       setMessages((prev) => [
         ...prev,
-        { role: "user", content: text },
+        { role: "user", content: msgText, uploadedImage: pendingImage || undefined },
         {
           role: "assistant",
           content:
             "**Leevee is holding this space for you.**\n\nI've noticed things have reached a critical point. My job is to keep you safe, so I'm pausing our chat for 30 minutes.\n\nWhile we wait, please use the **988** button below. You aren't alone, and I'll be here to listen again once we've both had a moment to breathe.\n\n📞 **Call or text 988** — Suicide & Crisis Lifeline (24/7)\n📱 **Text HOME to 741741** — Crisis Text Line\n\n*I'm an AI, and right now you need a real person. Please reach out.* 💙",
         },
       ]);
+      setPendingImage(null);
       setTimeout(() => {
         window.location.href = "https://988lifeline.org/";
       }, 4000);
       return;
     }
 
-    const crisisUrl = detectCrisis(text);
+    const crisisUrl = detectCrisis(msgText);
     if (crisisUrl) {
       localStorage.setItem("crisis_redirect_time", Date.now().toString());
       window.location.href = crisisUrl;
       return;
     }
 
-    if (mode === "image") return generateImage(text);
+    if (mode === "image" && !pendingImage) return generateImage(msgText);
 
-    const userMsg: Message = { role: "user", content: text };
+    const userMsg: Message = { role: "user", content: msgText, uploadedImage: pendingImage || undefined };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput("");
+    const currentImage = pendingImage;
+    setPendingImage(null);
     setLoading(true);
 
     let assistantSoFar = "";
