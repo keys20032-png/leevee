@@ -50,7 +50,7 @@ const InstallBanner = () => {
   if (isInstalled || dismissed) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-[60] mx-auto max-w-md animate-in slide-in-from-bottom-4 duration-500">
+    <div className="fixed bottom-4 left-3 right-3 sm:left-4 sm:right-4 z-[60] mx-auto max-w-md animate-in slide-in-from-bottom-4 duration-500" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="rounded-2xl border border-border bg-card/95 backdrop-blur-xl shadow-2xl shadow-primary/10 p-4">
         <div className="flex items-start gap-3">
           <div
