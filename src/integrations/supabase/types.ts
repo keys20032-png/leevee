@@ -136,6 +136,13 @@ export type Database = {
             referencedRelation: "feature_requests"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "feature_request_votes_feature_request_id_fkey"
+            columns: ["feature_request_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       feature_requests: {
@@ -263,7 +270,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      feature_requests_public: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          vote_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          vote_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          vote_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
