@@ -647,7 +647,7 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
       "severely depressed", "clinical depression", "so depressed", "i'm depressed",
       "severe anxiety", "anxiety attack", "panic attack", "panic disorder",
       "cant stop crying", "crying all the time", "feel nothing", "feel numb", "feel empty",
-      "losing my mind", "going crazy", "mental breakdown", "nervous breakdown",
+      "mental breakdown", "nervous breakdown",
       "cant get out of bed", "cant function", "cant cope", "cant take it anymore",
       "bipolar crisis", "manic episode", "psychotic episode", "hearing voices",
       "seeing things", "hallucinating",
