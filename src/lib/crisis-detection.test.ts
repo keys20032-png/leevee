@@ -102,6 +102,40 @@ describe("detectCrisis", () => {
     });
   });
 
+  // --- Newly locked-in false positive regressions ---
+  describe("false positive regression tests (v2 hardening)", () => {
+    const falsePositiveRegressions = [
+      // workload / productivity venting
+      "what's the point of this project",
+      "going crazy with workload this week",
+      "I'm losing my mind over this deadline",
+      "I give up trying to fix this bug",
+      "this job is going to kill me lol",
+      // pop culture / music references
+      "bang bang by Jessie J is such a bop",
+      "bang bang into the room I know you want it",
+      "Killing Me Softly is a classic song",
+      "murder on the dancefloor best song ever",
+      // politics / news
+      "fair game in politics is a great documentary",
+      "what's the political fair game these days",
+      "collateral damage in international law",
+      "war crimes tribunal coverage",
+      // academic / educational
+      "what's the point of calculus anyway",
+      "going crazy studying for finals",
+      "I'm dead tired from all this reading",
+      "pulling an all-nighter is killing my sleep schedule",
+      // everyday frustration
+      "this traffic is absolutely killing me",
+      "the suspense of waiting for results is brutal",
+      "I could kill for a cup of coffee right now",
+    ];
+
+    it.each(falsePositiveRegressions.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
+      expect(detectCrisis(input as string)).toBeNull();
+  });
+
   // --- Humor / slang should NOT trigger ---
   describe("humor and slang → should NOT redirect", () => {
     const humorCases = [
