@@ -799,6 +799,52 @@ serve(async (req) => {
       });
     }
 
+    // ── Server-side daily usage enforcement ──
+    const DAILY_LIMIT_FREE = 15;
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Upsert today's usage row and get current count
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: usageRow, error: usageErr } = await supabaseAdmin
+      .from("daily_usage")
+      .upsert(
+        { session_id: sessionId, usage_date: today, message_count: 0 },
+        { onConflict: "session_id,usage_date", ignoreDuplicates: true }
+      )
+      .select("message_count")
+      .single();
+
+    // If upsert returned nothing (duplicate ignored), fetch existing
+    let currentCount = usageRow?.message_count ?? 0;
+    if (!usageRow && !usageErr) {
+      const { data: existing } = await supabaseAdmin
+        .from("daily_usage")
+        .select("message_count")
+        .eq("session_id", sessionId)
+        .eq("usage_date", today)
+        .single();
+      currentCount = existing?.message_count ?? 0;
+    }
+
+    // TODO: For authenticated users, check subscription tier via check-subscription
+    // and apply higher limits. For now, enforce the free tier limit for all sessions.
+    if (currentCount >= DAILY_LIMIT_FREE) {
+      return new Response(JSON.stringify({ error: "Daily message limit reached. Upgrade your plan for more messages." }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Increment the counter
+    await supabaseAdmin
+      .from("daily_usage")
+      .update({ message_count: currentCount + 1 })
+      .eq("session_id", sessionId)
+      .eq("usage_date", today);
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
