@@ -60,13 +60,13 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: "SafeHelpHub Contact <onboarding@resend.dev>",
           to: ["keys20032@gmail.com"],
-          subject: `New Contact Form: ${name}`,
+          subject: `New Contact Form: ${escapeHtml(name)}`,
           html: `
             <h2>New Contact Form Submission</h2>
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(email)}</p>
             <p><strong>Message:</strong></p>
-            <p>${message.replace(/\n/g, "<br>")}</p>
+            <p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>
             <hr>
             <p style="color:#888;font-size:12px;">Sent from SafeHelpHub contact form</p>
           `,
