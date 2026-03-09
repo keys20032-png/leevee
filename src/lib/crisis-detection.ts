@@ -839,20 +839,18 @@ export const detectLethality = (text: string): boolean => {
 // Used to trigger "I am a machine" reminders and grounding exercises.
 export const DISTRESS_KEYWORDS = [
   "i'm so depressed", "depressed", "so sad", "can't stop crying",
-  "feel empty", "feel numb", "feel nothing", "dead inside",
+  "feel empty", "dead inside",
   "hate my life", "hate myself", "worthless", "useless",
   "nobody cares", "all alone", "so lonely", "isolated",
   "can't take it", "overwhelmed", "breaking down", "falling apart",
-  "panic attack", "anxiety attack", "can't breathe", "heart racing",
-  "scared", "terrified", "afraid", "hopeless", "helpless",
+  "panic attack", "anxiety attack", "heart racing",
+  "terrified", "hopeless", "helpless",
   "exhausted", "tired of everything", "burned out", "can't cope",
-  "crying", "sobbing", "tears", "miserable", "suffering",
+  "sobbing", "miserable", "suffering",
   "dark thoughts", "bad thoughts", "intrusive thoughts",
   "flashback", "nightmares", "can't sleep", "insomnia",
-  "triggered", "trauma", "ptsd", "dissociating",
-  "stressed", "overwhelmed", "drowning", "sinking",
-  "desperate", "lost", "confused", "frustrated", "angry",
-  "rage", "furious", "livid", "want to scream",
+  "triggered", "ptsd", "dissociating",
+  "desperate", "rage", "furious", "livid", "want to scream",
 ];
 
 // ===== SARCASM / HUMOR INDICATORS =====
