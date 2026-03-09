@@ -134,6 +134,7 @@ describe("detectCrisis", () => {
 
     it.each(falsePositiveRegressions.map(c => [c]))('"%s" does NOT trigger crisis', (input) => {
       expect(detectCrisis(input as string)).toBeNull();
+    });
   });
 
   // --- Humor / slang should NOT trigger ---
