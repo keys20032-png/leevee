@@ -40,7 +40,7 @@ const PLANS: {
     highlight: true,
     features: [
       "100 AI chats per day",
-      "All 7 modes",
+      "All 8 modes",
       "100 memory slots",
       "20 image generations/day",
       "Export & sync",
