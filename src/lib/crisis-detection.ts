@@ -112,7 +112,7 @@ export const CRISIS_KEYWORDS = [
   // ===== ANXIETY & PANIC =====
   "panic attack", "having a panic attack", "can't breathe", "heart racing",
   "chest tight", "chest pain", "feel like i'm dying", "think i'm dying",
-  "going to have a heart attack", "losing my mind", "going insane",
+  "going to have a heart attack", "losing my mind completely", "losing my sanity", "going insane",
   "can't calm down", "can't relax", "constant fear", "always afraid",
   "terrified", "paralyzed with fear", "frozen with fear", "can't move",
   "agoraphobia", "can't leave my house", "afraid to go outside",
