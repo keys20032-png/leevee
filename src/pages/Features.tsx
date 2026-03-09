@@ -11,6 +11,7 @@ const MODES = [
   { icon: PenTool, label: "Create", emoji: "🎨", desc: "Write stories, poetry, songs, scripts, creative prompts", gradient: "from-purple-500 to-pink-500" },
   { icon: Swords, label: "Debate", emoji: "⚡", desc: "Socratic questioning, steelmanning, sharpen your thinking", gradient: "from-amber-500 to-red-500" },
   { icon: ImageIcon, label: "Imagine", emoji: "🖼️", desc: "Generate and edit images from text prompts", gradient: "from-emerald-500 to-teal-500" },
+  { icon: Flame, label: "Drama", emoji: "💅", desc: "Spill the tea, vent dramatically, get unfiltered opinions with flair", gradient: "from-pink-500 to-rose-600" },
 ];
 
 const CAPABILITIES = [
