@@ -50,6 +50,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(false);
 
+  // Dedup / throttle guards
+  const subCheckInFlight = useRef(false);
+  const lastSubCheck = useRef(0);
+  const SUB_CHECK_MIN_INTERVAL = 10_000; // 10 seconds minimum between checks
+
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
@@ -63,7 +68,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (user) await fetchProfile(user.id);
   };
 
-  const checkSubscription = async () => {
+  const checkSubscription = useCallback(async (force = false) => {
+    // Prevent concurrent / rapid-fire calls
+    if (subCheckInFlight.current) return;
+    if (!force && Date.now() - lastSubCheck.current < SUB_CHECK_MIN_INTERVAL) return;
+
     const { data: { session: currentSession } } = await supabase.auth.getSession();
     if (!currentSession) {
       setTier("free");
@@ -72,6 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     try {
+      subCheckInFlight.current = true;
+      lastSubCheck.current = Date.now();
       setCheckingSubscription(true);
       const { data, error } = await supabase.functions.invoke("check-subscription");
       if (error || !data) {
@@ -95,21 +106,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSubscribed(false);
     } finally {
       setCheckingSubscription(false);
+      subCheckInFlight.current = false;
     }
-  };
+  }, []);
 
-  const refreshSubscription = async () => {
-    await checkSubscription();
-  };
+  const refreshSubscription = useCallback(async () => {
+    await checkSubscription(true);
+  }, [checkSubscription]);
 
   useEffect(() => {
+    let initialCheckDone = false;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
           setTimeout(() => fetchProfile(session.user.id), 0);
-          setTimeout(() => checkSubscription(), 100);
+          // Only check if getSession hasn't already done it
+          if (initialCheckDone) {
+            setTimeout(() => checkSubscription(), 200);
+          }
         } else {
           setProfile(null);
           setTier("free");
@@ -128,17 +145,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkSubscription();
       }
       setLoading(false);
+      initialCheckDone = true;
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [checkSubscription]);
 
-  // Refresh subscription every 60s
+  // Refresh subscription every 60s (throttle guard prevents duplicates)
   useEffect(() => {
     if (!user) return;
-    const interval = setInterval(checkSubscription, 60000);
+    const interval = setInterval(() => checkSubscription(), 60_000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, checkSubscription]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
