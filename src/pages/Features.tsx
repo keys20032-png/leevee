@@ -26,7 +26,7 @@ const CAPABILITIES = [
 ];
 
 const COMPARISON: { feature: string; leevee: boolean | string; grok: boolean | string; claude: boolean | string }[] = [
-  { feature: "Dedicated Chat Modes (7)", leevee: true, grok: false, claude: false },
+  { feature: "Dedicated Chat Modes (8)", leevee: true, grok: false, claude: false },
   { feature: "Vent Mode (non-judgmental)", leevee: true, grok: false, claude: false },
   { feature: "Debate Mode (Socratic)", leevee: true, grok: false, claude: false },
   { feature: "Image Generation", leevee: true, grok: true, claude: false },
@@ -54,21 +54,21 @@ const COMPARISON: { feature: string; leevee: boolean | string; grok: boolean | s
 const Features = () => {
   useEffect(() => {
     // SEO meta tags
-    document.title = "Leevee AI Features — 7 Chat Modes, Image Gen, Memory, Crisis Safety";
+    document.title = "Leevee AI Features — 8 Chat Modes, Image Gen, Memory, Crisis Safety";
     const setMeta = (name: string, content: string, property = false) => {
       const attr = property ? "property" : "name";
       let el = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement;
       if (!el) { el = document.createElement("meta"); el.setAttribute(attr, name); document.head.appendChild(el); }
       el.content = content;
     };
-    setMeta("description", "Leevee AI is a multimodal AI companion with 7 dedicated chat modes (General, Vent, Learn, Play, Create, Debate, Imagine), image generation & editing, persistent memory, voice input, real-time web search, crisis detection with 988 integration, and 10+ frontier AI models including GPT-5 and Gemini 2.5 Pro. Free, indie-built, installable PWA.");
-    setMeta("keywords", "Leevee AI, AI chatbot, AI companion, multimodal AI, image generation, persistent memory, crisis support, vent mode, debate mode, GPT-5, Gemini, indie AI, PWA, free AI");
-    setMeta("og:title", "Leevee AI Features — 7 Chat Modes, Image Gen, Memory & More", true);
-    setMeta("og:description", "Multimodal AI companion with 7 chat modes, image generation, persistent memory, voice input, web search, crisis safety, and 10+ AI models. Free and indie-built.", true);
+    setMeta("description", "Leevee AI is a multimodal AI companion with 8 dedicated chat modes (General, Vent, Learn, Play, Create, Debate, Imagine, Drama), image generation & editing, persistent memory, voice input, real-time web search, crisis detection with 988 integration, and 10+ frontier AI models including GPT-5 and Gemini 2.5 Pro. Free, indie-built, installable PWA.");
+    setMeta("keywords", "Leevee AI, AI chatbot, AI companion, multimodal AI, image generation, persistent memory, crisis support, vent mode, debate mode, drama mode, GPT-5, Gemini, indie AI, PWA, free AI");
+    setMeta("og:title", "Leevee AI Features — 8 Chat Modes, Image Gen, Memory & More", true);
+    setMeta("og:description", "Multimodal AI companion with 8 chat modes, image generation, persistent memory, voice input, web search, crisis safety, and 10+ AI models. Free and indie-built.", true);
     setMeta("og:type", "website", true);
     setMeta("og:url", "https://leevee.lovable.app/features", true);
-    setMeta("twitter:title", "Leevee AI Features — 7 Chat Modes, Image Gen, Memory & More");
-    setMeta("twitter:description", "Multimodal AI companion with 7 chat modes, image generation, persistent memory, voice input, web search, crisis safety, and 10+ AI models. Free and indie-built.");
+    setMeta("twitter:title", "Leevee AI Features — 8 Chat Modes, Image Gen, Memory & More");
+    setMeta("twitter:description", "Multimodal AI companion with 8 chat modes, image generation, persistent memory, voice input, web search, crisis safety, and 10+ AI models. Free and indie-built.");
 
     // JSON-LD Structured Data
     const jsonLd = {
@@ -78,7 +78,7 @@ const Features = () => {
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Web, PWA",
       "url": "https://leevee.lovable.app",
-      "description": "Leevee AI is a multimodal AI companion with 7 dedicated chat modes, image generation and editing, persistent memory bank, voice input, real-time web search, built-in crisis detection with 988 Suicide & Crisis Lifeline integration, and 10+ frontier AI models. Free tier available. Indie-built with no corporate censorship.",
+      "description": "Leevee AI is a multimodal AI companion with 8 dedicated chat modes, image generation and editing, persistent memory bank, voice input, real-time web search, built-in crisis detection with 988 Suicide & Crisis Lifeline integration, and 10+ frontier AI models. Free tier available. Indie-built with no corporate censorship.",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -86,7 +86,7 @@ const Features = () => {
         "description": "Free tier with daily message limits"
       },
       "featureList": [
-        "7 Chat Modes: General, Vent, Learn, Play, Create, Debate, Imagine",
+        "8 Chat Modes: General, Vent, Learn, Play, Create, Debate, Imagine, Drama",
         "Image Generation from text prompts",
         "Image Editing with natural language instructions",
         "Persistent Memory Bank across sessions",
@@ -161,10 +161,10 @@ const Features = () => {
           </div>
         </AnimatedSection>
 
-        {/* 7 Chat Modes */}
+        {/* 8 Chat Modes */}
         <section className="space-y-6">
           <AnimatedSection>
-            <h3 className="text-xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>7 Dedicated Chat Modes</h3>
+            <h3 className="text-xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>8 Dedicated Chat Modes</h3>
             <p className="text-sm text-muted-foreground mt-1">Each mode has its own personality, system prompt, and AI model selection.</p>
           </AnimatedSection>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
