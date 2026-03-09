@@ -109,6 +109,24 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_usage: {
+        Row: {
+          message_count: number
+          session_id: string
+          usage_date: string
+        }
+        Insert: {
+          message_count?: number
+          session_id: string
+          usage_date?: string
+        }
+        Update: {
+          message_count?: number
+          session_id?: string
+          usage_date?: string
+        }
+        Relationships: []
+      }
       feature_request_votes: {
         Row: {
           created_at: string
