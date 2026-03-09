@@ -297,7 +297,7 @@ const FullScreenChatbot = () => {
       const resp = await fetch(IMAGE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, sessionId }),
       });
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: "Image generation failed." }));
@@ -323,7 +323,7 @@ const FullScreenChatbot = () => {
       const resp = await fetch(IMAGE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ prompt: editPrompt, sourceImage }),
+        body: JSON.stringify({ prompt: editPrompt, sourceImage, sessionId }),
       });
       if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Image editing failed." })); throw new Error(err.error || "Image editing failed."); }
       const data = await resp.json();
