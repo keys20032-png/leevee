@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
-  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
+  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords, Briefcase,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
