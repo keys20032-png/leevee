@@ -2,6 +2,7 @@ import logo from "@/assets/safehelphublogo.jpg";
 import AnimatedSection from "@/components/AnimatedSection";
 import { ArrowDown, Shield, Sparkles } from "lucide-react";
 import { useI18n } from "@/i18n/I18nContext";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   const { t } = useI18n();
@@ -41,7 +42,7 @@ const HeroSection = () => {
           <div className="relative">
             <div className="absolute inset-0 rounded-2xl blur-2xl opacity-20" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }} />
             <div className="relative p-[2px] rounded-2xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-              <img src={logo} alt="Polly AI logo" className="w-20 h-20 md:w-24 md:h-24 rounded-[14px] object-cover" />
+              <img src={logo} alt="Leevee AI logo" className="w-20 h-20 md:w-24 md:h-24 rounded-[14px] object-cover" />
             </div>
           </div>
 
@@ -70,13 +71,13 @@ const HeroSection = () => {
               {t.hero.explore}
               <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" />
             </a>
-            <a
-              href="#about"
+            <Link
+              to="/features"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-border/60 text-foreground text-sm font-semibold tracking-wide uppercase transition-all hover:border-primary/40 hover:text-primary hover:bg-primary/5"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
               {t.hero.learnMore}
-            </a>
+            </Link>
           </div>
         </div>
       </AnimatedSection>

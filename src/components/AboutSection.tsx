@@ -1,15 +1,15 @@
 import AnimatedSection from "@/components/AnimatedSection";
-import { Heart, Users, Lightbulb, Globe } from "lucide-react";
+import { MessageSquare, Brain, ImageIcon, Shield } from "lucide-react";
 import { useI18n } from "@/i18n/I18nContext";
 
 const AboutSection = () => {
   const { t } = useI18n();
 
   const features = [
-    { icon: <Heart className="w-5 h-5" />, title: t.about.curatedTitle, description: t.about.curatedDesc },
-    { icon: <Users className="w-5 h-5" />, title: t.about.communityTitle, description: t.about.communityDesc },
-    { icon: <Lightbulb className="w-5 h-5" />, title: t.about.freeTitle, description: t.about.freeDesc },
-    { icon: <Globe className="w-5 h-5" />, title: t.about.accessibleTitle, description: t.about.accessibleDesc },
+    { icon: <MessageSquare className="w-5 h-5" />, title: t.about.curatedTitle, description: t.about.curatedDesc },
+    { icon: <Brain className="w-5 h-5" />, title: t.about.communityTitle, description: t.about.communityDesc },
+    { icon: <ImageIcon className="w-5 h-5" />, title: t.about.freeTitle, description: t.about.freeDesc },
+    { icon: <Shield className="w-5 h-5" />, title: t.about.accessibleTitle, description: t.about.accessibleDesc },
   ];
 
   return (

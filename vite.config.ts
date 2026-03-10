@@ -23,8 +23,8 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [/^\/~oauth/],
       },
       manifest: {
-        name: "Polly AI",
-        short_name: "Polly AI",
+        name: "Leevee AI",
+        short_name: "Leevee AI",
         description: "Your comprehensive guide to support, education, and wellness resources",
         theme_color: "#d4622a",
         background_color: "#0f1219",
