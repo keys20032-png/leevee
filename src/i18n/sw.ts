@@ -123,6 +123,7 @@ export const sw = {
     descDebate: "Nitapinga mawazo yako — kwa heshima.",
     descImagine: "Eleza unachokiona akilini mwako. Nitakihuisha.",
     descDrama: "Sema uvumi ☕ — drama halisi na ushahidi.",
+    descBusiness: "Msaada wa kitaalamu na barua pepe, mkakati, mawasilisho na kazi.",
     promptsGeneral: ["Nisaidie kupanga mawazo yangu", "Nahitaji ushauri", "Niandikie kitu", "Eleza kwa urahisi", "Tufanye brainstorm pamoja", "Nisaidie kufanya uamuzi"],
     promptsVent: ["Nahitaji kusema kitu", "Leo ilikuwa ngumu sana", "Nimezidiwa na sijui kwa nini", "Nahitaji mtu anisikilize tu", "Kila kitu kinaonekana kupita kiasi", "Nina hasira na nahitaji kuitoa"],
     promptsLearn: ["Nieleze kama nina miaka mitano", "Nisaidie kusoma kwa mtihani", "Sielewi dhana hii", "Nipe mtihani wa haraka", "Nisaidie kuandika thesis", "Niongoze hatua kwa hatua"],

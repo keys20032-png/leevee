@@ -123,6 +123,7 @@ export const de = {
     descDebate: "Ich werde deine Ideen hinterfragen — respektvoll.",
     descImagine: "Beschreib, was du siehst. Ich bringe es zum Leben.",
     descDrama: "Erzähl den Klatsch ☕ — echtes Drama mit Beweisen.",
+    descBusiness: "Professionelle Hilfe bei E-Mails, Strategie, Pitches und Karriere.",
     promptsGeneral: ["Hilf mir, meine Gedanken zu ordnen", "Ich brauche einen Rat", "Schreib etwas für mich", "Erkläre es einfach", "Brainstorming mit mir", "Hilf mir bei einer Entscheidung"],
     promptsVent: ["Ich muss etwas loswerden", "Heute war echt hart", "Ich bin überfordert und weiß nicht warum", "Ich brauche nur jemanden zum Zuhören", "Alles fühlt sich zu viel an", "Ich bin wütend und muss es rauslassen"],
     promptsLearn: ["Erkläre es wie für einen Fünfjährigen", "Hilf mir für die Prüfung lernen", "Ich verstehe dieses Konzept nicht", "Teste mein Wissen", "Hilf mir eine Thesis zu schreiben", "Führe mich Schritt für Schritt"],

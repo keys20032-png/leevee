@@ -123,6 +123,7 @@ export const vi = {
     descDebate: "Tôi sẽ phản biện ý tưởng của bạn — một cách tôn trọng.",
     descImagine: "Mô tả những gì bạn thấy. Tôi sẽ hiện thực hóa.",
     descDrama: "Kể chuyện đi ☕ — drama thật với bằng chứng.",
+    descBusiness: "Hỗ trợ chuyên nghiệp về email, chiến lược, thuyết trình và sự nghiệp.",
     promptsGeneral: ["Giúp tôi sắp xếp suy nghĩ", "Tôi cần lời khuyên", "Viết gì đó cho tôi", "Giải thích đơn giản", "Brainstorm cùng tôi", "Giúp tôi quyết định"],
     promptsVent: ["Tôi cần giãi bày", "Hôm nay thật khó khăn", "Tôi choáng ngợp mà không biết tại sao", "Chỉ cần ai đó lắng nghe", "Mọi thứ quá nhiều", "Tôi tức giận và cần xả"],
     promptsLearn: ["Giải thích như tôi 5 tuổi", "Giúp tôi ôn thi", "Tôi không hiểu khái niệm này", "Quiz tôi đi", "Giúp viết luận văn", "Hướng dẫn từng bước"],

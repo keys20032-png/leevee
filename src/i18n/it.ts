@@ -123,6 +123,7 @@ export const it = {
     descDebate: "Metterò in discussione le tue idee — con rispetto.",
     descImagine: "Descrivi cosa vedi nella tua mente. Lo darò vita.",
     descDrama: "Racconta il gossip ☕ — drama vero con prove.",
+    descBusiness: "Aiuto professionale con email, strategia, presentazioni e carriera.",
     promptsGeneral: ["Aiutami a organizzare i pensieri", "Ho bisogno di un consiglio", "Scrivi qualcosa per me", "Spiegamelo semplicemente", "Brainstorming insieme", "Aiutami a decidere"],
     promptsVent: ["Devo togliermi un peso", "Oggi è stata dura", "Sono sopraffatto e non so perché", "Ho solo bisogno che qualcuno ascolti", "Tutto sembra troppo", "Sono arrabbiato e devo sfogarmi"],
     promptsLearn: ["Spiegamelo come se avessi cinque anni", "Aiutami a studiare per l'esame", "Non capisco questo concetto", "Fammi un quiz", "Aiutami a scrivere una tesi", "Guidami passo passo"],
