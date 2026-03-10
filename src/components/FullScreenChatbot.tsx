@@ -1550,7 +1550,7 @@ const FullScreenChatbot = () => {
         )}
 
         {/* Chat Area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative">
           <div className="max-w-2xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-1">
 
             {/* Empty State */}
