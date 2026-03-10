@@ -231,6 +231,7 @@ export const ar = {
     modeDescDebate: "اشحذ تفكيرك",
     modeDescImagine: "أنشئ صوراً بالكلمات",
     modeDescDrama: "شاي حقيقي مع أدلة",
+    modeDescBusiness: "إيميلات، استراتيجية، عروض، مسار مهني",
     safetyTitle: "سلامتك مهمة",
     safetyDesc: "حماية مدمجة، نشطة دائماً.",
     crisisSupportTitle: "دعم الأزمات",

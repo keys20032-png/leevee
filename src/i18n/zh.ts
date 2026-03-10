@@ -231,6 +231,7 @@ export const zh = {
     modeDescDebate: "磨练你的思维",
     modeDescImagine: "用文字生成图片",
     modeDescDrama: "有凭有据的八卦",
+    modeDescBusiness: "邮件、策略、演示、职业",
     safetyTitle: "你的安全很重要",
     safetyDesc: "内置保护，始终开启。",
     crisisSupportTitle: "危机支持",

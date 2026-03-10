@@ -231,6 +231,7 @@ export const ko = {
     modeDescDebate: "사고 날카롭게 하기",
     modeDescImagine: "단어로 이미지 생성",
     modeDescDrama: "진짜 증거와 함께하는 가십",
+    modeDescBusiness: "이메일, 전략, 발표, 커리어",
     safetyTitle: "당신의 안전이 중요합니다",
     safetyDesc: "내장 보호 기능, 항상 켜짐.",
     crisisSupportTitle: "위기 지원",

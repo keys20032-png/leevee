@@ -231,6 +231,7 @@ export const hi = {
     modeDescDebate: "अपनी सोच तेज़ करें",
     modeDescImagine: "शब्दों से इमेज बनाएं",
     modeDescDrama: "असली प्रूफ के साथ गॉसिप",
+    modeDescBusiness: "ईमेल, रणनीति, पिच, करियर",
     safetyTitle: "आपकी सुरक्षा मायने रखती है",
     safetyDesc: "बिल्ट-इन सुरक्षा, हमेशा चालू।",
     crisisSupportTitle: "संकट सहायता",

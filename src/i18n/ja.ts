@@ -231,6 +231,7 @@ export const ja = {
     modeDescDebate: "思考を研ぎ澄ます",
     modeDescImagine: "言葉から画像を生成",
     modeDescDrama: "証拠付きのリアルゴシップ",
+    modeDescBusiness: "メール、戦略、プレゼン、キャリア",
     safetyTitle: "あなたの安全が大切です",
     safetyDesc: "組み込み保護、常にオン。",
     crisisSupportTitle: "危機サポート",

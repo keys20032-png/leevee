@@ -231,6 +231,7 @@ export const it = {
     modeDescDebate: "Affina il tuo pensiero",
     modeDescImagine: "Genera immagini dalle parole",
     modeDescDrama: "Gossip vero con prove",
+    modeDescBusiness: "Email, strategia, presentazioni, carriera",
     safetyTitle: "La tua sicurezza conta",
     safetyDesc: "Protezioni integrate, sempre attive.",
     crisisSupportTitle: "Supporto Crisi",

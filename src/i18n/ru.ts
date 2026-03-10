@@ -231,6 +231,7 @@ export const ru = {
     modeDescDebate: "Оттачивайте мышление",
     modeDescImagine: "Создавайте изображения из слов",
     modeDescDrama: "Настоящие сплетни с доказательствами",
+    modeDescBusiness: "Письма, стратегия, презентации, карьера",
     safetyTitle: "Ваша безопасность важна",
     safetyDesc: "Встроенная защита, всегда включена.",
     crisisSupportTitle: "Кризисная поддержка",

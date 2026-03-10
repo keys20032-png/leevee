@@ -231,6 +231,7 @@ export const sw = {
     modeDescDebate: "Noa mawazo yako",
     modeDescImagine: "Unda picha kutoka maneno",
     modeDescDrama: "Uvumi halisi na ushahidi",
+    modeDescBusiness: "Barua pepe, mkakati, mawasilisho, kazi",
     safetyTitle: "Usalama wako ni muhimu",
     safetyDesc: "Ulinzi uliojengwa, daima umewashwa.",
     crisisSupportTitle: "Msaada wa Dharura",

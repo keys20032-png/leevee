@@ -231,6 +231,7 @@ export const vi = {
     modeDescDebate: "Mài sắc tư duy",
     modeDescImagine: "Tạo ảnh từ lời",
     modeDescDrama: "Gossip thật với bằng chứng",
+    modeDescBusiness: "Email, chiến lược, thuyết trình, sự nghiệp",
     safetyTitle: "An toàn của bạn quan trọng",
     safetyDesc: "Bảo vệ tích hợp, luôn bật.",
     crisisSupportTitle: "Hỗ trợ khủng hoảng",
