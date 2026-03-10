@@ -9,7 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nContext";
 
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama" | "business";
 
 interface OnboardingFlowProps {
   onComplete: (prefs: { displayName: string; preferredMode: ChatMode }) => void;
