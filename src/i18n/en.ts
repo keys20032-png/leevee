@@ -260,6 +260,7 @@ export const en = {
     modeDescDebate: "Sharpen your thinking",
     modeDescImagine: "Generate images from words",
     modeDescDrama: "Messy gossip with real receipts",
+    modeDescBusiness: "Emails, strategy, pitches, career",
     safetyTitle: "Your safety matters",
     safetyDesc: "Built-in protections, always on.",
     crisisSupportTitle: "Crisis Support",
