@@ -132,6 +132,7 @@ export const sw = {
     promptsDebate: ["Badilisha mawazo yangu", "Cheza wakili wa shetani", "Hii ni wazo zuri au niko vibaya?", "Hoja upande mwingine", "Tafuta mapungufu katika hoja yangu", "Tujadiliane kitu cha kufurahisha"],
     promptsImagine: ["Kibanda cha starehe msituni wenye theluji", "Jiji la siku zijazo wakati wa dhahabu", "Kitu ambacho bado hakipo", "Chumba changu cha ndoto", "Sanaa ya kufikirika — nishangaze", "Joka anasoma hadithi ya kulala"],
     promptsDrama: ["Nipe ugomvi mkubwa wa watu mashuhuri", "Tukio la kushangaza zaidi la TV?", "Eleza mpangilio wa Taylor Swift vs Kanye", "Niambie kuhusu ushindani wa kihistoria MCHOYO", "Ugomvi mkubwa wa mtandaoni?", "Niambie uvumi ambao sijawahi kusikia"],
+    promptsBusiness: ["Andika barua pepe ya kitaalamu", "Nisaidie kujiandaa kwa mahojiano", "Pitia wasilisho langu la biashara", "Tengeneza muhtasari wa pendekezo", "Nisaidie kujadiliana nyongeza ya mshahara", "Andika chapisho la LinkedIn"],
     greetLateNight: "Bado uko macho? Niko hapa. 🌙",
     greetMorning: "Habari za asubuhi ☀️",
     greetAfternoon: "Habari za mchana 🌤️",

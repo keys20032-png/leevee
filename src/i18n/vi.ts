@@ -132,6 +132,7 @@ export const vi = {
     promptsDebate: ["Thay đổi suy nghĩ của tôi", "Đóng vai luật sư của quỷ", "Đây là ý hay hay tôi sai?", "Biện luận phía bên kia", "Tìm lỗ hổng trong lập luận", "Tranh luận gì đó vui"],
     promptsImagine: ["Cabin ấm cúng trong rừng tuyết", "Thành phố tương lai lúc hoàng hôn", "Thứ chưa tồn tại", "Phòng trong mơ", "Nghệ thuật trừu tượng — bất ngờ", "Rồng đọc truyện cổ tích"],
     promptsDrama: ["Drama celeb lớn nhất mọi thời", "Khoảnh khắc reality TV kịch tính nhất?", "Timeline Taylor Swift vs Kanye", "Kình địch lịch sử PETTY nhất", "Cuộc chiến internet kịch tính nhất?", "Kể gossip tôi chưa nghe"],
+    promptsBusiness: ["Viết email chuyên nghiệp", "Giúp tôi chuẩn bị phỏng vấn", "Xem lại bài pitch của tôi", "Tạo dàn ý đề xuất dự án", "Giúp tôi đàm phán tăng lương", "Viết bài LinkedIn nổi bật"],
     greetLateNight: "Vẫn thức? Tôi ở đây. 🌙",
     greetMorning: "Chào buổi sáng ☀️",
     greetAfternoon: "Chào buổi chiều 🌤️",
