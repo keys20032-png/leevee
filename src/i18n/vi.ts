@@ -114,6 +114,7 @@ export const vi = {
     modeDebate: "Tranh luận",
     modeImagine: "Tưởng tượng",
     modeDrama: "Drama",
+    modeBusiness: "Kinh doanh",
     descGeneral: "Không gian để suy nghĩ thành tiếng. Tôi sẽ giúp bạn tìm ra.",
     descVent: "Không bộ lọc. Không sửa chữa. Chỉ là không gian an toàn.",
     descLearn: "Không có câu hỏi ngớ ngẩn. Học theo tốc độ của bạn.",

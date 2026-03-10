@@ -114,6 +114,7 @@ export const ja = {
     modeDebate: "議論",
     modeImagine: "想像",
     modeDrama: "ドラマ",
+    modeBusiness: "ビジネス",
     descGeneral: "声に出して考える場所。一緒に解決しましょう。",
     descVent: "フィルターなし。直そうとしない。ただの安全な場所。",
     descLearn: "愚かな質問なんてない。あなたのペースで学ぼう。",

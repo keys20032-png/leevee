@@ -114,6 +114,7 @@ export const ar = {
     modeDebate: "مناظرة",
     modeImagine: "تخيل",
     modeDrama: "دراما",
+    modeBusiness: "أعمال",
     descGeneral: "مساحتك للتفكير بصوت عالٍ. سأساعدك في الحل.",
     descVent: "بدون فلاتر. بدون إصلاح. مجرد مساحة آمنة للتنفيس.",
     descLearn: "لا توجد أسئلة غبية. لنتعلم بوتيرتك.",

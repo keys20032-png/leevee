@@ -114,6 +114,7 @@ export const ko = {
     modeDebate: "토론",
     modeImagine: "상상",
     modeDrama: "드라마",
+    modeBusiness: "비즈니스",
     descGeneral: "소리 내어 생각하는 공간. 해결을 도와드릴게요.",
     descVent: "필터 없이. 고치려 하지 않아요. 안전한 공간일 뿐.",
     descLearn: "바보 같은 질문은 없어요. 당신의 속도로 배워요.",

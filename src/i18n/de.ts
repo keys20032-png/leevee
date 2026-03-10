@@ -114,6 +114,7 @@ export const de = {
     modeDebate: "Debatte",
     modeImagine: "Vorstellen",
     modeDrama: "Drama",
+    modeBusiness: "Business",
     descGeneral: "Dein Raum zum laut Denken. Ich helfe dir, es herauszufinden.",
     descVent: "Keine Filter. Kein Reparieren. Einfach ein sicherer Raum.",
     descLearn: "Keine dummen Fragen. Lass uns in deinem Tempo lernen.",

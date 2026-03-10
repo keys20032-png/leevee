@@ -114,6 +114,7 @@ export const sw = {
     modeDebate: "Jadili",
     modeImagine: "Fikiria",
     modeDrama: "Drama",
+    modeBusiness: "Biashara",
     descGeneral: "Nafasi yako ya kufikiri kwa sauti. Nitakusaidia kuelewa.",
     descVent: "Hakuna vichujio. Hakuna kurekebisha. Nafasi salama tu.",
     descLearn: "Hakuna maswali ya kipuuzi. Tujifunze kwa kasi yako.",

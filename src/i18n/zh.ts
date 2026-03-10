@@ -114,6 +114,7 @@ export const zh = {
     modeDebate: "辩论",
     modeImagine: "想象",
     modeDrama: "八卦",
+    modeBusiness: "商务",
     descGeneral: "你可以在这里大声思考。我来帮你理清头绪。",
     descVent: "没有过滤。没有修复。只是一个安全的空间让你释放。",
     descLearn: "这里没有蠢问题。按你的节奏学习。",

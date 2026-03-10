@@ -114,6 +114,7 @@ export const hi = {
     modeDebate: "बहस",
     modeImagine: "कल्पना",
     modeDrama: "ड्रामा",
+    modeBusiness: "बिज़नेस",
     descGeneral: "ज़ोर से सोचने की जगह। मैं समझने में मदद करूँगा।",
     descVent: "कोई फ़िल्टर नहीं। कोई सुधार नहीं। बस एक सुरक्षित जगह।",
     descLearn: "कोई बेवकूफ़ी भरा सवाल नहीं। आपकी गति से सीखें।",
