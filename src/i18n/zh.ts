@@ -145,6 +145,8 @@ export const zh = {
     headingImagine: "你看到了什么？",
     headingPlay: "一起玩吧。",
     headingDefault: "你在想什么？",
+    headingDrama: "说八卦吧。",
+    headingBusiness: "开始工作吧。",
     youreNotAlone: "你不孤单",
     lifeline988: "988生命线",
     resources: "资源",

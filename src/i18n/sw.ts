@@ -145,6 +145,8 @@ export const sw = {
     headingImagine: "Unaona nini?",
     headingPlay: "Tucheze.",
     headingDefault: "Nini akilini mwako?",
+    headingDrama: "Sema uvumi.",
+    headingBusiness: "Tuanze kazi.",
     youreNotAlone: "Uko si peke yako",
     lifeline988: "Lifeline 988",
     resources: "Rasilimali",

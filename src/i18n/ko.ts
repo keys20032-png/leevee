@@ -145,6 +145,8 @@ export const ko = {
     headingImagine: "무엇이 보이나요?",
     headingPlay: "놀아볼까요.",
     headingDefault: "무슨 생각을 하고 계세요?",
+    headingDrama: "가십을 풀어봐요.",
+    headingBusiness: "일을 시작해볼까요.",
     youreNotAlone: "당신은 혼자가 아니에요",
     lifeline988: "988 라이프라인",
     resources: "자원",

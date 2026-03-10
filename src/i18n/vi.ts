@@ -145,6 +145,8 @@ export const vi = {
     headingImagine: "Bạn thấy gì?",
     headingPlay: "Chơi nào.",
     headingDefault: "Bạn đang nghĩ gì?",
+    headingDrama: "Kể chuyện đi.",
+    headingBusiness: "Bắt tay vào việc.",
     youreNotAlone: "Bạn không đơn độc",
     lifeline988: "Đường dây 988",
     resources: "Tài nguyên",

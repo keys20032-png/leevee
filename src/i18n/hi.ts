@@ -145,6 +145,8 @@ export const hi = {
     headingImagine: "तुम क्या देखते हो?",
     headingPlay: "खेलते हैं।",
     headingDefault: "क्या चल रहा है दिमाग़ में?",
+    headingDrama: "गॉसिप सुनाओ।",
+    headingBusiness: "काम शुरू करें।",
     youreNotAlone: "तुम अकेले नहीं हो",
     lifeline988: "988 लाइफलाइन",
     resources: "संसाधन",

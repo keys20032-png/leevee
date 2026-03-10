@@ -145,6 +145,8 @@ export const ja = {
     headingImagine: "何が見える？",
     headingPlay: "遊ぼう。",
     headingDefault: "何を考えてる？",
+    headingDrama: "ゴシップを聞かせて。",
+    headingBusiness: "仕事を始めよう。",
     youreNotAlone: "一人じゃないよ",
     lifeline988: "988ライフライン",
     resources: "リソース",

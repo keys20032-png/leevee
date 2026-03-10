@@ -145,6 +145,8 @@ export const ar = {
     headingImagine: "ماذا ترى؟",
     headingPlay: "هيا نلعب.",
     headingDefault: "بماذا تفكر؟",
+    headingDrama: "انشر الشاي.",
+    headingBusiness: "هيا نعمل.",
     youreNotAlone: "لست وحدك",
     lifeline988: "خط 988",
     resources: "الموارد",

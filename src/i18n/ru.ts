@@ -145,6 +145,8 @@ export const ru = {
     headingImagine: "Что ты видишь?",
     headingPlay: "Поиграем.",
     headingDefault: "О чём думаешь?",
+    headingDrama: "Расскажи сплетни.",
+    headingBusiness: "Приступим к работе.",
     youreNotAlone: "Ты не одинок",
     lifeline988: "Линия 988",
     resources: "Ресурсы",

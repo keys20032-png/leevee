@@ -145,6 +145,8 @@ export const it = {
     headingImagine: "Cosa vedi?",
     headingPlay: "Giochiamo.",
     headingDefault: "A cosa pensi?",
+    headingDrama: "Racconta il gossip.",
+    headingBusiness: "Mettiamoci al lavoro.",
     youreNotAlone: "Non sei solo/a",
     lifeline988: "Linea 988",
     resources: "Risorse",
