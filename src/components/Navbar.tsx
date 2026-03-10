@@ -20,20 +20,17 @@ const Navbar = () => {
   return (
     <nav aria-label="Main navigation" className="fixed top-[44px] sm:top-[40px] left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border/50">
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-        <div className="flex items-center gap-3">
-          <a href="#home" className="flex items-center gap-3 group">
-            <div className="p-[1.5px] rounded-lg transition-transform group-hover:scale-105" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-            <img src={logo} alt="Leevee AI logo" className="w-8 h-8 rounded-[6px] object-cover" />
-            </div>
-            <span
-              className="text-sm font-bold tracking-[0.15em] uppercase bg-clip-text text-transparent hidden sm:inline"
-              style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
-            >
-              Leevee AI
-            </span>
-          </a>
-          <LanguageSelector />
-        </div>
+        <a href="#home" className="flex items-center gap-3 group">
+          <div className="p-[1.5px] rounded-lg transition-transform group-hover:scale-105" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
+          <img src={logo} alt="Leevee AI logo" className="w-8 h-8 rounded-[6px] object-cover" />
+          </div>
+          <span
+            className="text-sm font-bold tracking-[0.15em] uppercase bg-clip-text text-transparent hidden sm:inline"
+            style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            Leevee AI
+          </span>
+        </a>
 
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-6">
@@ -48,6 +45,7 @@ const Navbar = () => {
             </a>
           ))}
           <div className="w-px h-5 bg-border/50 mx-1" />
+          <LanguageSelector />
           <TextSizeToggle />
           <ThemeToggle />
         </div>
@@ -79,6 +77,7 @@ const Navbar = () => {
             </a>
           ))}
           <div className="flex items-center gap-3 pt-3">
+            <LanguageSelector />
             <TextSizeToggle />
             <ThemeToggle />
           </div>

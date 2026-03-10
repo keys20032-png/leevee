@@ -14,7 +14,6 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Install from "./pages/Install";
 import AIWebDeveloperVision from "./pages/AIWebDeveloperVision";
-import Features from "./pages/Features";
 import FeatureRequests from "./pages/FeatureRequests";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -43,7 +42,6 @@ const AppContent = () => {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/install" element={<Install />} />
           <Route path="/vision/ai-web-developer" element={<AIWebDeveloperVision />} />
-          <Route path="/features" element={<Features />} />
           <Route path="/feature-requests" element={<FeatureRequests />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="*" element={<NotFound />} />

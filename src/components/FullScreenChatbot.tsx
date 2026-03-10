@@ -5,100 +5,136 @@ import {
   PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
-  Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
+  Share2, X, ChevronUp, Link2, MoreHorizontal, RotateCcw,
   Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
   LogIn, UserCircle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import logo from "@/assets/safehubhelp-ai-logo.png";
 import { detectCrisis, detectLethality, detectDistress } from "@/lib/crisis-detection";
-import { useI18n } from "@/i18n/I18nContext";
 import { haptic } from "@/lib/haptics";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
 import { jsPDF } from "jspdf";
 import { useConversations, type ChatMessage } from "@/hooks/use-conversations";
 import { useAuth } from "@/hooks/use-auth";
-import { useDailyLimit } from "@/hooks/use-daily-limit";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
 
-const getModeConfig = (t: any): Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; gradient: string; emoji: string; prompts: string[] }> => ({
+const MODE_CONFIG: Record<ChatMode, { label: string; icon: typeof MessageSquare; description: string; gradient: string; emoji: string; prompts: string[] }> = {
   default: {
-    label: t.home.modeGeneral,
+    label: "General",
     icon: MessageSquare,
-    description: t.home.descGeneral,
+    description: "Your space to think out loud. I'll help you figure it out.",
     gradient: "from-primary to-accent",
     emoji: "💭",
-    prompts: t.home.promptsGeneral,
+    prompts: [
+      "Help me organize my thoughts",
+      "I need advice on something",
+      "Write something for me",
+      "Break this down simply",
+      "Brainstorm with me",
+      "Help me make a decision",
+    ],
   },
   vent: {
-    label: t.home.modeVent,
+    label: "Vent",
     icon: Flame,
-    description: t.home.descVent,
+    description: "No filters. No fixing. Just a safe space to let it out.",
     gradient: "from-red-500 to-orange-600",
     emoji: "🫂",
-    prompts: t.home.promptsVent,
+    prompts: [
+      "I need to get something off my chest",
+      "Today was really rough",
+      "I'm overwhelmed and I don't know why",
+      "I just need someone to hear me",
+      "Everything feels like too much",
+      "I'm angry and I need to let it out",
+    ],
   },
   academic: {
-    label: t.home.modeLearn,
+    label: "Learn",
     icon: GraduationCap,
-    description: t.home.descLearn,
+    description: "No dumb questions here. Let's learn at your pace.",
     gradient: "from-blue-500 to-cyan-500",
     emoji: "🧠",
-    prompts: t.home.promptsLearn,
+    prompts: [
+      "Explain this like I'm five",
+      "Help me study for my exam",
+      "I don't understand this concept",
+      "Quiz me on what I've learned",
+      "Help me write a thesis",
+      "Walk me through this step by step",
+    ],
   },
   fun: {
-    label: t.home.modePlay,
+    label: "Play",
     icon: PartyPopper,
-    description: t.home.descPlay,
+    description: "Games, laughs, and good vibes. No rules.",
     gradient: "from-yellow-500 to-orange-500",
     emoji: "✨",
-    prompts: t.home.promptsPlay,
+    prompts: [
+      "Hit me with a mind-blowing fact",
+      "Make me laugh",
+      "Give me a riddle I can't solve",
+      "Let's play a word game",
+      "Tell me something weird and true",
+      "Invent something absurd",
+    ],
   },
   creative: {
-    label: t.home.modeCreate,
+    label: "Create",
     icon: PenTool,
-    description: t.home.descCreate,
+    description: "Let's make something that didn't exist before.",
     gradient: "from-purple-500 to-pink-500",
     emoji: "🎨",
-    prompts: t.home.promptsCreate,
+    prompts: [
+      "Write me a poem about right now",
+      "Help me start a short story",
+      "Give me a wild writing prompt",
+      "Write a scene from a movie",
+      "Help me build a character",
+      "Songwriting — let's go",
+    ],
   },
   debate: {
-    label: t.home.modeDebate,
+    label: "Debate",
     icon: Swords,
-    description: t.home.descDebate,
+    description: "I'll push back on your ideas — respectfully. Let's sharpen your thinking.",
     gradient: "from-amber-500 to-red-500",
     emoji: "⚡",
-    prompts: t.home.promptsDebate,
+    prompts: [
+      "Change my mind about something",
+      "Play devil's advocate",
+      "Is this a good idea or am I wrong?",
+      "Argue the other side for me",
+      "Poke holes in my argument",
+      "Let's debate something fun",
+    ],
   },
   image: {
-    label: t.home.modeImagine,
+    label: "Imagine",
     icon: ImageIcon,
-    description: t.home.descImagine,
+    description: "Describe what you see in your head. I'll bring it to life.",
     gradient: "from-emerald-500 to-teal-500",
     emoji: "🖼️",
-    prompts: t.home.promptsImagine,
+    prompts: [
+      "A cozy cabin in a snowy forest",
+      "A futuristic city at golden hour",
+      "Something that doesn't exist yet",
+      "My dream room",
+      "Abstract art — surprise me",
+      "A dragon reading a bedtime story",
+    ],
   },
-  drama: {
-    label: t.home.modeDrama,
-    icon: Flame,
-    description: t.home.descDrama,
-    gradient: "from-pink-500 to-rose-600",
-    emoji: "💅",
-    prompts: t.home.promptsDrama,
-  },
-});
+};
 
 const FullScreenChatbot = () => {
-  const { t } = useI18n();
-  const MODE_CONFIG = useMemo(() => getModeConfig(t), [t]);
   const { user, profile } = useAuth();
-  const { isAtLimit, remaining, limit, increment, tier } = useDailyLimit();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -389,52 +425,35 @@ const FullScreenChatbot = () => {
   };
 
   // Send message
-  const sendMessage = async (overrideText?: string, { skipCrisisCheck = false }: { skipCrisisCheck?: boolean } = {}) => {
+  const sendMessage = async (overrideText?: string) => {
     const text = (overrideText || input).trim();
     if ((!text && !pendingImage) || loading) return;
-
-    // Daily limit gate
-    if (isAtLimit) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "user", content: text || "(image)" },
-        {
-          role: "assistant",
-          content: tier === "free" ? t.home.dailyLimitFree : t.home.dailyLimitPro,
-        },
-      ]);
-      return;
-    }
-
     haptic("medium");
 
     const msgText = text || (pendingImage ? "What's in this image?" : "");
 
-    // Crisis detection — only when user manually types (not from suggested prompts/follow-ups)
-    if (!skipCrisisCheck) {
-      // LETHALITY GATE
-      if (detectLethality(msgText)) {
-        localStorage.setItem("crisis_redirect_time", Date.now().toString());
-        setMessages((prev) => [
-          ...prev,
-          { role: "user", content: msgText, uploadedImage: pendingImage || undefined },
-          {
-            role: "assistant",
-            content:
-              "**Leevee is holding this space for you.**\n\nI've noticed things have reached a critical point. My job is to keep you safe, so I'm pausing our chat for 30 minutes.\n\nWhile we wait, please use the **988** button below. You aren't alone, and I'll be here to listen again once we've both had a moment to breathe.\n\n📞 **Call or text 988** — Suicide & Crisis Lifeline (24/7)\n📱 **Text HOME to 741741** — Crisis Text Line\n\n*I'm an AI, and right now you need a real person. Please reach out.* 💙",
-          },
-        ]);
-        setPendingImage(null);
-        setTimeout(() => { window.location.href = "https://988lifeline.org/"; }, 4000);
-        return;
-      }
+    // LETHALITY GATE
+    if (detectLethality(msgText)) {
+      localStorage.setItem("crisis_redirect_time", Date.now().toString());
+      setMessages((prev) => [
+        ...prev,
+        { role: "user", content: msgText, uploadedImage: pendingImage || undefined },
+        {
+          role: "assistant",
+          content:
+            "**Leevee is holding this space for you.**\n\nI've noticed things have reached a critical point. My job is to keep you safe, so I'm pausing our chat for 30 minutes.\n\nWhile we wait, please use the **988** button below. You aren't alone, and I'll be here to listen again once we've both had a moment to breathe.\n\n📞 **Call or text 988** — Suicide & Crisis Lifeline (24/7)\n📱 **Text HOME to 741741** — Crisis Text Line\n\n*I'm an AI, and right now you need a real person. Please reach out.* 💙",
+        },
+      ]);
+      setPendingImage(null);
+      setTimeout(() => { window.location.href = "https://988lifeline.org/"; }, 4000);
+      return;
+    }
 
-      const crisisUrl = detectCrisis(msgText);
-      if (crisisUrl) {
-        localStorage.setItem("crisis_redirect_time", Date.now().toString());
-        window.location.href = crisisUrl;
-        return;
-      }
+    const crisisUrl = detectCrisis(msgText);
+    if (crisisUrl) {
+      localStorage.setItem("crisis_redirect_time", Date.now().toString());
+      window.location.href = crisisUrl;
+      return;
     }
 
     if (mode === "image" && !pendingImage) return generateImage(msgText);
@@ -463,7 +482,6 @@ const FullScreenChatbot = () => {
     const currentImage = pendingImage;
     setPendingImage(null);
     setLoading(true);
-    increment();
 
     // Save user message to DB
     if (convoId) {
@@ -490,7 +508,6 @@ const FullScreenChatbot = () => {
           mode,
           sessionId,
           ...(currentImage ? { imageData: currentImage } : {}),
-          ...(skipCrisisCheck ? { skipCrisisCheck: true } : {}),
         }),
       });
 
@@ -557,7 +574,7 @@ const FullScreenChatbot = () => {
         }
       }
     } catch {
-      setMessages((prev) => [...prev, { role: "assistant", content: t.home.connectionError }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I'm having trouble connecting. Please try again." }]);
     }
     setLoading(false);
 
@@ -727,31 +744,6 @@ const FullScreenChatbot = () => {
     setChatSearchIdx(idx);
   };
 
-  // Generate branded shareable chat log
-  const shareBrandedLog = async () => {
-    const divider = "─".repeat(40);
-    const header = `✨ Leevee AI — Chat Log\n🗓 ${new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}\n🎯 Mode: ${MODE_CONFIG[mode].label}\n${divider}`;
-    const body = messages
-      .map((m) => `${m.role === "user" ? "🧑 You" : "🤖 Leevee"}\n${m.content}`)
-      .join(`\n${divider}\n`);
-    const footer = `${divider}\n💡 Powered by Leevee AI — ${window.location.origin}\n🧠 Your safe space to think, vent, learn & create.`;
-    const fullLog = `${header}\n\n${body}\n\n${footer}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "Leevee AI Chat Log", text: fullLog });
-      } catch {
-        await navigator.clipboard.writeText(fullLog);
-        haptic("light");
-      }
-    } else {
-      await navigator.clipboard.writeText(fullLog);
-      haptic("light");
-    }
-    setShareMenuOpen(false);
-    setMoreMenuOpen(false);
-  };
-
   // Export full conversation as text
   const exportAsText = () => {
     const text = messages
@@ -877,7 +869,7 @@ const FullScreenChatbot = () => {
   // Confirm before clearing chat with messages
   const confirmNewChat = () => {
     if (messages.length > 0) {
-      if (window.confirm(t.home.confirmNewChat)) {
+      if (window.confirm("Start a new chat? Your current conversation is saved in history.")) {
         startNewChat();
       }
     } else {
@@ -895,7 +887,7 @@ const FullScreenChatbot = () => {
     setMessages((prev) => prev.slice(0, idx));
     setFollowUps([]);
     haptic("light");
-    setTimeout(() => sendMessage(lastUserMsg.content, { skipCrisisCheck: true }), 100);
+    setTimeout(() => sendMessage(lastUserMsg.content), 100);
   };
 
   return (
@@ -920,7 +912,7 @@ const FullScreenChatbot = () => {
                     {tab === "history" && <Clock className="w-3 h-3 inline mr-1" />}
                     {tab === "memory" && <Brain className="w-3 h-3 inline mr-1" />}
                     {tab === "trash" && <Archive className="w-3 h-3 inline mr-1" />}
-                    {tab === "history" ? t.home.history : tab === "memory" ? t.home.memory : t.home.trash}
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
                 ))}
               </div>
@@ -952,7 +944,7 @@ const FullScreenChatbot = () => {
                     <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground/50" />
                     <input
                       type="text"
-                      placeholder={t.home.searchChats}
+                      placeholder="Search chats..."
                       value={searchHistory}
                       onChange={(e) => setSearchHistory(e.target.value)}
                       className="w-full bg-secondary/50 border border-border/40 rounded-lg pl-8 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -963,7 +955,7 @@ const FullScreenChatbot = () => {
                 <div className="flex-1 overflow-y-auto px-1.5 pb-2 space-y-0.5 scrollbar-none">
                   {filteredConversations.length === 0 && (
                     <div className="text-center text-xs text-muted-foreground/50 py-8">
-                      {searchHistory ? t.home.noMatchingChats : t.home.noConversationsYet}
+                      {searchHistory ? "No matching chats" : "No conversations yet"}
                     </div>
                   )}
                   {filteredConversations.map((c) => {
@@ -1006,13 +998,13 @@ const FullScreenChatbot = () => {
             {sidebarTab === "memory" && (
               <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 scrollbar-none">
                 <p className="text-[11px] text-muted-foreground/60 leading-relaxed" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  Leevee {t.home.memoryDesc.split('.')[0]}.
+                  Leevee remembers these facts about you across all conversations. Edit or remove anything.
                 </p>
                 {/* Add memory form */}
                 <div className="space-y-1.5">
                   <input
                     type="text"
-                    placeholder={t.home.labelPlaceholder}
+                    placeholder="Label (e.g. 'name')"
                     value={newMemoryKey}
                     onChange={(e) => setNewMemoryKey(e.target.value)}
                     className="w-full bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -1021,7 +1013,7 @@ const FullScreenChatbot = () => {
                   <div className="flex gap-1.5">
                     <input
                       type="text"
-                      placeholder={t.home.valuePlaceholder}
+                      placeholder="Value (e.g. 'Alex')"
                       value={newMemoryValue}
                       onChange={(e) => setNewMemoryValue(e.target.value)}
                       className="flex-1 bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -1047,8 +1039,8 @@ const FullScreenChatbot = () => {
                 {memories.length === 0 && (
                   <div className="text-center text-xs text-muted-foreground/40 py-6">
                     <Brain className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p>{t.home.noMemoriesYet}</p>
-                    <p className="text-[10px] mt-1">{t.home.leeveeWillLearn}</p>
+                    <p>No memories yet</p>
+                    <p className="text-[10px] mt-1">Leevee will learn about you as you chat</p>
                   </div>
                 )}
                 {memories.map((mem) => (
@@ -1102,8 +1094,8 @@ const FullScreenChatbot = () => {
                 {trashedConversations.length === 0 && (
                   <div className="text-center text-xs text-muted-foreground/40 py-8">
                     <Archive className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    <p>{t.home.trashEmpty}</p>
-                    <p className="text-[10px] mt-1">{t.home.trashDesc}</p>
+                    <p>Trash is empty</p>
+                    <p className="text-[10px] mt-1">Deleted conversations appear here for recovery</p>
                   </div>
                 )}
                 {trashedConversations.map((c) => {
@@ -1114,7 +1106,7 @@ const FullScreenChatbot = () => {
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] sm:text-xs font-medium truncate opacity-60" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{c.title}</p>
                         <p className="text-[10px] text-muted-foreground/40 mt-0.5">
-                          {t.home.deleted} {c.deleted_at ? formatDate(c.deleted_at) : ""}
+                          Deleted {c.deleted_at ? formatDate(c.deleted_at) : ""}
                         </p>
                       </div>
                       <button
@@ -1125,7 +1117,7 @@ const FullScreenChatbot = () => {
                         <Undo2 className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => { if (window.confirm(t.home.confirmPermanentDelete)) permanentlyDelete(c.id); }}
+                        onClick={() => { if (window.confirm("Permanently delete? This cannot be undone.")) permanentlyDelete(c.id); }}
                         className="p-1.5 rounded-md text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-all"
                         title="Delete permanently"
                       >
@@ -1145,14 +1137,14 @@ const FullScreenChatbot = () => {
                   className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  <HardDrive className="w-3 h-3" /> {t.home.exportAll}
+                  <HardDrive className="w-3 h-3" /> Export All
                 </button>
                 <button
                   onClick={() => setShowSyncModal(true)}
                   className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-[11px] text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
                   style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                  <Smartphone className="w-3 h-3" /> {t.home.syncDevices}
+                  <Smartphone className="w-3 h-3" /> Sync Devices
                 </button>
               </div>
               <p className="hidden sm:block text-[10px] text-muted-foreground/40 text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -1169,14 +1161,14 @@ const FullScreenChatbot = () => {
           <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" onClick={() => setShowSyncModal(false)} />
           <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] max-w-sm bg-card border border-border/60 rounded-2xl shadow-2xl p-6 animate-message-in">
             <h3 className="text-base font-bold text-foreground mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              <Smartphone className="w-4 h-4 inline mr-2" />{t.home.syncTitle}
+              <Smartphone className="w-4 h-4 inline mr-2" />Sync Across Devices
             </h3>
             <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              {t.home.syncDesc}
+              Your sync code links your conversations, memories, and history across devices. Enter it on another device to sync.
             </p>
             <div className="space-y-3">
               <div>
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.yourSyncCode}</label>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Your Sync Code</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -1194,11 +1186,11 @@ const FullScreenChatbot = () => {
                 </div>
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.importFromDevice}</label>
+                <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Import From Another Device</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder={t.home.pasteSyncCode}
+                    placeholder="Paste sync code..."
                     value={syncInput}
                     onChange={(e) => setSyncInput(e.target.value)}
                     className="flex-1 bg-secondary/50 border border-border/40 rounded-lg px-3 py-2 text-xs text-foreground font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
@@ -1206,7 +1198,7 @@ const FullScreenChatbot = () => {
                   <button
                     onClick={() => {
                       if (syncInput.trim() && syncInput.trim() !== getSyncCode()) {
-                        if (window.confirm(t.home.confirmSync)) {
+                        if (window.confirm("This will switch to the synced session. Your current local session will be replaced. Continue?")) {
                           importSession(syncInput.trim());
                         }
                       }
@@ -1215,7 +1207,7 @@ const FullScreenChatbot = () => {
                     className="px-3 py-2 rounded-lg text-xs font-medium text-primary-foreground disabled:opacity-30 transition-all active:scale-95"
                     style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
                   >
-                    {t.home.sync}
+                    Sync
                   </button>
                 </div>
               </div>
@@ -1260,9 +1252,6 @@ const FullScreenChatbot = () => {
               <h1 className="text-sm font-bold tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Leevee AI
               </h1>
-            </div>
-            <div className="hidden sm:block">
-              <LanguageSelector />
             </div>
           </div>
 
@@ -1354,18 +1343,14 @@ const FullScreenChatbot = () => {
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShareMenuOpen(false)} />
                       <div className="absolute right-0 top-full mt-2 z-50 w-48 rounded-xl border border-border/60 bg-card/95 backdrop-blur-xl shadow-2xl p-1 animate-message-in">
-                        <button onClick={shareBrandedLog} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Share2 className="w-3.5 h-3.5" /> {t.home.shareChatLog}
-                        </button>
-                        <div className="mx-2 my-0.5 h-px bg-border/40" />
                         <button onClick={copyConversation} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Copy className="w-3.5 h-3.5" /> {t.home.copyToClipboard}
+                          <Copy className="w-3.5 h-3.5" /> Copy to clipboard
                         </button>
                         <button onClick={exportAsText} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <FileText className="w-3.5 h-3.5" /> {t.home.exportAsTxt}
+                          <FileText className="w-3.5 h-3.5" /> Export as .txt
                         </button>
                         <button onClick={exportConversationPDF} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Download className="w-3.5 h-3.5" /> {t.home.exportAsPdf}
+                          <Download className="w-3.5 h-3.5" /> Export as PDF
                         </button>
                       </div>
                     </>
@@ -1391,7 +1376,7 @@ const FullScreenChatbot = () => {
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Plus className="w-4 h-4" /> {t.home.newChat}
+                      <Plus className="w-4 h-4" /> New chat
                     </button>
                     {messages.length > 0 && (
                       <>
@@ -1400,63 +1385,56 @@ const FullScreenChatbot = () => {
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <Search className="w-4 h-4" /> {t.home.searchMessages}
+                          <Search className="w-4 h-4" /> Search messages
                         </button>
                         <button
                           onClick={() => { copyConversation(); setMoreMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <Copy className="w-4 h-4" /> {t.home.copyConversation}
+                          <Copy className="w-4 h-4" /> Copy conversation
                         </button>
                         <button
                           onClick={() => { exportAsText(); setMoreMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <FileText className="w-4 h-4" /> {t.home.exportAsTxt}
+                          <FileText className="w-4 h-4" /> Export as .txt
                         </button>
                         <button
                           onClick={() => { exportConversationPDF(); setMoreMenuOpen(false); }}
                           className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
-                          <Download className="w-4 h-4" /> {t.home.exportAsPdf}
+                          <Download className="w-4 h-4" /> Export as PDF
                         </button>
                       </>
                     )}
-                    <button
-                      onClick={() => { shareBrandedLog(); }}
-                      className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-                      style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-                    >
-                      <Share2 className="w-4 h-4" /> {t.home.shareChatLog}
-                    </button>
                     <div className="mx-2 my-1 h-px bg-border/50" />
                     <button
                       onClick={() => { setSidebarOpen(true); setSidebarTab("memory"); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Brain className="w-4 h-4" /> {t.home.memoryBank}
+                      <Brain className="w-4 h-4" /> Memory Bank
                     </button>
                     <button
                       onClick={() => { exportAllData(); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <HardDrive className="w-4 h-4" /> {t.home.exportAllData}
+                      <HardDrive className="w-4 h-4" /> Export All Data
                     </button>
                     <button
                       onClick={() => { setShowSyncModal(true); setMoreMenuOpen(false); }}
                       className="w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-[13px] text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <Smartphone className="w-4 h-4" /> {t.home.syncDevices}
+                      <Smartphone className="w-4 h-4" /> Sync Devices
                     </button>
                     <div className="mx-2 my-1 h-px bg-border/50" />
                     <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl">
-                      <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.theme}</span>
+                      <span className="text-[13px] text-muted-foreground flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Theme</span>
                       <ThemeToggle />
                     </div>
                     <div className="mx-2 my-1 h-px bg-border/50" />
@@ -1466,7 +1444,7 @@ const FullScreenChatbot = () => {
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
                       {user ? <UserCircle className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-                      {user ? (profile?.display_name || t.home.profile) : t.home.signIn}
+                      {user ? (profile?.display_name || "Profile") : "Sign In"}
                     </a>
                   </div>
                 </>
@@ -1501,7 +1479,7 @@ const FullScreenChatbot = () => {
             <Search className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
             <input
               type="text"
-              placeholder={t.home.searchMessagesPlaceholder}
+              placeholder="Search messages..."
               value={chatSearch}
               onChange={(e) => { setChatSearch(e.target.value); setChatSearchIdx(0); }}
               className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
@@ -1528,7 +1506,7 @@ const FullScreenChatbot = () => {
               </div>
             )}
             {chatSearch && chatSearchMatches.length === 0 && (
-              <span className="text-[10px] text-muted-foreground/50">{t.home.noResults}</span>
+              <span className="text-[10px] text-muted-foreground/50">No results</span>
             )}
             <button
               onClick={() => { setChatSearchOpen(false); setChatSearch(""); }}
@@ -1546,98 +1524,59 @@ const FullScreenChatbot = () => {
             {/* Empty State */}
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center min-h-[50vh] sm:min-h-[60vh] text-center space-y-6 sm:space-y-8 animate-message-in">
-                <div className="animate-float relative">
-                  <div className="absolute inset-0 rounded-3xl blur-2xl opacity-30 animate-pulse-ring" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }} />
-                  <div className="p-[2px] rounded-3xl relative" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-mid)), hsl(var(--gradient-end)))" }}>
+                <div className="animate-float">
+                  <div className="p-[2px] rounded-3xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
                     <div className="bg-background rounded-[22px] p-3">
                       <img src={logo} alt="Leevee AI" className="w-16 h-16 sm:w-14 sm:h-14 rounded-2xl object-cover" />
                     </div>
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <p className="text-sm text-muted-foreground/70 tracking-wide" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                     {(() => {
                       const h = new Date().getHours();
-                      if (h < 5) return t.home.greetLateNight;
-                      if (h < 12) return t.home.greetMorning;
-                      if (h < 17) return t.home.greetAfternoon;
-                      if (h < 21) return t.home.greetEvening;
-                      return t.home.greetNight;
+                      if (h < 5) return "Still up? I'm here. 🌙";
+                      if (h < 12) return "Good morning ☀️";
+                      if (h < 17) return "Good afternoon 🌤️";
+                      if (h < 21) return "Good evening 🌅";
+                      return "Hey, night owl 🌙";
                     })()}
                   </p>
                   <h2
-                    className="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                    className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
+                    style={{ backgroundImage: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--warm-glow)), hsl(var(--gradient-end)))", fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : t.home.headingDefault}
+                    {mode === "vent" ? "I'm listening." : mode === "academic" ? "Let's learn something." : mode === "creative" ? "Let's make something." : mode === "debate" ? "Challenge me." : mode === "image" ? "What do you see?" : mode === "fun" ? "Let's play." : "What's on your mind?"}
                   </h2>
                   <p className="text-muted-foreground text-[13px] sm:text-sm max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2.5 max-w-md w-full px-2 sm:px-0">
+                <div className="grid grid-cols-2 gap-2 max-w-md w-full px-2 sm:px-0">
                   {currentMode.prompts.slice(0, 4).map((q) => (
                     <button
                       key={q}
-                      onClick={() => sendMessage(q, { skipCrisisCheck: true })}
-                      className="group px-3.5 py-3.5 text-[12px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/40 hover:text-foreground hover:bg-card/80 transition-all duration-300 text-left flex items-start gap-2 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.97] hover:-translate-y-0.5"
+                      onClick={() => sendMessage(q)}
+                      className="group px-3.5 py-3 text-[12px] sm:text-xs rounded-2xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 text-left flex items-start gap-2 hover:shadow-lg hover:shadow-primary/5 active:scale-[0.97]"
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
-                      <span className="text-primary/30 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5">→</span>
+                      <span className="text-primary/40 group-hover:text-primary transition-colors flex-shrink-0 mt-0.5">→</span>
                       <span className="leading-snug">{q}</span>
                     </button>
                   ))}
                 </div>
 
-                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/50 px-4">
-                  <span>{t.home.youreNotAlone}</span>
-                  <span className="text-muted-foreground/20">·</span>
+                <div className="flex items-center gap-2 text-xs sm:text-[11px] text-muted-foreground/60 px-4">
+                  <span>You're not alone</span>
+                  <span>·</span>
                   <a href="tel:988" className="text-destructive/70 hover:text-destructive font-medium transition-colors">
-                    {t.home.lifeline988}
+                    988 Lifeline
                   </a>
-                  <span className="text-muted-foreground/20">·</span>
-                  <a href="/crisis-resources" className="hover:text-foreground/70 transition-colors">
-                    {t.home.resources}
+                  <span>·</span>
+                  <a href="/crisis-resources" className="hover:text-foreground transition-colors">
+                    Resources
                   </a>
-                </div>
-
-                {/* Fun Facts */}
-                <div className="mt-4 sm:mt-6 w-full max-w-md px-2 sm:px-0">
-                  <div className="rounded-2xl border border-border/40 bg-card/30 p-4 space-y-2.5">
-                    <p className="text-[10px] uppercase tracking-widest text-primary/50 font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                      {t.home.funFactsTitle}
-                    </p>
-                    <div className="space-y-2 text-[11px] sm:text-xs text-muted-foreground/60 leading-relaxed" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                      {(() => {
-                        const allFacts = [
-                          "🧠 Leevee has 7 dedicated chat modes — each with its own personality and AI model. No other major AI does this.",
-                          "🎨 Leevee can generate AND edit images from text — not just text-only like most chatbots.",
-                          "💾 Your memory bank persists across sessions. Export it, sync it, own it. Your data is yours.",
-                          "⚡ Leevee is powered by 10+ frontier AI models including GPT-5 and Gemini 2.5 Pro — auto-selected per mode.",
-                          "🫂 Vent Mode matches your energy without moralizing. No silver-lining, no unsolicited advice.",
-                          "⚔️ Debate Mode steelmans the opposition — it argues the BEST version of the counterargument.",
-                          "🆘 Crisis detection is always on. 988 Lifeline, safety plans, quick exit — built in, not bolted on.",
-                          "📱 Leevee is a PWA — install it on your phone like a native app. No app store needed.",
-                          "🌍 Available in 5 languages: English, Spanish, French, Arabic, and Chinese.",
-                          "🔒 No account required for basic usage. Sync across devices with just a code.",
-                          "🏗️ Leevee is indie-built — one developer, no corporate board, no censorship theater.",
-                          "🗣️ Leevee is fluent in AAVE and LGBTQ+ vernacular as legitimate linguistic systems, not as novelty.",
-                          "📄 Export any conversation as a clean PDF with one tap.",
-                          "🔍 Real-time web search keeps responses grounded in current info, not just training cutoffs.",
-                          "🎓 Academic Mode thinks like Socrates, explains like Feynman, and cites its intellectual lineage.",
-                        ];
-                        // Show 3 random facts, seeded by day so they change daily
-                        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-                        const shuffled = allFacts.map((f, i) => ({ f, sort: Math.sin(dayOfYear * 100 + i * 37) })).sort((a, b) => a.sort - b.sort).map(x => x.f);
-                        return shuffled.slice(0, 3).map((fact, i) => (
-                          <p key={i} className="flex items-start gap-1.5">
-                            <span className="leading-relaxed">{fact}</span>
-                          </p>
-                        ));
-                      })()}
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
@@ -1787,7 +1726,7 @@ const FullScreenChatbot = () => {
                   aria-label="Retry last message"
                 >
                   <RotateCcw className="w-3 h-3" />
-                   {t.home.retry}
+                  Retry
                 </button>
               </div>
             )}
@@ -1798,7 +1737,7 @@ const FullScreenChatbot = () => {
                 {followUps.map((q, qi) => (
                   <button
                     key={qi}
-                    onClick={() => { setFollowUps([]); sendMessage(q, { skipCrisisCheck: true }); }}
+                    onClick={() => { setFollowUps([]); sendMessage(q); }}
                     className="group inline-flex items-center gap-1.5 px-4 py-2.5 sm:px-3.5 sm:py-2 text-[13px] sm:text-xs rounded-xl border border-border/60 bg-card/50 text-muted-foreground hover:border-primary/30 hover:text-foreground hover:bg-card transition-all duration-200 hover:shadow-md hover:shadow-primary/5 active:scale-[0.97]"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
@@ -1826,7 +1765,7 @@ const FullScreenChatbot = () => {
                       <span className="w-2 h-2 bg-primary/50 rounded-full typing-dot" />
                     </div>
                     <span className="text-xs text-muted-foreground">
-                      {mode === "image" ? t.home.generatingImage : t.home.leeveeThinking}
+                      {mode === "image" ? "Generating image…" : "Leevee is thinking…"}
                     </span>
                   </div>
                 </div>
@@ -1864,29 +1803,29 @@ const FullScreenChatbot = () => {
               onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
               className="flex items-end gap-2.5"
             >
-              <div className="flex-1 relative group">
+              <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder={
-                    pendingImage ? t.home.askAboutImage
-                      : isListening ? t.home.listening
-                      : mode === "image" ? t.home.describeImage
-                      : t.home.messageLeevee
+                    pendingImage ? "Ask about this image..."
+                      : isListening ? "Listening..."
+                      : mode === "image" ? "Describe what you want to see..."
+                      : "Message Leevee..."
                   }
                   rows={1}
-                  className="w-full bg-card/80 border border-border/60 rounded-2xl px-4 py-3.5 pr-12 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all duration-300 resize-none scrollbar-none text-[16px] sm:text-sm group-hover:border-border"
+                  className="w-full bg-card border border-border/60 rounded-2xl px-4 py-3.5 pr-12 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all resize-none scrollbar-none text-[16px] sm:text-sm"
                   style={{ fontFamily: "'Space Grotesk', sans-serif", maxHeight: "140px" }}
                 />
                 <button
                   type="button"
                   onClick={isListening ? stopListening : startListening}
-                  className={`absolute right-3 bottom-3 p-2 rounded-lg transition-all duration-200 ${
+                  className={`absolute right-3 bottom-3 p-2 rounded-lg transition-all ${
                     isListening
                       ? "text-destructive animate-pulse"
-                      : "text-muted-foreground/30 hover:text-muted-foreground/70"
+                      : "text-muted-foreground/40 hover:text-muted-foreground"
                   }`}
                   aria-label={isListening ? "Stop listening" : "Voice input"}
                 >
@@ -1896,38 +1835,28 @@ const FullScreenChatbot = () => {
               <button
                 type="submit"
                 disabled={(!input.trim() && !pendingImage) || loading}
-                className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center disabled:opacity-20 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-95 flex-shrink-0 glow-primary"
+                className="w-12 h-12 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center disabled:opacity-30 transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 active:scale-95 flex-shrink-0 glow-primary"
                 style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}
               >
                 {mode === "image" && !pendingImage ? <ImageIcon className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" /> : <Send className="w-5 h-5 sm:w-4 sm:h-4 text-primary-foreground" />}
               </button>
             </form>
-            {tier !== "premium" && (
-              <div className="flex items-center justify-center gap-2 mt-1.5">
-                <span className={`text-[10px] tracking-wider uppercase ${remaining <= 3 ? "text-destructive" : "text-muted-foreground/30"}`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  {remaining}/{limit === Infinity ? "∞" : limit} {t.home.messagesLeftToday}
-                </span>
-                {remaining <= 5 && (
-                  <a href="/pricing" className="text-[10px] text-primary hover:underline tracking-wider uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                    {t.home.upgrade}
-                  </a>
-                )}
-              </div>
-            )}
-            <p className="text-[10px] text-center mt-2 tracking-wider uppercase flex items-center justify-center gap-1.5 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              <span className="font-semibold text-primary">Leevee AI</span>
-              <span className="text-muted-foreground/40">·</span>
-              <a href="/features" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.features}</a>
-              <span className="text-muted-foreground/40">·</span>
-              <a href="/safety" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.safety}</a>
-              <span className="text-muted-foreground/40">·</span>
-              <a href="/feature-requests" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.ideas}</a>
-              <span className="text-muted-foreground/40">·</span>
-              <a href="/pricing" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.pricing}</a>
-              <span className="text-muted-foreground/40">·</span>
-              <a href="/terms" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.terms}</a>
-              <span className="text-muted-foreground/40">·</span>
-              <a href="/privacy" className="text-foreground/60 hover:text-primary transition-colors font-medium">{t.home.privacy}</a>
+            <p className="text-[10px] text-muted-foreground/30 text-center mt-1.5 sm:mt-2 tracking-wider uppercase flex items-center justify-center gap-2 flex-wrap" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <span>Leevee AI</span>
+              <span className="text-muted-foreground/20">·</span>
+              <span>Powered by Gemini</span>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/safety" className="hover:text-muted-foreground/60 transition-colors">Safety</a>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/vision/ai-web-developer" className="hover:text-muted-foreground/60 transition-colors">Vision</a>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/feature-requests" className="hover:text-muted-foreground/60 transition-colors">Ideas</a>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/pricing" className="hover:text-muted-foreground/60 transition-colors">Pricing</a>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/terms" className="hover:text-muted-foreground/60 transition-colors">Terms</a>
+              <span className="text-muted-foreground/20">·</span>
+              <a href="/privacy" className="hover:text-muted-foreground/60 transition-colors">Privacy</a>
             </p>
           </div>
         </div>

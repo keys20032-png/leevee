@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import FullScreenChatbot from "@/components/FullScreenChatbot";
 import InstallBanner from "@/components/InstallBanner";
-import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import SafetyCheckScreen from "@/components/SafetyCheckScreen";
-import OnboardingFlow from "@/components/OnboardingFlow";
 
 const COOLDOWN_MS = 30 * 60 * 1000; // 30 minutes
 
@@ -15,6 +13,7 @@ const getCrisisTime = (): number | null => {
 };
 
 const isInCooldown = (): boolean => {
+  // Admin override: add ?bypass=1 to URL to skip safety lockout
   if (new URLSearchParams(window.location.search).get("bypass") === "1") {
     localStorage.removeItem("crisis_redirect_time");
     return false;
@@ -24,13 +23,8 @@ const isInCooldown = (): boolean => {
   return Date.now() - t < COOLDOWN_MS;
 };
 
-const hasCompletedOnboarding = (): boolean => {
-  return localStorage.getItem("leevee_onboarding_complete") === "1";
-};
-
 const Index = () => {
   const [showSafetyCheck, setShowSafetyCheck] = useState(() => isInCooldown());
-  const [showOnboarding, setShowOnboarding] = useState(() => !hasCompletedOnboarding() && !isInCooldown());
 
   useEffect(() => {
     const check = () => {
@@ -62,19 +56,6 @@ const Index = () => {
     );
   }
 
-  if (showOnboarding) {
-    return (
-      <OnboardingFlow
-        onComplete={({ displayName, preferredMode }) => {
-          localStorage.setItem("leevee_onboarding_complete", "1");
-          if (displayName) localStorage.setItem("leevee_display_name", displayName);
-          if (preferredMode) localStorage.setItem("leevee_preferred_mode", preferredMode);
-          setShowOnboarding(false);
-        }}
-      />
-    );
-  }
-
   return (
     <div className="h-dvh flex flex-col bg-background overflow-hidden">
       <InstallBanner />
@@ -87,7 +68,6 @@ const Index = () => {
       <main id="main-content" role="main" className="flex-1 overflow-hidden">
         <FullScreenChatbot />
       </main>
-      <PushNotificationPrompt />
     </div>
   );
 };

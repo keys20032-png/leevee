@@ -5,9 +5,9 @@ const StatsSection = () => {
   const { t } = useI18n();
 
   const stats = [
-    { value: "7", label: t.stats.resources },
-    { value: "10+", label: t.stats.categories },
-    { value: "99.9%", label: t.stats.free },
+    { value: "20+", label: t.stats.resources },
+    { value: "4", label: t.stats.categories },
+    { value: "100%", label: t.stats.free },
     { value: "24/7", label: t.stats.available },
   ];
 
