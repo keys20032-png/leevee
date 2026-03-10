@@ -132,6 +132,7 @@ export const es = {
     promptsDebate: ["Hazme cambiar de opinión", "Haz de abogado del diablo", "¿Es buena idea o estoy equivocado/a?", "Argumenta el otro lado", "Busca fallas en mi argumento", "Debatamos algo divertido"],
     promptsImagine: ["Una cabaña acogedora en un bosque nevado", "Una ciudad futurista al atardecer", "Algo que aún no existe", "Mi habitación soñada", "Arte abstracto — sorpréndeme", "Un dragón leyendo un cuento"],
     promptsDrama: ["Dame la pelea de celebridades más intensa", "¿Cuál es el momento más dramático de reality TV?", "Explica la línea de tiempo Taylor Swift vs Kanye", "Cuéntame una rivalidad histórica muy MEZQUINA", "¿Cuál es la pelea de internet más dramática?", "Cuenta chisme que nunca haya escuchado"],
+    promptsBusiness: ["Redacta un email profesional", "Ayúdame a preparar una entrevista", "Revisa mi presentación de negocios", "Crea un esquema de propuesta", "Ayúdame a negociar un aumento", "Escribe un post de LinkedIn destacado"],
     greetLateNight: "¿Aún despierto/a? Estoy aquí. 🌙",
     greetMorning: "Buenos días ☀️",
     greetAfternoon: "Buenas tardes 🌤️",
