@@ -179,7 +179,8 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("Push error:", error);
+    return new Response(JSON.stringify({ error: "An internal error occurred." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
