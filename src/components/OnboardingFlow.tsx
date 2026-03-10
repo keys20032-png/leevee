@@ -37,7 +37,6 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const SAFETY_FEATURES = useMemo(() => [
     { icon: Shield, title: t.onboarding.crisisSupportTitle, desc: t.onboarding.crisisSupportDesc },
     { icon: Heart, title: t.onboarding.safetyPlanTitle, desc: t.onboarding.safetyPlanDesc },
-    { icon: Sparkles, title: t.onboarding.quickExitTitle, desc: t.onboarding.quickExitDesc },
   ], [t]);
 
   const handleFinish = () => {
