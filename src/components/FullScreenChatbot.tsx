@@ -6,7 +6,7 @@ import {
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
-  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
+  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap, Shield,
   LogIn, UserCircle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
