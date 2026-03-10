@@ -128,6 +128,7 @@ export const en = {
     modeDebate: "Debate",
     modeImagine: "Imagine",
     modeDrama: "Drama",
+    modeBusiness: "Business",
     // Mode descriptions
     descGeneral: "Your space to think out loud. I'll help you figure it out.",
     descVent: "No filters. No fixing. Just a safe space to let it out.",
