@@ -148,6 +148,7 @@ export const en = {
     promptsDebate: ["Change my mind about something", "Play devil's advocate", "Is this a good idea or am I wrong?", "Argue the other side for me", "Poke holes in my argument", "Let's debate something fun"],
     promptsImagine: ["A cozy cabin in a snowy forest", "A futuristic city at golden hour", "Something that doesn't exist yet", "My dream room", "Abstract art — surprise me", "A dragon reading a bedtime story"],
     promptsDrama: ["Give me the wildest celebrity beef of all time", "What's the messiest reality TV moment ever?", "Break down the Taylor Swift vs Kanye timeline", "Tell me about a historical rivalry that was PETTY", "What's the most dramatic internet feud?", "Spill some tea I've never heard before"],
+    promptsBusiness: ["Draft a professional email for me", "Help me prepare for a job interview", "Review my business pitch", "Create a project proposal outline", "Help me negotiate a raise", "Write a LinkedIn post that stands out"],
     // Greetings
     greetLateNight: "Still up? I'm here. 🌙",
     greetMorning: "Good morning ☀️",
