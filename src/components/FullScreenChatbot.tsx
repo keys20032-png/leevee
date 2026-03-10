@@ -1579,7 +1579,7 @@ const FullScreenChatbot = () => {
                     className="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : t.home.headingDefault}
+                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : mode === "drama" ? t.home.headingDrama : mode === "business" ? t.home.headingBusiness : t.home.headingDefault}
                   </h2>
                   <p className="text-muted-foreground text-[13px] sm:text-sm max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}
