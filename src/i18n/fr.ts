@@ -123,6 +123,7 @@ export const fr = {
     descDebate: "Je contesterai vos idées — respectueusement. Affûtons votre pensée.",
     descImagine: "Décrivez ce que vous voyez dans votre tête. Je lui donnerai vie.",
     descDrama: "Racontez les potins ☕ — drama réel avec preuves.",
+    descBusiness: "Aide pro pour emails, stratégie, présentations et carrière.",
     promptsGeneral: ["Aide-moi à organiser mes pensées", "J'ai besoin d'un conseil", "Écris quelque chose pour moi", "Explique-moi simplement", "Brainstormons ensemble", "Aide-moi à prendre une décision"],
     promptsVent: ["J'ai besoin de me défouler", "Aujourd'hui était vraiment dur", "Je suis submergé(e) et je ne sais pas pourquoi", "J'ai juste besoin que quelqu'un m'écoute", "Tout semble trop", "Je suis en colère et j'ai besoin de l'exprimer"],
     promptsLearn: ["Explique-moi comme si j'avais cinq ans", "Aide-moi à réviser pour mon examen", "Je ne comprends pas ce concept", "Teste-moi sur ce que j'ai appris", "Aide-moi à écrire une thèse", "Guide-moi étape par étape"],

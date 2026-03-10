@@ -123,6 +123,7 @@ export const pt = {
     descDebate: "Vou questionar suas ideias — com respeito. Vamos afiar seu pensamento.",
     descImagine: "Descreva o que você vê na sua mente. Vou dar vida.",
     descDrama: "Conta a fofoca ☕ — drama real com provas.",
+    descBusiness: "Ajuda profissional com emails, estratégia, apresentações e carreira.",
     promptsGeneral: ["Me ajude a organizar meus pensamentos", "Preciso de um conselho", "Escreva algo para mim", "Explique de forma simples", "Vamos fazer brainstorm", "Me ajude a tomar uma decisão"],
     promptsVent: ["Preciso desabafar", "Hoje foi muito difícil", "Estou sobrecarregado e não sei por quê", "Só preciso que alguém me ouça", "Tudo parece demais", "Estou com raiva e preciso desabafar"],
     promptsLearn: ["Explique como se eu tivesse cinco anos", "Me ajude a estudar para a prova", "Não entendo esse conceito", "Me faça um quiz", "Me ajude a escrever uma tese", "Me guie passo a passo"],
