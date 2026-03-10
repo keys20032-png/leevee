@@ -6,7 +6,7 @@ import {
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
-  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
+  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap, Shield,
   LogIn, UserCircle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -1192,6 +1192,10 @@ const FullScreenChatbot = () => {
                     <Copy className="w-3.5 h-3.5" />
                   </button>
                 </div>
+                <p className="text-[10px] text-destructive/80 mt-1.5 leading-relaxed flex items-start gap-1">
+                  <Shield className="w-3 h-3 mt-0.5 shrink-0" />
+                  <span>Warning: Anyone with this code gets full access to your conversations and memories. Never share it publicly.</span>
+                </p>
               </div>
               <div>
                 <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.importFromDevice}</label>
