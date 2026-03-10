@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import {
   MessageSquare, Flame, GraduationCap, PartyPopper,
   PenTool, Swords, ImageIcon, Shield, ArrowRight,
-  ArrowLeft, Heart, Sparkles, Check,
+  ArrowLeft, Heart, Sparkles, Check, Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nContext";
