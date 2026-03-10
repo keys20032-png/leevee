@@ -132,6 +132,7 @@ export const de = {
     promptsDebate: ["Ändere meine Meinung", "Spiel den Advocatus Diaboli", "Ist das eine gute Idee oder liege ich falsch?", "Argumentiere die andere Seite", "Finde Schwächen in meinem Argument", "Lass uns über was Lustiges debattieren"],
     promptsImagine: ["Eine gemütliche Hütte im verschneiten Wald", "Eine futuristische Stadt bei Sonnenuntergang", "Etwas, das noch nicht existiert", "Mein Traumzimmer", "Abstrakte Kunst — überrasch mich", "Ein Drache liest eine Gute-Nacht-Geschichte"],
     promptsDrama: ["Der wildeste Promi-Streit aller Zeiten", "Der dramatischste Reality-TV-Moment?", "Taylor Swift vs Kanye Timeline erklären", "Eine historische Rivalität, die PETTY war", "Der dramatischste Internet-Streit?", "Klatsch, den ich noch nie gehört habe"],
+    promptsBusiness: ["Verfasse eine professionelle E-Mail", "Hilf mir bei einem Vorstellungsgespräch", "Überprüfe meinen Business-Pitch", "Erstelle eine Projektvorschlag-Gliederung", "Hilf mir bei einer Gehaltsverhandlung", "Schreibe einen LinkedIn-Post"],
     greetLateNight: "Noch wach? Ich bin hier. 🌙",
     greetMorning: "Guten Morgen ☀️",
     greetAfternoon: "Guten Tag 🌤️",
