@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
-  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
+  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords, Briefcase,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
@@ -22,7 +22,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useDailyLimit } from "@/hooks/use-daily-limit";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama" | "business";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
@@ -91,6 +91,14 @@ const getModeConfig = (t: any): Record<ChatMode, { label: string; icon: typeof M
     gradient: "from-pink-500 to-rose-600",
     emoji: "💅",
     prompts: t.home.promptsDrama,
+  },
+  business: {
+    label: t.home.modeBusiness,
+    icon: Briefcase,
+    description: t.home.descBusiness,
+    gradient: "from-slate-600 to-zinc-800",
+    emoji: "💼",
+    prompts: t.home.promptsBusiness,
   },
 });
 
@@ -1542,7 +1550,7 @@ const FullScreenChatbot = () => {
         )}
 
         {/* Chat Area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative">
           <div className="max-w-2xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-1">
 
             {/* Empty State */}
@@ -1571,7 +1579,7 @@ const FullScreenChatbot = () => {
                     className="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : t.home.headingDefault}
+                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : mode === "drama" ? t.home.headingDrama : mode === "business" ? t.home.headingBusiness : t.home.headingDefault}
                   </h2>
                   <p className="text-muted-foreground text-[13px] sm:text-sm max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}

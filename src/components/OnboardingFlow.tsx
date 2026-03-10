@@ -4,12 +4,12 @@ import { Input } from "@/components/ui/input";
 import {
   MessageSquare, Flame, GraduationCap, PartyPopper,
   PenTool, Swords, ImageIcon, Shield, ArrowRight,
-  ArrowLeft, Heart, Sparkles, Check,
+  ArrowLeft, Heart, Sparkles, Check, Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nContext";
 
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama" | "business";
 
 interface OnboardingFlowProps {
   onComplete: (prefs: { displayName: string; preferredMode: ChatMode }) => void;
@@ -32,6 +32,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
     { key: "debate" as ChatMode, label: t.home.modeDebate, icon: Swords, emoji: "⚡", desc: t.onboarding.modeDescDebate, gradient: "from-amber-500 to-red-500" },
     { key: "image" as ChatMode, label: t.home.modeImagine, icon: ImageIcon, emoji: "🖼️", desc: t.onboarding.modeDescImagine, gradient: "from-emerald-500 to-teal-500" },
     { key: "drama" as ChatMode, label: t.home.modeDrama, icon: Flame, emoji: "💅", desc: t.onboarding.modeDescDrama, gradient: "from-pink-500 to-rose-600" },
+    { key: "business" as ChatMode, label: t.home.modeBusiness, icon: Briefcase, emoji: "💼", desc: t.onboarding.modeDescBusiness, gradient: "from-slate-600 to-zinc-800" },
   ], [t]);
 
   const SAFETY_FEATURES = useMemo(() => [
