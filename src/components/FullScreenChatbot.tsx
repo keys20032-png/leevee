@@ -92,6 +92,14 @@ const getModeConfig = (t: any): Record<ChatMode, { label: string; icon: typeof M
     emoji: "💅",
     prompts: t.home.promptsDrama,
   },
+  business: {
+    label: t.home.modeBusiness,
+    icon: Briefcase,
+    description: t.home.descBusiness,
+    gradient: "from-slate-600 to-zinc-800",
+    emoji: "💼",
+    prompts: t.home.promptsBusiness,
+  },
 });
 
 const FullScreenChatbot = () => {
