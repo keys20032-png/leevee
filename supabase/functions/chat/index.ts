@@ -275,6 +275,7 @@ const MODE_MODELS: Record<string, string> = {
   vent: "google/gemini-2.5-flash",
   debate: "google/gemini-3-flash-preview",
   drama: "google/gemini-2.5-flash",
+  business: "google/gemini-3-flash-preview",
 };
 
 // ── Crisis detection data ──
