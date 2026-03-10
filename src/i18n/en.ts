@@ -163,6 +163,8 @@ export const en = {
     headingImagine: "What do you see?",
     headingPlay: "Let's play.",
     headingDefault: "What's on your mind?",
+    headingDrama: "Spill the tea.",
+    headingBusiness: "Let's get to work.",
     // Bottom links
     youreNotAlone: "You're not alone",
     lifeline988: "988 Lifeline",
