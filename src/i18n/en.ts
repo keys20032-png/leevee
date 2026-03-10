@@ -128,7 +128,6 @@ export const en = {
     modeDebate: "Debate",
     modeImagine: "Imagine",
     modeDrama: "Drama",
-    modeBusiness: "Business",
     // Mode descriptions
     descGeneral: "Your space to think out loud. I'll help you figure it out.",
     descVent: "No filters. No fixing. Just a safe space to let it out.",
@@ -138,7 +137,6 @@ export const en = {
     descDebate: "I'll push back on your ideas — respectfully. Let's sharpen your thinking.",
     descImagine: "Describe what you see in your head. I'll bring it to life.",
     descDrama: "Spill the tea ☕ — messy gossip with real receipts.",
-    descBusiness: "Professional help with emails, strategy, pitches, and career moves.",
     // Mode prompts
     promptsGeneral: ["Help me organize my thoughts", "I need advice on something", "Write something for me", "Break this down simply", "Brainstorm with me", "Help me make a decision"],
     promptsVent: ["I need to get something off my chest", "Today was really rough", "I'm overwhelmed and I don't know why", "I just need someone to hear me", "Everything feels like too much", "I'm angry and I need to let it out"],
@@ -148,7 +146,6 @@ export const en = {
     promptsDebate: ["Change my mind about something", "Play devil's advocate", "Is this a good idea or am I wrong?", "Argue the other side for me", "Poke holes in my argument", "Let's debate something fun"],
     promptsImagine: ["A cozy cabin in a snowy forest", "A futuristic city at golden hour", "Something that doesn't exist yet", "My dream room", "Abstract art — surprise me", "A dragon reading a bedtime story"],
     promptsDrama: ["Give me the wildest celebrity beef of all time", "What's the messiest reality TV moment ever?", "Break down the Taylor Swift vs Kanye timeline", "Tell me about a historical rivalry that was PETTY", "What's the most dramatic internet feud?", "Spill some tea I've never heard before"],
-    promptsBusiness: ["Draft a professional email for me", "Help me prepare for a job interview", "Review my business pitch", "Create a project proposal outline", "Help me negotiate a raise", "Write a LinkedIn post that stands out"],
     // Greetings
     greetLateNight: "Still up? I'm here. 🌙",
     greetMorning: "Good morning ☀️",
@@ -163,8 +160,6 @@ export const en = {
     headingImagine: "What do you see?",
     headingPlay: "Let's play.",
     headingDefault: "What's on your mind?",
-    headingDrama: "Spill the tea.",
-    headingBusiness: "Let's get to work.",
     // Bottom links
     youreNotAlone: "You're not alone",
     lifeline988: "988 Lifeline",
@@ -260,7 +255,6 @@ export const en = {
     modeDescDebate: "Sharpen your thinking",
     modeDescImagine: "Generate images from words",
     modeDescDrama: "Messy gossip with real receipts",
-    modeDescBusiness: "Emails, strategy, pitches, career",
     safetyTitle: "Your safety matters",
     safetyDesc: "Built-in protections, always on.",
     crisisSupportTitle: "Crisis Support",

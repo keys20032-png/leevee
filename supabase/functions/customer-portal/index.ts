@@ -48,8 +48,8 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    console.error("Portal error:", error);
-    return new Response(JSON.stringify({ error: "An internal error occurred." }), {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

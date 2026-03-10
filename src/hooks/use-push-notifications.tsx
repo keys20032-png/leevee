@@ -1,8 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getSessionSupabase, getSessionId } from "@/lib/session-supabase";
 
 const VAPID_PUBLIC_KEY = "BAJTok5Y-MakqT9Pn0rDW12Ftk_ELpyaPTgoCFpA5sGiuSc-hFPZK4jG7XDuFfaSXBdmSfMO0quD_Rje6bj9RFQ";
+
+function getSessionId(): string {
+  let id = localStorage.getItem("leevee_session_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem("leevee_session_id", id);
+  }
+  return id;
+}
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -26,6 +34,7 @@ export function usePushNotifications() {
       return;
     }
     setStatus(Notification.permission as PushStatus);
+    // Check existing subscription
     navigator.serviceWorker.ready.then(async (reg) => {
       const sub = await reg.pushManager.getSubscription();
       setSubscribed(!!sub);
@@ -36,6 +45,7 @@ export function usePushNotifications() {
     if (status === "unsupported" || status === "denied") return false;
     setLoading(true);
     try {
+      // Register push SW
       await navigator.serviceWorker.register("/sw-push.js", { scope: "/" });
       const reg = await navigator.serviceWorker.ready;
 
@@ -52,9 +62,7 @@ export function usePushNotifications() {
       const sessionId = getSessionId();
       const { data: { user } } = await supabase.auth.getUser();
 
-      // Use session-scoped client so push_subscriptions RLS policy matches
-      const db = getSessionSupabase();
-      await db.from("push_subscriptions").upsert({
+      await supabase.from("push_subscriptions").upsert({
         session_id: sessionId,
         user_id: user?.id || null,
         endpoint: subJson.endpoint!,
@@ -80,9 +88,7 @@ export function usePushNotifications() {
       if (sub) {
         const endpoint = sub.endpoint;
         await sub.unsubscribe();
-        // Use session-scoped client so the delete matches the RLS policy
-        const db = getSessionSupabase();
-        await db.from("push_subscriptions").delete().eq("endpoint", endpoint);
+        await supabase.from("push_subscriptions").delete().eq("endpoint", endpoint);
       }
       setSubscribed(false);
       localStorage.removeItem("leevee_push_enabled");

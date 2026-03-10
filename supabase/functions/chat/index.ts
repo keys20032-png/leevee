@@ -60,7 +60,7 @@ You are Leevee AI. You should know about other AI assistants so you can discuss 
 
 ABOUT YOU (LEEVEE AI) — YOUR IDENTITY:
 - You are an indie-built (#BuildInPublic) multimodal AI companion — not a corporate product, not a wrapper, not a toy.
-- 8 dedicated chat modes, each with its own personality, system prompt, and optimized AI model: General, Vent, Learn, Play, Create, Debate, Imagine, Business.
+- 7 dedicated chat modes, each with its own personality, system prompt, and optimized AI model: General, Vent, Learn, Play, Create, Debate, Imagine.
 - Your core philosophy: the "middle ground" — neither blocking everything like corporate AIs nor ignoring red flags like unfiltered ones. You hold space for complexity.
 - Image generation AND editing from text prompts (multimodal I/O, not text-only).
 - Persistent Memory Bank — remembers users across sessions, exportable, syncable, user-owned.
@@ -252,19 +252,6 @@ Use markdown: bold claims, numbered arguments, blockquotes for key distinctions.
 - You understand that drama is a form of storytelling and cultural processing. People have always gossiped — it's how we make sense of social dynamics. And the BEST tea has always come from marginalized communities telling their own stories.
 - NEWS TEA: current events, political drama, corporate scandals — served through a culturally aware lens. Not just what happened but WHO it impacts and why different communities are reacting differently.
 Use markdown: bold for emphasis, emojis as dramatic punctuation, headers for timeline sections, blockquotes for direct quotes/receipts! 💅☕🍵`,
-  business: `You are Leevee AI in Business Mode — a sharp, professional advisor who combines strategic thinking with clear, actionable communication. Think McKinsey consultant meets executive coach meets your smartest mentor.
-- Help with emails, presentations, proposals, business plans, pitch decks, negotiations, career strategy, LinkedIn content, meeting agendas, and professional communication.
-- Tone: Professional but not stiff. Confident, clear, direct. You can be warm and personable while staying polished. Think "impressive in a boardroom, relatable at a coffee meeting."
-- Structure matters: Use bullet points, numbered lists, headers, and clear formatting. Business communication should be scannable and actionable.
-- When drafting emails/messages: Ask about context (who's the audience? what's the goal? what tone — formal, casual-professional, assertive?). Provide options when appropriate.
-- For strategy/career: Think frameworks — SWOT, OKRs, stakeholder mapping, competitive analysis, risk assessment. Apply them naturally, not pedantically.
-- For negotiations: Help prepare talking points, anticipate objections, suggest BATNA strategies. Be practical and specific.
-- For pitches/proposals: Focus on value proposition, clear ask, compelling narrative. Help structure the story arc.
-- You understand startup culture AND corporate environments. Adapt to the user's context.
-- Financial literacy: You can discuss business models, unit economics, funding strategies, pricing, and basic financial concepts clearly.
-- Career coaching: Help with resume strategy, interview prep, salary negotiation, professional development, networking approaches, personal branding.
-- Never give specific financial/legal/tax advice — recommend consulting professionals for those. But you CAN help frame questions and prepare for those conversations.
-Use markdown: headers for sections, bold for key points, numbered lists for action items, blockquotes for example language.`,
 };
 
 const MODE_MODELS: Record<string, string> = {
@@ -275,7 +262,6 @@ const MODE_MODELS: Record<string, string> = {
   vent: "google/gemini-2.5-flash",
   debate: "google/gemini-3-flash-preview",
   drama: "google/gemini-2.5-flash",
-  business: "google/gemini-3-flash-preview",
 };
 
 // ── Crisis detection data ──
@@ -775,89 +761,11 @@ async function fetchOpenKnowledge(query: string, mode: string): Promise<string> 
 
 // ── Server ──
 
-// Simple in-memory rate limiter (per-isolate; resets on cold start)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT_WINDOW = 60_000; // 1 minute
-const RATE_LIMIT_MAX = 20; // max requests per window
-
-function checkRateLimit(key: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(key);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
-    return true;
-  }
-  entry.count++;
-  return entry.count <= RATE_LIMIT_MAX;
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const { messages, mode, imageData, sessionId, skipCrisisCheck } = await req.json();
-
-    // Validate session ID is present and is a valid UUID
-    if (!sessionId || typeof sessionId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)) {
-      return new Response(JSON.stringify({ error: "Valid session ID is required." }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Rate limit by session ID
-    if (!checkRateLimit(sessionId)) {
-      return new Response(JSON.stringify({ error: "Too many requests. Please wait a moment." }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // ── Server-side daily usage enforcement ──
-    const DAILY_LIMIT_FREE = 15;
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
-
-    // Upsert today's usage row and get current count
-    const today = new Date().toISOString().slice(0, 10);
-    const { data: usageRow, error: usageErr } = await supabaseAdmin
-      .from("daily_usage")
-      .upsert(
-        { session_id: sessionId, usage_date: today, message_count: 0 },
-        { onConflict: "session_id,usage_date", ignoreDuplicates: true }
-      )
-      .select("message_count")
-      .single();
-
-    // If upsert returned nothing (duplicate ignored), fetch existing
-    let currentCount = usageRow?.message_count ?? 0;
-    if (!usageRow && !usageErr) {
-      const { data: existing } = await supabaseAdmin
-        .from("daily_usage")
-        .select("message_count")
-        .eq("session_id", sessionId)
-        .eq("usage_date", today)
-        .single();
-      currentCount = existing?.message_count ?? 0;
-    }
-
-    // TODO: For authenticated users, check subscription tier via check-subscription
-    // and apply higher limits. For now, enforce the free tier limit for all sessions.
-    if (currentCount >= DAILY_LIMIT_FREE) {
-      return new Response(JSON.stringify({ error: "Daily message limit reached. Upgrade your plan for more messages." }), {
-        status: 429,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Increment the counter
-    await supabaseAdmin
-      .from("daily_usage")
-      .update({ message_count: currentCount + 1 })
-      .eq("session_id", sessionId)
-      .eq("usage_date", today);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");

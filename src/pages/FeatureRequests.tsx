@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getSessionSupabase, getSessionId } from "@/lib/session-supabase";
 import { ArrowLeft, ChevronUp, Plus, Lightbulb, TrendingUp, Clock, Filter, Send, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,16 +7,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
-// Public view type — session_id intentionally excluded to prevent enumeration
+const SESSION_KEY = "leevee_session_id";
+function getSessionId(): string {
+  let id = localStorage.getItem(SESSION_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(SESSION_KEY, id);
+  }
+  return id;
+}
+
 type FeatureRequest = {
   id: string;
+  session_id: string;
   title: string;
   description: string;
   category: string;
   status: string;
   vote_count: number;
   created_at: string;
-  updated_at: string;
 };
 
 const CATEGORIES = [
@@ -35,12 +43,8 @@ const SORT_OPTIONS = [
 
 const FeatureRequests = () => {
   const sessionId = getSessionId();
-  // db = session-scoped client; supabase = public read client
-  const db = getSessionSupabase();
-
   const [requests, setRequests] = useState<FeatureRequest[]>([]);
   const [votedIds, setVotedIds] = useState<Set<string>>(new Set());
-  const [ownRequestIds, setOwnRequestIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
@@ -50,11 +54,11 @@ const FeatureRequests = () => {
   const [sortBy, setSortBy] = useState<"votes" | "newest">("votes");
   const [submitting, setSubmitting] = useState(false);
 
-  // ── Read feature requests from the PUBLIC VIEW (no session_id exposed) ──
   const loadRequests = useCallback(async () => {
-    const query = (supabase as any)
-      .from("feature_requests_public")
-      .select("id, title, description, category, status, vote_count, created_at, updated_at");
+    const query = supabase
+      .from("feature_requests")
+      .select("*")
+      .eq("status", "open");
 
     if (filterCategory !== "all") query.eq("category", filterCategory);
     if (sortBy === "votes") query.order("vote_count", { ascending: false });
@@ -65,29 +69,18 @@ const FeatureRequests = () => {
     setLoading(false);
   }, [filterCategory, sortBy]);
 
-  // ── Load the current session's own request IDs (for "yours" badge) ──
-  const loadOwnRequestIds = useCallback(async () => {
-    const { data } = await db
-      .from("feature_requests")
-      .select("id")
-      .eq("session_id", sessionId);
-    if (data) setOwnRequestIds(new Set(data.map((r: any) => r.id as string)));
-  }, [sessionId, db]);
-
-  // ── Load which feature requests this session has voted on ──
   const loadVotes = useCallback(async () => {
-    const { data } = await db
+    const { data } = await supabase
       .from("feature_request_votes")
       .select("feature_request_id")
       .eq("session_id", sessionId);
-    if (data) setVotedIds(new Set(data.map((v: any) => v.feature_request_id as string)));
-  }, [sessionId, db]);
+    if (data) setVotedIds(new Set(data.map((v: any) => v.feature_request_id)));
+  }, [sessionId]);
 
   useEffect(() => {
     loadRequests();
     loadVotes();
-    loadOwnRequestIds();
-  }, [loadRequests, loadVotes, loadOwnRequestIds]);
+  }, [loadRequests, loadVotes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,7 +104,7 @@ const FeatureRequests = () => {
     }
 
     setSubmitting(true);
-    const { error } = await db
+    const { error } = await supabase
       .from("feature_requests")
       .insert({ session_id: sessionId, title: trimmedTitle, description: trimmedDesc, category });
 
@@ -123,7 +116,7 @@ const FeatureRequests = () => {
       setDescription("");
       setCategory("general");
       setShowForm(false);
-      await Promise.all([loadRequests(), loadOwnRequestIds()]);
+      loadRequests();
     }
     setSubmitting(false);
   };
@@ -145,17 +138,18 @@ const FeatureRequests = () => {
     );
 
     if (hasVoted) {
-      const { error } = await db
+      const { error } = await supabase
         .from("feature_request_votes")
         .delete()
         .eq("feature_request_id", requestId)
         .eq("session_id", sessionId);
       if (error) {
+        // Revert
         setVotedIds((prev) => { const next = new Set(prev); next.add(requestId); return next; });
         setRequests((prev) => prev.map((r) => r.id === requestId ? { ...r, vote_count: r.vote_count + 1 } : r));
       }
     } else {
-      const { error } = await db
+      const { error } = await supabase
         .from("feature_request_votes")
         .insert({ feature_request_id: requestId, session_id: sessionId });
       if (error) {
@@ -321,7 +315,7 @@ const FeatureRequests = () => {
           <div className="space-y-3">
             {requests.map((req) => {
               const hasVoted = votedIds.has(req.id);
-              const isOwn = ownRequestIds.has(req.id);
+              const isOwn = req.session_id === sessionId;
               return (
                 <div
                   key={req.id}

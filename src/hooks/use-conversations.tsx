@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getSessionSupabase, getSessionId } from "@/lib/session-supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Conversation = {
   id: string;
@@ -32,6 +32,17 @@ export type UserMemory = {
   updated_at: string;
 };
 
+const SESSION_KEY = "leevee_session_id";
+
+function getSessionId(): string {
+  let id = localStorage.getItem(SESSION_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(SESSION_KEY, id);
+  }
+  return id;
+}
+
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [trashedConversations, setTrashedConversations] = useState<Conversation[]>([]);
@@ -39,9 +50,6 @@ export function useConversations() {
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [memories, setMemories] = useState<UserMemory[]>([]);
   const sessionId = getSessionId();
-
-  // Get session-scoped Supabase client (sends x-session-id header for RLS)
-  const supabase = getSessionSupabase();
 
   // Load conversations list (exclude soft-deleted)
   const loadConversations = useCallback(async () => {
@@ -54,7 +62,7 @@ export function useConversations() {
       .limit(50);
     if (data) setConversations(data as Conversation[]);
     setLoadingConversations(false);
-  }, [sessionId, supabase]);
+  }, [sessionId]);
 
   // Load trashed conversations
   const loadTrash = useCallback(async () => {
@@ -66,7 +74,7 @@ export function useConversations() {
       .order("deleted_at", { ascending: false })
       .limit(50);
     if (data) setTrashedConversations(data as Conversation[]);
-  }, [sessionId, supabase]);
+  }, [sessionId]);
 
   // Load memories
   const loadMemories = useCallback(async () => {
@@ -76,7 +84,7 @@ export function useConversations() {
       .eq("session_id", sessionId)
       .order("updated_at", { ascending: false });
     if (data) setMemories(data as UserMemory[]);
-  }, [sessionId, supabase]);
+  }, [sessionId]);
 
   useEffect(() => {
     loadConversations();
@@ -98,7 +106,7 @@ export function useConversations() {
     setActiveConversationId(id);
     loadConversations();
     return id;
-  }, [sessionId, loadConversations, supabase]);
+  }, [sessionId, loadConversations]);
 
   // Load messages for a conversation
   const loadMessages = useCallback(async (conversationId: string): Promise<ChatMessage[]> => {
@@ -108,7 +116,7 @@ export function useConversations() {
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: true });
     return (data || []) as ChatMessage[];
-  }, [supabase]);
+  }, []);
 
   // Save a message
   const saveMessage = useCallback(async (
@@ -135,7 +143,7 @@ export function useConversations() {
       .update({ updated_at: new Date().toISOString() })
       .eq("id", conversationId);
     return (data as any).id as string;
-  }, [supabase]);
+  }, []);
 
   // Update message content (for streaming)
   const updateMessageContent = useCallback(async (messageId: string, content: string) => {
@@ -143,7 +151,7 @@ export function useConversations() {
       .from("chat_messages")
       .update({ content })
       .eq("id", messageId);
-  }, [supabase]);
+  }, []);
 
   // Set reaction on a message
   const setReaction = useCallback(async (messageId: string, reaction: "thumbs_up" | "thumbs_down" | null) => {
@@ -151,7 +159,7 @@ export function useConversations() {
       .from("chat_messages")
       .update({ reaction })
       .eq("id", messageId);
-  }, [supabase]);
+  }, []);
 
   // Soft-delete a conversation (move to trash)
   const deleteConversation = useCallback(async (conversationId: string) => {
@@ -161,14 +169,14 @@ export function useConversations() {
       .eq("id", conversationId);
     if (activeConversationId === conversationId) setActiveConversationId(null);
     loadConversations();
-  }, [activeConversationId, loadConversations, supabase]);
+  }, [activeConversationId, loadConversations]);
 
   // Permanently delete a conversation
   const permanentlyDelete = useCallback(async (conversationId: string) => {
     await supabase.from("chat_messages").delete().eq("conversation_id", conversationId);
     await supabase.from("conversations").delete().eq("id", conversationId);
     loadTrash();
-  }, [loadTrash, supabase]);
+  }, [loadTrash]);
 
   // Restore a trashed conversation
   const restoreConversation = useCallback(async (conversationId: string) => {
@@ -178,13 +186,13 @@ export function useConversations() {
       .eq("id", conversationId);
     loadConversations();
     loadTrash();
-  }, [loadConversations, loadTrash, supabase]);
+  }, [loadConversations, loadTrash]);
 
   // Update conversation title
   const updateTitle = useCallback(async (conversationId: string, title: string) => {
     await supabase.from("conversations").update({ title }).eq("id", conversationId);
     loadConversations();
-  }, [loadConversations, supabase]);
+  }, [loadConversations]);
 
   // ── Memory CRUD ──
   const addMemory = useCallback(async (key: string, value: string, source = "manual") => {
@@ -192,17 +200,17 @@ export function useConversations() {
       .from("user_memories")
       .upsert({ session_id: sessionId, key, value, source, updated_at: new Date().toISOString() }, { onConflict: "session_id,key" });
     loadMemories();
-  }, [sessionId, loadMemories, supabase]);
+  }, [sessionId, loadMemories]);
 
   const deleteMemory = useCallback(async (id: string) => {
     await supabase.from("user_memories").delete().eq("id", id);
     loadMemories();
-  }, [loadMemories, supabase]);
+  }, [loadMemories]);
 
   const updateMemory = useCallback(async (id: string, value: string) => {
     await supabase.from("user_memories").update({ value, updated_at: new Date().toISOString() }).eq("id", id);
     loadMemories();
-  }, [loadMemories, supabase]);
+  }, [loadMemories]);
 
   // Export all data as JSON
   const exportAllData = useCallback(async () => {
@@ -238,14 +246,14 @@ export function useConversations() {
     link.download = `leevee-data-${new Date().toISOString().slice(0, 10)}.json`;
     link.click();
     URL.revokeObjectURL(link.href);
-  }, [sessionId, supabase]);
+  }, [sessionId]);
 
   // Generate a sync link (share session ID)
   const getSyncCode = useCallback(() => sessionId, [sessionId]);
 
   // Import session from sync code
   const importSession = useCallback((newSessionId: string) => {
-    localStorage.setItem("leevee_session_id", newSessionId);
+    localStorage.setItem(SESSION_KEY, newSessionId);
     window.location.reload();
   }, []);
 

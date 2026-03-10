@@ -2,11 +2,11 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   Send, Bot, User, Sparkles, ExternalLink, Volume2, VolumeX,
   Mic, MicOff, GraduationCap, PartyPopper, MessageSquare,
-  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords, Briefcase,
+  PenTool, ImageIcon, Download, Phone, ChevronDown, Flame, Swords,
   Paperclip, FileText, Pencil, Copy, Check, Plus, Trash2, Search,
   ThumbsUp, ThumbsDown, PanelLeftOpen, PanelLeftClose, Clock,
   Share2, X, ChevronUp, MoreHorizontal, RotateCcw,
-  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap, Shield,
+  Brain, Archive, Undo2, HardDrive, Smartphone, DatabaseZap,
   LogIn, UserCircle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -22,7 +22,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useDailyLimit } from "@/hooks/use-daily-limit";
 
 type Message = { role: "user" | "assistant"; content: string; images?: string[]; uploadedImage?: string; metrics?: { ttft: number; total: number; mode: string }; dbId?: string; reaction?: "thumbs_up" | "thumbs_down" | null };
-type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama" | "business";
+type ChatMode = "default" | "vent" | "academic" | "fun" | "creative" | "debate" | "image" | "drama";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
@@ -91,14 +91,6 @@ const getModeConfig = (t: any): Record<ChatMode, { label: string; icon: typeof M
     gradient: "from-pink-500 to-rose-600",
     emoji: "💅",
     prompts: t.home.promptsDrama,
-  },
-  business: {
-    label: t.home.modeBusiness,
-    icon: Briefcase,
-    description: t.home.descBusiness,
-    gradient: "from-slate-600 to-zinc-800",
-    emoji: "💼",
-    prompts: t.home.promptsBusiness,
   },
 });
 
@@ -305,7 +297,7 @@ const FullScreenChatbot = () => {
       const resp = await fetch(IMAGE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ prompt, sessionId }),
+        body: JSON.stringify({ prompt }),
       });
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: "Image generation failed." }));
@@ -331,7 +323,7 @@ const FullScreenChatbot = () => {
       const resp = await fetch(IMAGE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-        body: JSON.stringify({ prompt: editPrompt, sourceImage, sessionId }),
+        body: JSON.stringify({ prompt: editPrompt, sourceImage }),
       });
       if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Image editing failed." })); throw new Error(err.error || "Image editing failed."); }
       const data = await resp.json();
@@ -1200,10 +1192,6 @@ const FullScreenChatbot = () => {
                     <Copy className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <p className="text-[10px] text-destructive/80 mt-1.5 leading-relaxed flex items-start gap-1">
-                  <Shield className="w-3 h-3 mt-0.5 shrink-0" />
-                  <span>Warning: Anyone with this code gets full access to your conversations and memories. Never share it publicly.</span>
-                </p>
               </div>
               <div>
                 <label className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/60 block mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{t.home.importFromDevice}</label>
@@ -1273,7 +1261,9 @@ const FullScreenChatbot = () => {
                 Leevee AI
               </h1>
             </div>
-            <LanguageSelector />
+            <div className="hidden sm:block">
+              <LanguageSelector />
+            </div>
           </div>
 
           {/* Mode tabs */}
@@ -1550,7 +1540,7 @@ const FullScreenChatbot = () => {
         )}
 
         {/* Chat Area */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto chat-gradient relative" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
           <div className="max-w-2xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-1">
 
             {/* Empty State */}
@@ -1579,7 +1569,7 @@ const FullScreenChatbot = () => {
                     className="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
-                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : mode === "drama" ? t.home.headingDrama : mode === "business" ? t.home.headingBusiness : t.home.headingDefault}
+                    {mode === "vent" ? t.home.headingVent : mode === "academic" ? t.home.headingLearn : mode === "creative" ? t.home.headingCreate : mode === "debate" ? t.home.headingDebate : mode === "image" ? t.home.headingImagine : mode === "fun" ? t.home.headingPlay : t.home.headingDefault}
                   </h2>
                   <p className="text-muted-foreground text-[13px] sm:text-sm max-w-xs sm:max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                     {currentMode.description}
