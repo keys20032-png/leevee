@@ -6,23 +6,23 @@
 
 @layer base {
   :root {
-    --background: 228 14% 8%;
+    --background: 225 25% 7%;
     --foreground: 210 20% 92%;
 
-    --card: 228 14% 11%;
+    --card: 225 22% 11%;
     --card-foreground: 210 20% 92%;
 
-    --popover: 228 14% 11%;
+    --popover: 225 22% 11%;
     --popover-foreground: 210 20% 92%;
 
     --primary: 16 80% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 228 14% 14%;
+    --secondary: 225 22% 15%;
     --secondary-foreground: 210 20% 92%;
 
-    --muted: 228 12% 16%;
-    --muted-foreground: 215 10% 48%;
+    --muted: 225 18% 16%;
+    --muted-foreground: 215 12% 52%;
 
     --accent: 262 50% 60%;
     --accent-foreground: 0 0% 100%;
@@ -30,8 +30,8 @@
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 228 12% 14%;
-    --input: 228 12% 14%;
+    --border: 225 18% 15%;
+    --input: 225 18% 15%;
     --ring: 16 80% 56%;
 
     --radius: 0.75rem;
@@ -39,11 +39,8 @@
     --section-icon: 16 80% 56%;
     --gradient-start: 16 80% 56%;
     --gradient-end: 262 50% 60%;
-    --warm-glow: 32 85% 52%;
 
-    --chat-surface: 228 14% 10%;
-    --chat-bubble-user: 16 80% 56%;
-    --chat-bubble-ai: 228 14% 13%;
+    --warm-glow: 32 85% 52%;
   }
 
   .light {
@@ -71,47 +68,41 @@
     --destructive: 0 72% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 14% 88%;
-    --input: 220 14% 88%;
+    --border: 220 14% 86%;
+    --input: 220 14% 86%;
     --ring: 16 78% 48%;
 
     --section-icon: 16 78% 48%;
     --gradient-start: 16 78% 48%;
     --gradient-end: 262 48% 48%;
-    --warm-glow: 32 80% 44%;
 
-    --chat-surface: 220 20% 97%;
-    --chat-bubble-user: 16 78% 48%;
-    --chat-bubble-ai: 220 14% 94%;
+    --warm-glow: 32 80% 44%;
   }
 
   .dark {
-    --background: 228 16% 5%;
+    --background: 225 28% 5%;
     --foreground: 210 20% 94%;
-    --card: 228 16% 9%;
+    --card: 225 24% 9%;
     --card-foreground: 210 20% 94%;
-    --popover: 228 16% 9%;
+    --popover: 225 24% 9%;
     --popover-foreground: 210 20% 94%;
     --primary: 16 80% 56%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 228 14% 12%;
+    --secondary: 225 22% 13%;
     --secondary-foreground: 210 20% 94%;
-    --muted: 228 12% 14%;
-    --muted-foreground: 215 10% 50%;
+    --muted: 225 18% 14%;
+    --muted-foreground: 215 10% 55%;
     --accent: 262 50% 62%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 60% 35%;
     --destructive-foreground: 210 20% 94%;
-    --border: 228 12% 13%;
-    --input: 228 12% 13%;
+    --border: 225 18% 14%;
+    --input: 225 18% 14%;
     --ring: 16 80% 56%;
     --section-icon: 16 80% 56%;
     --gradient-start: 16 80% 56%;
     --gradient-end: 262 50% 62%;
     --warm-glow: 32 85% 52%;
-    --chat-surface: 228 16% 7%;
-    --chat-bubble-user: 16 80% 56%;
-    --chat-bubble-ai: 228 16% 11%;
   }
 }
 
@@ -125,131 +116,27 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Prevent pull-to-refresh on mobile */
-    overscroll-behavior-y: contain;
   }
 
   html {
     scroll-behavior: smooth;
-    /* Use safe area for notched devices */
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
-  /* Prevent iOS tap highlight */
-  button, a, input, textarea {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Prevent iOS text size adjust */
-  html {
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-  }
-
-  /* Prevent iOS zoom on input focus (font-size >= 16px) */
-  @media screen and (max-width: 768px) {
-    input, textarea, select {
-      font-size: 16px !important;
-    }
-  }
-
+  /* Visible focus rings for keyboard navigation */
   *:focus-visible {
     @apply outline-2 outline-offset-2 outline-primary/70;
     outline-style: solid;
   }
 
+  /* Remove focus ring for mouse clicks */
   *:focus:not(:focus-visible) {
     outline: none;
   }
 }
 
+/* Smooth transitions for theme switching */
 @layer utilities {
   .transition-theme {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  .scrollbar-none {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
-
-  .glass {
-    background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-
-  .glass-border {
-    border: 1px solid hsl(var(--border) / 0.5);
-  }
-
-  .glow-primary {
-    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
-  }
-
-  .chat-gradient {
-    background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--chat-surface)) 100%);
-  }
-}
-
-@layer components {
-  /* Typing indicator */
-  @keyframes typing-dot {
-    0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
-    30% { opacity: 1; transform: translateY(-4px); }
-  }
-  .typing-dot {
-    animation: typing-dot 1.4s infinite;
-  }
-  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
-  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
-
-  /* Message fade-in */
-  @keyframes message-in {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-message-in {
-    animation: message-in 0.3s ease-out forwards;
-  }
-
-  /* Subtle float for empty state */
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-  }
-  .animate-float {
-    animation: float 4s ease-in-out infinite;
-  }
-
-  /* Breathing animation for crisis cooldown */
-  @keyframes breathe {
-    0%, 100% { transform: scale(0.85); opacity: 0.3; }
-    50% { transform: scale(1); opacity: 0.7; }
-  }
-  @keyframes breathe-text {
-    0%, 100% { opacity: 0.4; }
-    25% { opacity: 1; }
-    50% { opacity: 0.4; }
-    75% { opacity: 1; }
-  }
-
-  /* Shimmer for loading */
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-  .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--muted)) 0%,
-      hsl(var(--muted-foreground) / 0.1) 50%,
-      hsl(var(--muted)) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
   }
 }

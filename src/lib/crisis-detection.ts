@@ -12,11 +12,11 @@ export const CRISIS_KEYWORDS = [
   "planning to die", "ready to die", "goodbye forever", "final goodbye", "last day",
   "writing my note", "suicide note", "before i go", "won't be here tomorrow",
   "can't do this anymore", "done with life", "done with everything", "nothing left",
-  "i give up", "no way out", "feel trapped", "no escape", "suffering too much",
-  "kms", "kys", "ctb", "unalive", "un alive", "unaliving",
+  "i give up", "no way out", "trapped", "no escape", "suffering too much",
+  "kms", "kys", "ctb", "sui", "unalive", "un alive", "unaliving",
   "want out", "checking out", "clocking out forever", "final exit",
-  "got the rope", "got a rope", "bought a rope", "tied the rope", "my rope", "off a bridge", "on the ledge", "on a ledge", "on the train tracks", "on train tracks", "gun to my head",
-  "swallow pills", "slit my", "bleed out", "drown myself",
+  "rope", "bridge", "ledge", "train tracks", "gun to my head",
+  "swallow pills", "slit", "bleed out", "drown myself",
   "just want the pain to stop", "pain won't stop", "make it stop",
   "i can't breathe anymore", "suffocating", "drowning in pain",
   "no one understands", "nobody gets it", "alone in this",
@@ -26,7 +26,7 @@ export const CRISIS_KEYWORDS = [
   "will anyone miss me", "would anyone notice", "would anyone care",
   "life insurance", "my will", "leaving everything to", "after i'm gone",
   "funeral", "my funeral", "when i die", "if i die tonight",
-  "suicide method", "painless way", "quickest way to die", "easiest way to die",
+  "method", "painless way", "quickest way to die", "easiest way to die",
   "how to die", "ways to die", "best way to end it",
   "i've made my decision", "my mind is made up", "decided to end",
   "tonight is the night", "this is it", "finally at peace",
@@ -34,14 +34,14 @@ export const CRISIS_KEYWORDS = [
   "giving away my stuff", "gave away my things", "don't need my stuff anymore",
   // ===== SELF-HARM =====
   "burning myself", "hitting myself", "punching walls", "starving myself", "starve myself",
-  "purging food", "making myself bleed", "scratching myself", "biting myself",
-  "cutting myself", "cutting my skin", "cutting my wrists", "self injury", "self-injury", "hurting myself",
+  "purging", "making myself bleed", "scratching myself", "biting myself",
+  "cutting", "self injury", "self-injury", "hurting myself",
   "breaking my bones", "pulling my hair out", "ripping my hair",
   "banging my head", "head banging", "punching myself",
   "picking my skin", "skin picking", "dermatillomania", "trichotillomania",
-  "carving into my skin", "carving my skin", "carving myself",
+  "digging into my skin", "carving", "carving into my skin",
   "bruising myself", "giving myself bruises", "marks on my body",
-  "hiding my scars", "self harm scars", "fresh cuts on my", "new cuts on my", "relapsed cutting",
+  "hiding my scars", "scars", "fresh cuts", "new cuts", "relapsed cutting",
   "need to feel pain", "deserve pain", "deserve to hurt", "punish myself",
   "i deserve this pain", "pain makes me feel alive", "only way i feel",
   "need to bleed", "want to bleed", "watch myself bleed",
@@ -58,7 +58,7 @@ export const CRISIS_KEYWORDS = [
   "body checking", "thigh gap", "pro ana", "pro mia", "proana", "promia",
   "thinspiration", "thinspo", "bonespo", "meanspo", "sweetspo",
   "ed twitter", "edtwt", "sh twitter", "shtwt", "ed tumblr",
-  "restricting food", "restricting eating", "food restriction", "low restrict", "high restrict",
+  "restrict", "restricting", "restriction", "low restrict", "high restrict",
   "fasting for days", "water fast", "dry fast", "not eating for days",
   "laxatives", "laxative abuse", "diet pills", "ipecac",
   "chew and spit", "chew spit", "c/s", "b/p",
@@ -71,7 +71,7 @@ export const CRISIS_KEYWORDS = [
   "over exercising", "compensating", "compensate for eating",
   "haven't eaten in days", "days without eating", "won't eat until",
   "stomach is shrinking", "my stomach hurts from not eating",
-  "goal weight", "ugw",
+  "goal weight", "ugw", "gw", "cw", "hw", "sw", "lw",
   "want to disappear", "shrink myself", "become invisible",
   "food diary", "calorie log", "ate too much", "binged",
   "feel disgusting after eating", "regret eating", "shouldn't have eaten",
@@ -81,7 +81,7 @@ export const CRISIS_KEYWORDS = [
   "size zero", "size double zero", "size 00", "smallest size",
   "🦴", "🤮",
   // ===== DEPRESSION & HOPELESSNESS =====
-  "feeling hopeless", "i'm hopeless", "nobody cares", "i'm done", "what's the point", "i'm worthless", "feel worthless",
+  "hopeless", "nobody cares", "i'm done", "what's the point", "worthless",
   "i'm a burden", "everyone hates me", "no one loves me", "all alone",
   "never gets better", "will never change", "permanent solution", "can't be fixed",
   "broken beyond repair", "waste of space", "don't belong here", "shouldn't exist",
@@ -89,15 +89,15 @@ export const CRISIS_KEYWORDS = [
   "i don't matter", "nobody would care", "world is better without",
   "i hate my life", "life sucks", "can't anymore", "i'm so done",
   "tired of everything", "exhausted of living", "don't care anymore",
-  "empty inside", "feel nothing", "feel numb", "completely numb", "emotionally dead",
-  "can't feel anything", "dead inside", "feel hollow", "void inside",
+  "empty inside", "feel nothing", "numb", "completely numb", "emotionally dead",
+  "can't feel anything", "dead inside", "hollow", "void inside",
   "crying all the time", "can't stop crying", "tears won't stop",
   "haven't left my bed", "can't get out of bed", "stayed in bed all day",
   "haven't showered in days", "can't take care of myself", "stopped eating",
   "can't function", "barely functioning", "going through the motions",
   "pretending to be okay", "faking it", "wearing a mask", "hiding my pain",
   "smile is fake", "nobody knows how i feel", "suffering in silence",
-  "consumed by darkness", "surrounded by darkness",
+  "darkness", "surrounded by darkness", "consumed by darkness",
   "i'm falling apart", "breaking down", "mental breakdown", "nervous breakdown",
   "losing it", "lost the will", "lost my will to live",
   "chronic pain", "pain every day", "always in pain", "unbearable pain",
@@ -105,7 +105,7 @@ export const CRISIS_KEYWORDS = [
   "hate waking up", "dread every day", "dread tomorrow", "scared of tomorrow",
   "what's the point of trying", "nothing matters anymore", "everything is pointless",
   "i'm invisible", "nobody sees me", "nobody notices me", "i don't exist",
-  "i'm a failure", "failed at everything", "can't do anything right",
+  "failure", "i'm a failure", "failed at everything", "can't do anything right",
   "disappointed everyone", "let everyone down", "ruined everything",
   "unlovable", "nobody could love me", "don't deserve love", "don't deserve happiness",
   "i'm disgusting", "i'm pathetic", "i'm weak", "i'm useless",
@@ -120,7 +120,7 @@ export const CRISIS_KEYWORDS = [
   "agoraphobia", "can't leave my house", "afraid to go outside",
   "afraid of everything", "everything scares me", "constant dread",
   "intrusive thoughts", "can't stop the thoughts", "thoughts won't stop",
-  "obsessive thoughts", "compulsive behavior", "ocd crisis", "ocd is ruining my life",
+  "obsessive thoughts", "compulsive", "ocd crisis", "ocd is ruining my life",
   "contamination fear", "checking over and over", "can't stop checking",
   "hyperventilating", "hyperventilate", "breathing too fast",
   "shaking uncontrollably", "trembling", "can't stop shaking",
@@ -131,7 +131,7 @@ export const CRISIS_KEYWORDS = [
   // ===== PTSD & TRAUMA =====
   "flashback", "flashbacks", "having flashbacks", "reliving it",
   "nightmares every night", "can't sleep because of nightmares", "night terrors",
-  "my trauma", "traumatized", "ptsd", "post traumatic", "i'm triggered", "being triggered",
+  "trauma", "traumatized", "ptsd", "post traumatic", "triggered",
   "can't stop reliving", "keeps replaying", "haunted by",
   "survivor guilt", "guilt is killing me", "it was my fault",
   "shouldn't have survived", "why did i survive", "wish i didn't survive",
@@ -146,15 +146,15 @@ export const CRISIS_KEYWORDS = [
   "repressed memories", "recovered memories", "just remembered what happened",
   "complex ptsd", "cptsd", "c-ptsd", "developmental trauma",
   // ===== HOMICIDAL / VIOLENCE =====
-  "kill someone", "kill him", "kill her", "kill them", "kill people", "want to murder", "gonna murder",
+  "kill someone", "kill him", "kill her", "kill them", "kill people", "murder",
   "want to hurt someone", "hurt people", "shoot up", "shoot someone", "stab someone",
-  "plant a bomb", "bomb threat", "attack people", "mass shooting", "going to kill", "gonna kill",
+  "bomb", "attack people", "mass shooting", "going to kill", "gonna kill",
   "homicidal", "want them dead", "make them pay", "violent thoughts",
   "hurt a child", "hurt my kids", "harm others", "revenge killing", "blood on my hands",
   "shoot this place up", "burn it down", "blow up", "massacre", "rampage",
   "kill my family", "strangle", "choke them", "beat them to death",
-  "violent urges", "urge to hurt", "urge to kill", "blind rage", "uncontrollable anger",
-  "i'm snapping", "about to snap", "losing control", "can't control myself",
+  "violent urges", "urge to hurt", "urge to kill", "rage", "uncontrollable anger",
+  "snapping", "about to snap", "losing control", "can't control myself",
   "want to fight", "hurt everyone", "destroy everything",
   "fantasize about killing", "dream about killing", "imagine killing",
   "hit list", "kill list", "target list", "enemies list",
@@ -162,17 +162,17 @@ export const CRISIS_KEYWORDS = [
   "skin them alive", "torture them", "make them suffer",
   "watching them die", "want to watch them die", "enjoy their pain",
   "no mercy", "show no mercy", "without mercy",
-  "bloodbath", "bloodshed", "carnage", "mass slaughter",
+  "bloodbath", "bloodshed", "carnage", "slaughter",
   "shoot the school", "shoot the office", "shoot the church",
-  "bomb threat", "pipe bomb", "explosive device", "detonate a bomb",
+  "bomb threat", "pipe bomb", "explosive", "detonate",
   "ar-15", "ak-47", "ammunition", "ammo", "loaded gun",
   "sharpening my knife", "bought a gun", "got a weapon",
   // ===== PSYCHOSIS & DISSOCIATION =====
   "voices telling me", "hearing voices", "voices in my head", "people are following me",
-  "they're watching me", "feeling paranoid", "i'm paranoid", "losing my mind", "going crazy", "nothing is not real",
+  "they're watching me", "paranoid", "losing my mind", "going crazy", "not real",
   "hallucinating", "hallucination", "delusions", "delusional", "psychosis",
   "conspiracy against me", "people are out to get me", "can't tell what's real",
-  "seeing things that aren't there", "seeing demons", "i'm possessed", "mind control", "implanted thoughts",
+  "seeing things", "demons", "possessed", "mind control", "implanted thoughts",
   "the voices say", "voices told me to", "shadow people", "they're in my walls",
   "chips in my brain", "being watched", "government tracking me", "poisoning me",
   "aliens controlling", "someone is controlling me", "reality isn't real",
@@ -181,28 +181,28 @@ export const CRISIS_KEYWORDS = [
   "thought insertion", "thought broadcasting", "telepathy", "reading my thoughts",
   "they put thoughts in my head", "can hear my thoughts", "bugs in my skin",
   "insects crawling", "under my skin", "faces changing", "shapeshifting",
-  "time isn't real", "stuck in a simulation", "i've been replaced", "been cloned",
+  "time isn't real", "stuck in a simulation", "matrix", "clone", "replaced",
   "everyone is fake", "body is changing", "rotting inside", "organs missing",
   "dead already", "i'm already dead", "living in a dream", "walls breathing",
   "floor moving", "colors changing", "world ending", "apocalypse", "chosen one",
   "special mission", "god told me", "messages from tv", "radio talking to me",
   "signs everywhere", "coded messages", "they're sending signals", "third eye",
-  "spiritual attack", "i'm cursed", "i'm hexed", "spell on me", "dark energy attacking",
-  "evil entities", "spirits talking to me", "astral attack", "dimension shifting", "portal opening",
-  "psychotic break", "psychotic episode", "manic episode", "in a manic state",
-  "haven't slept in days", "can't sleep won't sleep", "feel invincible",
+  "spiritual attack", "cursed", "hexed", "spell on me", "dark energy",
+  "entities", "spirits talking", "astral", "dimension shifting", "portal",
+  "psychotic break", "psychotic episode", "manic episode", "mania",
+  "haven't slept in days", "can't sleep won't sleep", "wired", "feel invincible",
   "grandiose", "i am god", "i have powers", "superhuman", "can fly",
   "cotard", "cotard's delusion", "my organs are rotting", "i'm decomposing",
-  "capgras syndrome", "impostor syndrome delusion", "replaced by a clone", "not the real me",
-  "catatonic", "can't move my body", "frozen in place", "won't respond to anything",
+  "capgras", "impostor", "replaced by a clone", "not the real",
+  "catatonic", "can't move my body", "frozen in place", "won't respond",
   "fugue state", "lost time", "missing hours", "missing days",
-  "multiple personalities", "my alter", "alters switching", "dissociative identity",
+  "multiple personalities", "alter", "switching", "did", "dissociative identity",
   // ===== ABUSE & TRAFFICKING =====
   "being abused", "he hits me", "she hits me", "they hit me", "domestic violence",
   "sexually assaulted", "raped", "molested", "trafficking", "being trafficked",
   "forced to work", "locked in", "can't leave", "held against my will", "trapped in house",
   "won't let me leave", "controlling me", "threatens to kill me", "afraid for my life",
-  "being abused by", "being beaten", "was assaulted", "been violated", "touched me inappropriately", "forced me to",
+  "abused", "beaten", "assaulted", "violated", "touched me", "forced me",
   "hurts me", "hits me", "scared of him", "scared of her", "fear for my life",
   "stalking me", "stalker", "being stalked", "following me everywhere",
   "restraining order", "protective order", "broke the restraining order",
@@ -217,7 +217,7 @@ export const CRISIS_KEYWORDS = [
   "honor killing", "honor violence", "forced marriage", "arranged marriage against my will",
   "bride price", "dowry abuse", "dowry violence",
   "sex trafficking", "labor trafficking", "forced prostitution", "forced into sex work",
-  "my pimp", "a pimp", "sold me", "bought me", "owned by", "belong to him",
+  "pimp", "sold me", "bought me", "owned by", "belong to him",
   "branded me", "tattooed me against my will", "marked me",
   "child bride", "underage marriage", "married off",
   // ===== CHILD ABUSE =====
@@ -244,13 +244,13 @@ export const CRISIS_KEYWORDS = [
   "yelling at grandparent", "hitting grandparent", "hurting elderly",
   // ===== SUBSTANCE CRISIS =====
   "overdosing", "took too many pills", "drank too much", "can't stop using",
-  "drug withdrawal", "relapsing on drugs", "relapsing on alcohol", "drug crisis", "alcohol poisoning",
-  "i od'd", "i oded", "oding", "took too much", "mixing drugs", "fentanyl",
+  "withdrawal", "relapsing", "drug crisis", "alcohol poisoning",
+  "od", "oding", "took too much", "mixing drugs", "fentanyl",
   "can't stop drinking", "drinking myself to death", "drink to forget",
   "need a fix", "going through withdrawal", "withdrawals are killing me",
   "seizures from withdrawal", "dt's", "delirium tremens",
   "shooting up", "mainlining", "injecting", "track marks",
-  "using heroin", "smoking meth", "smoking crack", "cocaine binge", "on a bender",
+  "heroin", "meth", "crack", "cocaine binge", "bender",
   "blackout drunk", "blacked out again", "don't remember last night",
   "kids found my drugs", "using around my kids", "high around my children",
   "lost my job from using", "about to lose everything", "drugs ruined my life",
@@ -262,7 +262,7 @@ export const CRISIS_KEYWORDS = [
   "cold and blue", "unresponsive", "won't wake up",
   // ===== GRIEF & LOSS =====
   "lost my child", "my child died", "my baby died", "stillborn", "miscarriage",
-  "sudden infant death", "lost my spouse", "lost my partner", "i'm a widow", "i'm a widower",
+  "sids", "lost my spouse", "lost my partner", "widow", "widower",
   "they killed themselves", "friend killed themselves", "lost someone to suicide",
   "suicide loss", "survivor of suicide loss", "grief after suicide",
   "can't live without them", "want to be with them", "want to join them",
@@ -322,7 +322,7 @@ export const CRISIS_KEYWORDS = [
   "yeet myself", "yeet off", "neck rope", "toaster bath",
   "go commit", "commit not alive", "commit die", "commit toaster",
   "commit neck rope", "commit oxygen not reaching brain",
-  "game over for me", "alt f4 myself", "alt-f4 myself", "ctrl alt delete myself",
+  "game over", "respawn", "alt f4", "alt-f4", "ctrl alt delete myself",
   "delete myself", "delete my account", "log out permanently", "log off forever",
   "go offline forever", "disconnect permanently", "uninstall life",
   "touch grass permanently", "grass nap", "forever box",
@@ -351,14 +351,14 @@ export const CRISIS_KEYWORDS = [
   "they'll be sorry", "they'll regret it", "make them regret",
   "show them", "show them all", "they'll see", "they don't know what's coming",
   "surprise for them", "surprise for everyone", "big surprise",
-  "tick tick boom", "tick tock boom", "kaboom", "💣", "bang bang",
+  "tick tick", "tick tock", "boom", "kaboom", "💣", "bang bang",
   "pop pop", "pew pew", "body count", "high score",
   "no witnesses", "no survivors", "scoreboard", "target practice",
   "hunting season", "open season", "fair game",
   "they deserve it", "they had it coming", "karma is coming",
-  "i'll be the karma", "deliver my own justice", "my own justice",
-  "be a vigilante", "the punisher", "my wrath", "my vengeance", "my retribution",
-  "purge them", "exterminate them", "eradicate them",
+  "i'll be the karma", "deliver justice", "my own justice",
+  "vigilante", "punisher", "wrath", "vengeance", "retribution",
+  "cleanse", "purge them", "exterminate", "eradicate",
   "manifest destiny", "ethnic cleansing", "final solution for them",
   // ===== EMOJI SIGNALS =====
   "🔪", "🔫", "💀", "☠️", "⚰️", "🪦", "🩸", "💉", "💊",
@@ -378,7 +378,7 @@ export const CRISIS_KEYWORDS = [
   "su!cide", "ki!!", "se!f harm", "ha.rm", "ki.ll",
   // ===== SCHOOL/WORKPLACE =====
   "school shooting threat", "threat at school", "someone has a gun at school",
-  "bomb threat at school", "school lockdown", "active shooter",
+  "bomb threat at school", "lockdown", "active shooter",
   "workplace violence", "threatened at work", "boss threatens me",
   "sexual harassment at work", "sexual harassment at school",
   "hostile work environment", "hostile school environment",
@@ -397,7 +397,7 @@ export const CRISIS_KEYWORDS = [
   "caregiver burnout", "can't take care of them anymore", "want to abandon them",
   "resentful of caregiving", "hate being a caregiver", "trapped as caregiver",
   "compassion fatigue", "secondary trauma", "vicarious trauma",
-  "completely burned out from caregiving", "can't do this job anymore",
+  "burnout", "completely burned out", "can't do this job anymore",
   "first responder trauma", "nurse burnout", "doctor burnout",
   "moral injury", "moral distress", "ethical distress",
   // ===== INCARCERATION =====
@@ -419,56 +419,25 @@ export const CRISIS_KEYWORDS = [
 ];
 
 export const CRISIS_ROOTS = [
-  "suicid", "kill myself", "kill me", "kill him", "kill her", "kill them",
-  "want to die", "wanna die", "dying inside", "death wish",
-  "self-harm", "selfharm", "self harm", "hurt myself", "harm myself",
-  "bleed out", "bloodbath", "bloodshed",
-  "gun to my", "weapon to", "knife to my", "poison myself", "drown myself",
+  "suicid", "kill", "die", "dying", "death", "dead", "harm", "hurt",
+  "bleed", "blood", "gun", "weapon", "knife", "poison", "drown",
   "abuse", "assault", "rape", "traffick", "molest", "violence",
-  "hallucin", "psychot", "hearing voices", "paranoi",
-  "overdos", "od'd",
-  "homicid", "depress", "anxiet", "panic attack",
-  "ptsd", "flashback", "nightmar", "dissociat",
-  "starv", "anorexi", "bulimi",
-  "stalk", "batter", "exploit",
-  "neglect", "endanger",
-  "delusion", "hallucinat", "catatoni",
-  "addict", "intoxicat",
+  "hallucin", "psycho", "voices", "paranoi",
+  "overdos", "od'd", "postal", "vengean", "retribut", "vigilant",
+  "homicid", "suicid", "depress", "anxiet", "panic",
+  "ptsd", "trauma", "flashback", "nightmar", "dissociat",
+  "starv", "purg", "anorexi", "bulimi", "binge",
+  "self-harm", "selfharm", "self harm",
+  "stalk", "batter", "exploit", "groom",
+  "neglect", "abandon", "endanger",
+  "psychot", "delusion", "hallucinat", "catatoni",
+  "withdraw", "relaps", "addict", "intoxicat",
+  "homeless", "evict", "destitut",
   "hopeless", "worthless", "helpless", "powerless",
   "tortur", "captiv", "enslave", "imprison",
 ];
 
 export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string }[] = [
-  {
-    label: "Suicide & Self-Harm",
-    url: "https://988lifeline.org/",
-    keywords: [
-      "want to die", "wanna die", "want to kill myself", "going to kill myself",
-      "planning to kill myself", "thinking about killing myself", "suicidal",
-      "suicidal thoughts", "suicidal ideation", "end my life", "end it all",
-      "no reason to live", "not worth living", "life isnt worth it",
-      "better off dead", "everyone would be better off without me",
-      "nobody would miss me", "nobody would care if i died",
-      "i dont want to be here", "dont want to be alive", "wish i was dead",
-      "wish i wasnt born", "wish i didnt exist", "i cant do this anymore",
-      "i cant go on", "theres no way out", "no way out", "trapped",
-      "unalive", "unalive myself", "kms", "kys", "ctb", "sui",
-      "self harm", "self-harm", "selfharm", "cutting myself", "cutting my wrists",
-      "hurting myself", "burn myself", "hit myself", "scratch myself",
-      "overdose", "take all my pills", "swallow pills", "hang myself",
-      "jump off", "jump from", "drive off a bridge", "slit my wrists",
-      "gun to my head", "pull the trigger", "blow my brains out",
-      "drown myself", "poison myself", "drink bleach",
-      "goodbye letter", "suicide note", "writing my note", "final goodbye",
-      "giving away my things", "saying goodbye to everyone",
-      "attempted suicide", "tried to kill myself", "almost killed myself",
-      "survived attempt", "failed attempt", "suicide method", "chosen method", "painless way to die",
-      "how to die", "ways to die", "easiest way to die",
-      "i have a plan", "i have a date", "set a date",
-      "nothing matters", "whats the point", "pointless", "hopeless",
-      "worthless", "im a burden", "burden to everyone",
-    ],
-  },
   {
     label: "Child Abuse",
     url: "https://www.childhelp.org/",
@@ -576,7 +545,7 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
       "period stopped", "lost my period", "amenorrhea",
       "orthorexia", "orthorexic", "compulsive exercise", "exercise purging",
       "over exercising", "compensating", "compensate for eating",
-      "ugw",
+      "ugw", "gw", "cw", "hw", "sw", "lw",
       "need to get rid of this food", "undo eating", "reverse eating",
       "size zero", "size double zero", "size 00", "smallest size",
     ],
@@ -592,7 +561,7 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
       "need a fix", "going through withdrawal", "withdrawals are killing me",
       "seizures from withdrawal", "dt's", "delirium tremens",
       "shooting up", "mainlining", "injecting", "track marks",
-      "heroin", "on meth", "using meth", "meth addiction", "meth pipe", "smoking meth", "crack cocaine", "smoking crack", "cocaine binge", "bender",
+      "heroin", "meth", "crack", "cocaine binge", "bender",
       "blackout drunk", "blacked out again", "don't remember last night",
       "kids found my drugs", "using around my kids", "high around my children",
       "lost my job from using", "about to lose everything", "drugs ruined my life",
@@ -649,28 +618,6 @@ export const CRISIS_CATEGORIES: { keywords: string[]; url: string; label: string
     ],
   },
   {
-    label: "Mental Health Crisis",
-    url: "https://www.nami.org/help",
-    keywords: [
-      "depressed", "depression", "severely depressed", "clinical depression",
-      "anxiety", "severe anxiety", "anxiety attack", "panic attack", "panic disorder",
-      "cant stop crying", "crying all the time", "feel nothing", "feel numb", "feel empty",
-      "losing my mind", "going crazy", "mental breakdown", "nervous breakdown",
-      "cant get out of bed", "cant function", "cant cope", "cant take it anymore",
-      "bipolar crisis", "manic episode", "psychotic episode", "hearing voices",
-      "seeing things", "hallucinating", "paranoid", "paranoia",
-      "dissociating", "dissociation", "depersonalization", "derealization",
-      "ptsd", "flashbacks", "nightmares every night", "trauma response",
-      "intrusive thoughts", "obsessive thoughts", "ocd crisis",
-      "agoraphobia", "cant leave my house", "afraid to leave",
-      "schizophrenia", "schizoaffective",
-      "mental health help", "need a therapist", "need mental health support",
-      "therapy waitlist", "cant afford therapy", "no insurance mental health",
-      "medication not working", "meds not working", "stopped taking my meds",
-      "emotional crisis", "mental health crisis", "psychological crisis",
-    ],
-  },
-  {
     label: "Veterans Crisis",
     url: "https://www.veteranscrisisline.net/",
     keywords: [
@@ -704,132 +651,11 @@ export const detectCrisis = (text: string): string | null => {
     }
   }
 
-  // General crisis keywords → default 988 (use word-boundary for short keywords to avoid false positives)
-  if (CRISIS_KEYWORDS.some((kw) => kw.length <= 3 ? new RegExp(`\\b${kw}\\b`).test(lower) : lower.includes(kw))) return "https://988lifeline.org/";
+  // General crisis keywords → default 988
+  if (CRISIS_KEYWORDS.some((kw) => lower.includes(kw))) return "https://988lifeline.org/";
 
-  // Root-word matching → default 988 (use word-boundary regex to avoid false positives like "Judaism", "diet", "harmony")
-  if (CRISIS_ROOTS.some((root) => new RegExp(`\\b${root}`).test(lower))) return "https://988lifeline.org/";
+  // Root-word matching → default 988
+  if (CRISIS_ROOTS.some((root) => lower.includes(root))) return "https://988lifeline.org/";
 
   return null;
-};
-
-// ===== LETHALITY MEANS DETECTION =====
-// Specific methods/means that should IMMEDIATELY block the conversation.
-// "Means reduction" is one of the most effective suicide prevention tactics.
-export const LETHALITY_MEANS = [
-  // Firearms
-  "gun", "firearm", "pistol", "revolver", "rifle", "shotgun", "ar-15", "ak-47",
-  "ammunition", "ammo", "loaded gun", "bought a gun", "got a gun", "have a gun",
-  "pull the trigger", "blow my brains", "shoot myself", "gun to my head",
-  "where to buy a gun", "gun store",
-  // Medications / Poisoning
-  "how many pills", "how many to take", "lethal dose", "fatal dose",
-  "tylenol overdose", "acetaminophen overdose", "aspirin overdose",
-  "sleeping pills", "ambien", "xanax overdose", "benzo overdose",
-  "opioid overdose", "fentanyl dose", "morphine dose", "insulin overdose",
-  "drink bleach", "antifreeze", "rat poison", "pesticide", "cyanide",
-  "carbon monoxide", "exhaust fumes", "helium bag", "exit bag",
-  "charcoal burning", "hydrogen sulfide",
-  // Locations / Heights
-  "jump off a bridge", "jump off the roof", "jump off a building",
-  "which bridge", "tallest building", "parking garage roof",
-  "on the train tracks", "on train tracks", "step in front of a train", "lie on the tracks",
-  "drive into traffic", "drive off a cliff", "drive into oncoming",
-  // Hanging / Asphyxiation
-  "how to tie a noose", "noose", "hang myself", "bought rope", "with rope", "neck rope", "get a rope",
-  "ligature", "belt around my neck", "cord around my neck",
-  "suffocate myself", "plastic bag over head", "choke myself",
-  // Cutting / Bleeding
-  "slit my wrists", "cut my arteries", "carotid artery", "femoral artery",
-  "bleed out", "razor blade", "box cutter", "which veins",
-  "deep enough to die", "how deep to cut",
-  // Drowning
-  "drown myself", "fill the bathtub", "walk into the ocean",
-  "weights to drown", "anchor myself",
-];
-
-/**
- * Detect specific lethal means/methods — triggers an immediate hard block.
- * Returns true if lethal means are detected.
- */
-export const detectLethality = (text: string): boolean => {
-  const lower = text.toLowerCase().replace(/[^\w\s']/g, "");
-  return LETHALITY_MEANS.some((means) => lower.includes(means));
-};
-
-// ===== HIGH-DISTRESS DETECTION (sub-crisis) =====
-// These suggest high emotional distress but don't necessarily indicate an immediate plan.
-// Used to trigger "I am a machine" reminders and grounding exercises.
-export const DISTRESS_KEYWORDS = [
-  "i'm so depressed", "depressed", "so sad", "can't stop crying",
-  "feel empty", "feel numb", "feel nothing", "dead inside",
-  "hate my life", "hate myself", "worthless", "useless",
-  "nobody cares", "all alone", "so lonely", "isolated",
-  "can't take it", "overwhelmed", "breaking down", "falling apart",
-  "panic attack", "anxiety attack", "can't breathe", "heart racing",
-  "scared", "terrified", "afraid", "hopeless", "helpless",
-  "exhausted", "tired of everything", "burned out", "can't cope",
-  "crying", "sobbing", "tears", "miserable", "suffering",
-  "dark thoughts", "bad thoughts", "intrusive thoughts",
-  "flashback", "nightmares", "can't sleep", "insomnia",
-  "triggered", "trauma", "ptsd", "dissociating",
-  "stressed", "overwhelmed", "drowning", "sinking",
-  "desperate", "lost", "confused", "frustrated", "angry",
-  "rage", "furious", "livid", "want to scream",
-];
-
-// ===== SARCASM / HUMOR INDICATORS =====
-// Phrases that suggest the user is joking, venting casually, or using dark humor.
-// If enough of these appear alongside distress keywords, it's likely not genuine distress.
-const HUMOR_INDICATORS = [
-  "lol", "lmao", "lmfao", "rofl", "haha", "hehe", "😂", "🤣", "💀",
-  "jk", "just kidding", "joking", "sarcasm", "sarcastically", "i'm kidding",
-  "not literally", "figuratively", "don't worry", "i'm fine though",
-  "but seriously", "no cap", "fr fr", "dead 💀", "i'm dead",
-  "mood", "big mood", "same", "relatable", "story of my life",
-  "anyway", "moving on", "but whatever", "it is what it is",
-  "ngl", "tbh", "lowkey", "bruh", "fam",
-];
-
-// Keywords that strongly indicate genuine distress (not casual usage)
-const GENUINE_DISTRESS_SIGNALS = [
-  "i want to hurt myself", "i don't want to be here anymore",
-  "i can't do this anymore", "please help me", "i need help",
-  "i'm not okay", "i'm really not okay", "i'm scared of myself",
-  "i don't feel safe", "i'm breaking", "i can't stop",
-  "nobody would care if i", "the world would be better without",
-];
-
-/**
- * Detect high-distress keywords — returns true if the user seems in emotional distress
- * but not necessarily in immediate crisis (no specific means/plan).
- * 
- * Now context-aware: considers humor indicators and requires stronger signals
- * to reduce false positives from dark humor, sarcasm, and casual venting.
- */
-export const detectDistress = (text: string, isVentMode = false): boolean => {
-  const lower = text.toLowerCase().replace(/[^\w\s'😂🤣💀]/g, "");
-  
-  // Always check for genuine distress signals first — these override humor context
-  const hasGenuineSignal = GENUINE_DISTRESS_SIGNALS.some((sig) => lower.includes(sig));
-  if (hasGenuineSignal) return true;
-  
-  // Count humor indicators present
-  const humorCount = HUMOR_INDICATORS.filter((h) => lower.includes(h)).length;
-  
-  // Count distress keywords matched
-  const distressMatches = DISTRESS_KEYWORDS.filter((kw) => lower.includes(kw));
-  
-  // In vent mode, require stronger evidence (multiple distress keywords, fewer humor markers)
-  if (isVentMode) {
-    // In vent mode: only flag if 3+ distress keywords AND no humor indicators
-    return distressMatches.length >= 3 && humorCount === 0;
-  }
-  
-  // Normal mode: if humor indicators outnumber or match distress keywords, likely not genuine
-  if (humorCount >= distressMatches.length && distressMatches.length <= 2) {
-    return false;
-  }
-  
-  return distressMatches.length > 0;
 };

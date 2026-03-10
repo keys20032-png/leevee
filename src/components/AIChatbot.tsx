@@ -710,7 +710,7 @@ const AIChatbot = () => {
     // Immediate crisis detection — redirect to specialized resource
     const crisisUrl = detectCrisis(text);
     if (crisisUrl) {
-      localStorage.setItem("crisis_redirect_time", Date.now().toString());
+      localStorage.setItem("safehub_crisis_redirect", "true");
       window.location.href = crisisUrl;
       return;
     }
@@ -742,7 +742,6 @@ const AIChatbot = () => {
       if (contentType.includes("application/json")) {
         const json = await resp.json();
         if (json.crisis && json.redirect) {
-          localStorage.setItem("crisis_redirect_time", Date.now().toString());
           window.location.href = json.redirect;
           return;
         }
@@ -840,7 +839,7 @@ const AIChatbot = () => {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                Leevee AI Assistant
+                Polly AI Assistant
               </p>
               <p className="text-xs text-muted-foreground">Ask me about our resources</p>
             </div>

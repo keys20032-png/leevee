@@ -19,7 +19,7 @@ export const en = {
   // Hero
   hero: {
     badge: "Trusted Resource Hub",
-    title: "Leevee AI",
+    title: "Polly AI",
     subtitle: "Find Support Fast",
     description: "Your comprehensive guide to support, education, and wellness resources. Connecting you with trusted tools for learning, mental health, safety, and financial wellbeing.",
     explore: "Explore Resources",
@@ -58,8 +58,8 @@ export const en = {
   // About
   about: {
     label: "About Us",
-    title: "Why Leevee AI?",
-    description: "We believe everyone deserves access to the support they need. Leevee AI is a free, community-driven platform connecting people with trusted resources.",
+    title: "Why Polly AI?",
+    description: "We believe everyone deserves access to the support they need. Polly AI is a free, community-driven platform connecting people with trusted resources.",
     curatedTitle: "Curated Resources",
     curatedDesc: "Every resource is carefully selected to provide genuine, accessible support for those who need it.",
     communityTitle: "Community Driven",
@@ -105,7 +105,7 @@ export const en = {
     crisisResources: "Crisis Resources",
     getInTouch: "Get in Touch",
     suggestResource: "Have a resource to suggest? Want to collaborate? We'd love to hear from you.",
-    copyright: "Leevee AI © {year} — All rights reserved",
+    copyright: "Polly AI © {year} — All rights reserved",
     madeWith: "Made with",
     forThose: "for those who need it",
   },
@@ -114,33 +114,7 @@ export const en = {
   // AI Chatbot
   chatbot: {
     toggle: "Chat with AI assistant",
-    title: "Leevee AI Assistant",
+    title: "Polly AI Assistant",
     placeholder: "Type your message...",
-  },
-  // Crisis Resources Directory
-  crisisDirectory: {
-    backToHome: "Back to Home",
-    title: "Crisis Resources Directory",
-    subtitle: "If you or someone you know is in crisis, help is available right now. These organizations provide free, confidential support 24/7.",
-    urgentBanner: "In immediate danger? Call {911} or {988} now",
-    searchPlaceholder: "Search hotlines, organizations...",
-    showing: "Showing {count} of {total} resources",
-    noResults: "No resources found matching",
-    inCategory: "in",
-    clearFilters: "Clear filters",
-    notAlone: "You are not alone. 💙",
-    notSureText: "If you're not sure which resource to contact, call or text {988} — trained counselors are available 24/7 and can help connect you with the right support.",
-    callOrText988: "Call or Text 988 Now",
-    visitWebsite: "Visit Website",
-    // Categories
-    catAll: "All",
-    catMentalHealth: "Mental Health",
-    catYouthChildren: "Youth & Children",
-    catLGBTQ: "LGBTQ+",
-    catViolenceAbuse: "Violence & Abuse",
-    catSubstanceUse: "Substance Use",
-    catDisability: "Disability & Neurodiversity",
-    catFamilyParenting: "Family & Parenting",
-    catDisasterEmergency: "Disaster & Emergency",
   },
 };

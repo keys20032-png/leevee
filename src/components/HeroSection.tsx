@@ -41,7 +41,7 @@ const HeroSection = () => {
           <div className="relative">
             <div className="absolute inset-0 rounded-2xl blur-2xl opacity-20" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }} />
             <div className="relative p-[2px] rounded-2xl" style={{ background: "linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)))" }}>
-              <img src={logo} alt="Leevee AI logo" className="w-20 h-20 md:w-24 md:h-24 rounded-[14px] object-cover" />
+              <img src={logo} alt="Polly AI logo" className="w-20 h-20 md:w-24 md:h-24 rounded-[14px] object-cover" />
             </div>
           </div>
 

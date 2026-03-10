@@ -56,7 +56,6 @@ const ResourcesSection = () => {
         { title: "Safer Choices", description: "Making informed safety decisions", category: t.resources.supportTitle, url: "https://dodge-oven-26086229.figma.site/" },
         { title: "HopeRising", description: "Hope and recovery support platform", category: t.resources.supportTitle, url: "https://light-of-hope-project.lovable.app/" },
         { title: "Tasty Start", description: "Food security and nutrition resources", category: t.resources.supportTitle, url: "https://tasty-start.lovable.app/" },
-        { title: "The Truth About Sex Work", description: "Objective education on legal sex work — real pros, cons, and safety info", category: t.resources.supportTitle, url: "/sex-work-education" },
       ],
     },
     {
