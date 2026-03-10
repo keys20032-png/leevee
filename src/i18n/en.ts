@@ -138,6 +138,7 @@ export const en = {
     descDebate: "I'll push back on your ideas — respectfully. Let's sharpen your thinking.",
     descImagine: "Describe what you see in your head. I'll bring it to life.",
     descDrama: "Spill the tea ☕ — messy gossip with real receipts.",
+    descBusiness: "Professional help with emails, strategy, pitches, and career moves.",
     // Mode prompts
     promptsGeneral: ["Help me organize my thoughts", "I need advice on something", "Write something for me", "Break this down simply", "Brainstorm with me", "Help me make a decision"],
     promptsVent: ["I need to get something off my chest", "Today was really rough", "I'm overwhelmed and I don't know why", "I just need someone to hear me", "Everything feels like too much", "I'm angry and I need to let it out"],
