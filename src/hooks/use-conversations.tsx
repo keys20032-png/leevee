@@ -243,7 +243,8 @@ export function useConversations() {
 
   // Import session from sync code
   const importSession = useCallback((newSessionId: string) => {
-    localStorage.setItem(SESSION_KEY, newSessionId);
+    setSessionId(newSessionId);
+    resetSessionClient();
     window.location.reload();
   }, []);
 
