@@ -123,11 +123,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (session?.user) {
           setTimeout(() => fetchProfile(session.user.id), 0);
           setTimeout(() => checkSubscription(), 100);
+          setTimeout(() => checkAdmin(session.user.id), 0);
         } else {
           setProfile(null);
           setTier("free");
           setSubscribed(false);
           setSubscriptionEnd(null);
+          setIsAdmin(false);
         }
         setLoading(false);
       }
