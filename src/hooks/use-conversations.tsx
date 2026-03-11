@@ -51,6 +51,14 @@ export function useConversations() {
   const [memories, setMemories] = useState<UserMemory[]>([]);
   const sessionId = getSessionId();
 
+  // Set the session ID as a global header for RLS policies
+  useEffect(() => {
+    supabase.functions.setAuth(sessionId); // not needed but safe
+    // Set global headers so RLS can read x-session-id
+    (supabase as any).rest.headers['x-session-id'] = sessionId;
+    (supabase as any).realtime?.setAuth?.(sessionId);
+  }, [sessionId]);
+
   // Load conversations list (exclude soft-deleted)
   const loadConversations = useCallback(async () => {
     const { data } = await supabase
