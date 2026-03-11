@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getSessionClient, getSessionId, setSessionId, resetSessionClient } from "@/lib/supabase-session";
 
 export type Conversation = {
   id: string;
@@ -32,17 +32,6 @@ export type UserMemory = {
   updated_at: string;
 };
 
-const SESSION_KEY = "leevee_session_id";
-
-function getSessionId(): string {
-  let id = localStorage.getItem(SESSION_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(SESSION_KEY, id);
-  }
-  return id;
-}
-
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [trashedConversations, setTrashedConversations] = useState<Conversation[]>([]);
@@ -50,24 +39,7 @@ export function useConversations() {
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [memories, setMemories] = useState<UserMemory[]>([]);
   const sessionId = getSessionId();
-
-  // Set the session ID as a global header for RLS policies  
-  useEffect(() => {
-    // Access the internal PostgREST client headers
-    try {
-      const restClient = (supabase as any).rest;
-      if (restClient && restClient.headers) {
-        restClient.headers['x-session-id'] = sessionId;
-      }
-      // Also set on the schema client used internally
-      const schemaClient = (supabase as any).schema;
-      if (schemaClient && typeof schemaClient === 'function') {
-        // Handled via rest headers above
-      }
-    } catch (e) {
-      console.warn('Could not set session header:', e);
-    }
-  }, [sessionId]);
+  const supabase = getSessionClient();
 
   // Load conversations list (exclude soft-deleted)
   const loadConversations = useCallback(async () => {
