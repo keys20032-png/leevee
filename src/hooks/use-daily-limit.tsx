@@ -27,12 +27,12 @@ const setCount = (n: number) => {
 };
 
 export const useDailyLimit = () => {
-  const { tier, isAdmin } = useAuth();
+  const { tier } = useAuth();
   const [count, setCountState] = useState(getCount);
 
-  const limit = isAdmin ? Infinity : DAILY_LIMITS[tier];
+  const limit = DAILY_LIMITS[tier];
   const remaining = Math.max(0, limit - count);
-  const isAtLimit = !isAdmin && count >= limit;
+  const isAtLimit = count >= limit;
 
   const increment = useCallback(() => {
     const next = getCount() + 1;
