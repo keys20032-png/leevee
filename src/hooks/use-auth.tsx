@@ -141,6 +141,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         fetchProfile(session.user.id);
         checkSubscription();
+        checkAdmin(session.user.id);
       }
       setLoading(false);
     });
