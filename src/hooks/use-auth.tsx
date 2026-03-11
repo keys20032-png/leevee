@@ -34,6 +34,7 @@ const AuthContext = createContext<AuthContextType>({
   subscribed: false,
   subscriptionEnd: null,
   checkingSubscription: false,
+  isAdmin: false,
   signOut: async () => {},
   refreshProfile: async () => {},
   refreshSubscription: async () => {},
