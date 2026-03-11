@@ -51,6 +51,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscribed, setSubscribed] = useState(false);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdmin = async (userId: string) => {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    setIsAdmin(!!data);
+  };
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
