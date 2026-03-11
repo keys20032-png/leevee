@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getSessionClient, getSessionId, setSessionId, resetSessionClient } from "@/lib/supabase-session";
 
 export type Conversation = {
   id: string;
@@ -32,17 +32,6 @@ export type UserMemory = {
   updated_at: string;
 };
 
-const SESSION_KEY = "leevee_session_id";
-
-function getSessionId(): string {
-  let id = localStorage.getItem(SESSION_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(SESSION_KEY, id);
-  }
-  return id;
-}
-
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [trashedConversations, setTrashedConversations] = useState<Conversation[]>([]);
@@ -50,6 +39,7 @@ export function useConversations() {
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [memories, setMemories] = useState<UserMemory[]>([]);
   const sessionId = getSessionId();
+  const supabase = getSessionClient();
 
   // Load conversations list (exclude soft-deleted)
   const loadConversations = useCallback(async () => {
@@ -253,7 +243,8 @@ export function useConversations() {
 
   // Import session from sync code
   const importSession = useCallback((newSessionId: string) => {
-    localStorage.setItem(SESSION_KEY, newSessionId);
+    setSessionId(newSessionId);
+    resetSessionClient();
     window.location.reload();
   }, []);
 
