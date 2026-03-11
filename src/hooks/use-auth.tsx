@@ -19,6 +19,7 @@ type AuthContextType = {
   subscribed: boolean;
   subscriptionEnd: string | null;
   checkingSubscription: boolean;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   refreshSubscription: () => Promise<void>;
@@ -33,6 +34,7 @@ const AuthContext = createContext<AuthContextType>({
   subscribed: false,
   subscriptionEnd: null,
   checkingSubscription: false,
+  isAdmin: false,
   signOut: async () => {},
   refreshProfile: async () => {},
   refreshSubscription: async () => {},
@@ -49,6 +51,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [subscribed, setSubscribed] = useState(false);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdmin = async (userId: string) => {
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    setIsAdmin(!!data);
+  };
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
@@ -110,11 +123,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (session?.user) {
           setTimeout(() => fetchProfile(session.user.id), 0);
           setTimeout(() => checkSubscription(), 100);
+          setTimeout(() => checkAdmin(session.user.id), 0);
         } else {
           setProfile(null);
           setTier("free");
           setSubscribed(false);
           setSubscriptionEnd(null);
+          setIsAdmin(false);
         }
         setLoading(false);
       }
@@ -126,6 +141,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         fetchProfile(session.user.id);
         checkSubscription();
+        checkAdmin(session.user.id);
       }
       setLoading(false);
     });
@@ -148,13 +164,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setTier("free");
     setSubscribed(false);
     setSubscriptionEnd(null);
+    setIsAdmin(false);
   };
 
   return (
     <AuthContext.Provider value={{
       user, session, loading, profile,
       tier, subscribed, subscriptionEnd, checkingSubscription,
-      signOut, refreshProfile, refreshSubscription,
+      isAdmin, signOut, refreshProfile, refreshSubscription,
     }}>
       {children}
     </AuthContext.Provider>

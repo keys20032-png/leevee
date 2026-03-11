@@ -109,6 +109,24 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_usage: {
+        Row: {
+          message_count: number
+          session_id: string
+          usage_date: string
+        }
+        Insert: {
+          message_count?: number
+          session_id: string
+          usage_date?: string
+        }
+        Update: {
+          message_count?: number
+          session_id?: string
+          usage_date?: string
+        }
+        Relationships: []
+      }
       feature_request_votes: {
         Row: {
           created_at: string
@@ -134,6 +152,13 @@ export type Database = {
             columns: ["feature_request_id"]
             isOneToOne: false
             referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_request_votes_feature_request_id_fkey"
+            columns: ["feature_request_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests_public"
             referencedColumns: ["id"]
           },
         ]
@@ -261,15 +286,71 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      feature_requests_public: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          vote_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          vote_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          vote_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -396,6 +477,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
