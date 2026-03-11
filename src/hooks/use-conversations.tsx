@@ -53,7 +53,13 @@ export function useConversations() {
 
   // Set the session ID as a global header for RLS policies
   useEffect(() => {
-    supabase.headers = { ...supabase.headers, 'x-session-id': sessionId };
+    const client = supabase as any;
+    if (client.rest?.headers) {
+      client.rest.headers['x-session-id'] = sessionId;
+    }
+    if (client.headers) {
+      client.headers['x-session-id'] = sessionId;
+    }
   }, [sessionId]);
 
   // Load conversations list (exclude soft-deleted)
