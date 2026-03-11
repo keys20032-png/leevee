@@ -51,14 +51,21 @@ export function useConversations() {
   const [memories, setMemories] = useState<UserMemory[]>([]);
   const sessionId = getSessionId();
 
-  // Set the session ID as a global header for RLS policies
+  // Set the session ID as a global header for RLS policies  
   useEffect(() => {
-    const client = supabase as any;
-    if (client.rest?.headers) {
-      client.rest.headers['x-session-id'] = sessionId;
-    }
-    if (client.headers) {
-      client.headers['x-session-id'] = sessionId;
+    // Access the internal PostgREST client headers
+    try {
+      const restClient = (supabase as any).rest;
+      if (restClient && restClient.headers) {
+        restClient.headers['x-session-id'] = sessionId;
+      }
+      // Also set on the schema client used internally
+      const schemaClient = (supabase as any).schema;
+      if (schemaClient && typeof schemaClient === 'function') {
+        // Handled via rest headers above
+      }
+    } catch (e) {
+      console.warn('Could not set session header:', e);
     }
   }, [sessionId]);
 
