@@ -19,6 +19,7 @@ type AuthContextType = {
   subscribed: boolean;
   subscriptionEnd: string | null;
   checkingSubscription: boolean;
+  isAdmin: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   refreshSubscription: () => Promise<void>;
