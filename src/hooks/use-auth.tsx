@@ -164,13 +164,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setTier("free");
     setSubscribed(false);
     setSubscriptionEnd(null);
+    setIsAdmin(false);
   };
 
   return (
     <AuthContext.Provider value={{
       user, session, loading, profile,
       tier, subscribed, subscriptionEnd, checkingSubscription,
-      signOut, refreshProfile, refreshSubscription,
+      isAdmin, signOut, refreshProfile, refreshSubscription,
     }}>
       {children}
     </AuthContext.Provider>
